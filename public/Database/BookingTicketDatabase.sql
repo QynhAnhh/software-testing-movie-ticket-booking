@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS show_time(
 DROP TABLE IF EXISTS seat_type;
 CREATE TABLE IF NOT EXISTS seat_type(
 	seat_type_id INT PRIMARY KEY AUTO_INCREMENT,
-    seat_type_name ENUM("REGULAR" , "VIP") NOT NULL,
+    seat_type_name ENUM('REGULAR' , 'VIP') NOT NULL,
     seat_type_price INT NOT NULL
 );
 
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS seat(
 	seat_id INT PRIMARY KEY AUTO_INCREMENT,
     room_id INT NOT NULL ,
     seat_number INT NOT NULL CHECK(seat_number BETWEEN 1 AND 12) ,
-    seat_row ENUM("A","B","C","D","E","F","G","H") NOT NULL,
+    seat_row ENUM('A','B','C','D','E','F','G','H') NOT NULL,
 	seat_type_id INT NOT NULL ,
     
     UNIQUE(room_id, seat_row, seat_number),
