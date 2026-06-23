@@ -24,17 +24,53 @@
 
 .search-box {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .search-box input {
-    padding: 10px 40px 10px 20px;
+    padding: 10px 40px 10px 20px; 
     border-radius: 20px;
     border: none;
     outline: none;
     width: 250px;
 }
 
-/* Auth Section (Đăng nhập / User) */
+.search-btn {
+    position: absolute;
+    right: 15px; 
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon{
+    width: 18px; 
+    height: 18px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.search-btn:hover .search-icon {
+    opacity: 1;
+}
+
+
+.setting-icon {
+    width: 22px; 
+    height: 22px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    vertical-align: middle;
+}
+
+.setting-icon:hover {
+    transform: rotate(90deg);
+}
+
 .auth-section {
     display: flex;
     align-items: center;

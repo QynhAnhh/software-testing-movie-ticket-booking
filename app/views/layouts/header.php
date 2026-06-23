@@ -1,3 +1,5 @@
+// http://localhost/MOVIE-TICKET-BOOKING/app/views/layouts/header.php
+
 <?php
 // Mô phỏng session
 if (session_status() === PHP_SESSION_NONE) {
@@ -32,25 +34,28 @@ if (!isset($theaters)) {
             </div>
             
             <div class="header-top-right">
-                <form class="search-box" action="/search" method="GET">
-                    <input type="text" name="keyword" placeholder="Tìm phim...">
-                </form>
+    <form class="search-box" action="/search" method="GET">
+        <input type="text" name="keyword" placeholder="Tìm phim...">
+        <button type="submit" class="search-btn">
+            <img src="/movie-ticket-booking/public/assets/svg/search1.svg" alt="Search" class="search-icon">
+        </button>
+    </form>
 
-                <div class="auth-section">
-                    <?php if (isset($_SESSION['user'])): ?>
-                        <div class="user-profile">
-                            <span>Hi, <?php echo htmlspecialchars($_SESSION['user']['name']); ?></span>
-                            <a href="/settings" title="Cài đặt tài khoản">
-                                <span class="gear-icon">⚙️</span>
-                            </a>
-                        </div>
-                    <?php else: ?>
-                        <a href="/login" class="login-btn">
-                        Đăng nhập
-                        </a>
-                    <?php endif; ?>
-                </div>
+    <div class="auth-section">
+        <?php if (isset($_SESSION['user'])): ?>
+            <div class="user-profile">
+                <span>Hi, <?php echo htmlspecialchars($_SESSION['user']['name']); ?></span>
+                <a href="/settings" title="Cài đặt tài khoản">
+                    <img src="/public/assets/svg/setting.svg" alt="Settings" class="setting-icon">
+                </a>
             </div>
+        <?php else: ?>
+            <a href="/login" class="login-btn">
+            Đăng nhập
+            </a>
+        <?php endif; ?>
+    </div>
+</div>
         </div>
 
         <nav class="header-bottom">
