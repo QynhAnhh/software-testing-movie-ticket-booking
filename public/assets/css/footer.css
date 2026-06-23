@@ -1,7 +1,7 @@
 /* --- FOOTER MAIN --- */
 .main-footer {
-  background: linear-gradient(to right, #663399, #3461c4);
-  color: #ffffff;
+  background: linear-gradient(to right, var(--bg-ft1), var(--bg-ft2));
+  color: var(--text-light);
   padding: 60px 0 40px;
   font-size: 15px;
   margin-top: auto;
@@ -16,7 +16,7 @@
 }
 
 .footer-col h3 {
-  color: #ffffff;
+  color: var(--text-light);
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 25px;
@@ -31,12 +31,12 @@
 }
 
 .footer-col ul li a {
-  color: #e2e8f0; /* Màu xám sáng giúp chữ không bị chìm */
+  color: #e2e8f0; 
   transition: color 0.3s ease;
 }
 
 .footer-col ul li a:hover {
-  color: #ffffff; /* Trắng tinh khi hover */
+  color: var(--text-light); 
 }
 
 /* Cột 4 (Bên phải) */
@@ -75,7 +75,6 @@
 
 /* --- ĐƯỜNG PHÂN CÁCH --- */
 .footer-divider {
-  /* Đổi viền sang màu trắng có độ trong suốt để hợp với nền gradient */
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 30px;
 }
@@ -102,7 +101,7 @@
 }
 
 .company-info h4 {
-  color: #ffffff;
+  color: var(--text-light);
   font-size: 15px;
   font-weight: normal;
   margin-bottom: 2px;

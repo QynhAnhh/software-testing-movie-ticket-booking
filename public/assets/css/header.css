@@ -1,6 +1,6 @@
 .main-header {
     background-color: var(--bg-header);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: none;
 }
 
 /* --- PHẦN TRÊN --- */
@@ -13,7 +13,7 @@
 }
 
 .logo img {
-    height: 40px; /* Tùy chỉnh theo logo thực tế */
+    height: 40px; /* Tùy chỉnh */
 }
 
 .header-top-right {
@@ -139,7 +139,6 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     z-index: 1000;
-    /* Dùng grid để chia cột giống ảnh em gửi */
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
