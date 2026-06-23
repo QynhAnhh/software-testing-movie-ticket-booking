@@ -6,6 +6,8 @@
     --text-dim: #9ca3af;      /* Chữ màu xám */
     --primary-yellow: #facc15; /* Màu vàng của nút/icon */
     --border-color: #1f2937;  /* Đường viền phân cách */
+    --bg-ft1: #663399;        /* Màu nền tím đậm */
+    --bg-ft2: #3461C4;        /* Màu nền xanh dương */
 }
 
 /* Reset CSS cơ bản */
