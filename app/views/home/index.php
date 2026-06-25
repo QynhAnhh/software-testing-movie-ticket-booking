@@ -2,16 +2,16 @@
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
             <div class="swiper-slide">
-                <img src="/movie-ticket-booking/public/assets/img/tonghop-banner.jpg" alt="Banner 1">
+                <img src="/MOVIE-TICKET-BOOKING/public/assets/img/tonghop-banner.jpg" alt="Banner 1">
             </div>
             <div class="swiper-slide">
-                <img src="/movie-ticket-booking/public/assets/img/minions&quaivat-banner.jpg" alt="Banner 2">
+                <img src="/MOVIE-TICKET-BOOKING/public/assets/img/minions&quaivat-banner.jpg" alt="Banner 2">
             </div>
             <div class="swiper-slide">
-                <img src="/movie-ticket-booking/public/assets/img/supergirl-banner.png" alt="Banner 3">
+                <img src="/MOVIE-TICKET-BOOKING/public/assets/img/supergirl-banner.png" alt="Banner 3">
             </div>
             <div class="swiper-slide">
-                <img src="/movie-ticket-booking/public/assets/img/muave-banner.png" alt="Banner 4">
+                <img src="/MOVIE-TICKET-BOOKING/public/assets/img/muave-banner.png" alt="Banner 4">
             </div>
         </div>
 
