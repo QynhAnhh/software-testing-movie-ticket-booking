@@ -59,12 +59,101 @@ Khi cần code một tính năng mới (ví dụ: hiển thị danh sách phim, 
 File duy nhất cả nhóm bắt buộc phải sửa chung là [routes/web.php](file:///d:/Downloads/laragon/www/movie-ticket-booking/routes/web.php). Để tránh conflict file này, hãy tuân thủ quy tắc sau:
 
 1. **Phân chia khu vực trong routes:** Đọc kỹ chú thích trong file routes và chỉ thêm route ở khu vực của mình.
-2. **Khai báo gọn gàng:** Viết route trên 1 dòng duy nhất.
-    * *Ví dụ:* `$router->get('/movies', [MovieController::class, 'index']);`
+2. **Khai báo gọn gàng:** Sử dụng cú pháp array thay vì string để dễ phát hiện lỗi.
+    * *Đúng (Chuẩn dự án):* `$router->get('/movies', [\App\Controllers\MovieController::class, 'index']);`
+    * *Không dùng:* `$router->get('/movies', 'MovieController@index');`
 
 ---
 
-## 4. Quy Trình Git Để Tránh Trùng Lặp
+## 4. Ví Dụ Mẫu: Luồng Phát Triển Module Movie (Dành cho cả nhóm tham khảo)
+
+Khi phát triển bất kỳ module nào (Movie, Showtime, Booking...), hãy đi theo luồng chuẩn hóa sau để đồng nhất:
+
+### Bước 4.1: Kiểm tra Database thực tế
+Luôn đối chiếu đúng cấu trúc bảng trong [BookingTicketDatabase.sql](file:///d:/Downloads/laragon/www/movie-ticket-booking/database/BookingTicketDatabase.sql). 
+*   *Lưu ý:* Bảng liên kết thể loại là `movie_genre` (số ít), cột chứa ảnh là `poster` chứ không phải `poster_url`.
+
+### Bước 4.2: Viết Model (`app/Models/MovieModel.php`)
+Kế thừa từ `BaseModel` để tái sử dụng kết nối database và các hàm CRUD có sẵn.
+*   *Sử dụng hàm cha:* Hãy dùng trực tiếp hàm `findAll()` và `findById($id)` đã được định nghĩa trong `BaseModel`.
+*   *Ví dụ code:*
+    ```php
+    namespace App\Models;
+
+    class MovieModel extends BaseModel {
+        protected string $table = 'movies';
+        
+        // Chỉ viết thêm các hàm đặc thù của Movie
+        public function findByStatus($status) {
+            $stmt = $this->db->prepare("SELECT * FROM movies WHERE status = :status AND is_active = 1");
+            $stmt->execute(['status' => $status]);
+            return $stmt->fetchAll();
+        }
+    }
+    ```
+
+### Bước 4.3: Viết Service (`app/Services/MovieService.php`)
+Xử lý logic nghiệp vụ và đóng gói dữ liệu (như tính phân trang) để Controller sử dụng.
+*   *Ví dụ:*
+    ```php
+    namespace App\Services;
+
+    use App\Models\MovieModel;
+
+    class MovieService {
+        private MovieModel $movieModel;
+
+        public function __construct() {
+            $this->movieModel = new MovieModel();
+        }
+
+        public function getMovieList($page = 1, $perPage = 6) {
+            // Logic tính phân trang offset...
+            $movies = $this->movieModel->findAll(); 
+            return [
+                'data' => $movies,
+                'current_page' => $page,
+                'total_pages' => 3
+            ];
+        }
+    }
+    ```
+
+### Bước 4.4: Viết Controller (`app/Controllers/MovieController.php`)
+Nhận tham số qua `Request`, gọi `MovieService` và render View.
+*   *Ví dụ:*
+    ```php
+    namespace App\Controllers;
+
+    use App\Core\Controller;
+    use App\Services\MovieService;
+
+    class MovieController extends Controller {
+        private MovieService $movieService;
+
+        public function __construct() {
+            $this->movieService = new MovieService();
+        }
+
+        public function index() {
+            $page = $_GET['page'] ?? 1;
+            $data = $this->movieService->getMovieList($page);
+            return $this->view('movies/index', $data);
+        }
+    }
+    ```
+
+### Bước 4.5: Đăng ký Route tương thích hệ thống
+Khai báo route trong `routes/web.php` bằng dạng Class Array. Vì Router của chúng ta so khớp URL chính xác, nên với các URL chi tiết/tìm kiếm, ta khai báo như sau:
+```php
+$router->get('/movies', [\App\Controllers\MovieController::class, 'index']);
+$router->get('/movies/detail', [\App\Controllers\MovieController::class, 'show']); // Nhận ID qua $_GET['id']
+$router->get('/movies/search', [\App\Controllers\MovieController::class, 'search']); // Nhận từ khóa qua $_GET['q']
+```
+
+---
+
+## 5. Quy Trình Git Để Tránh Trùng Lặp
 
 Để việc merge code vào nhánh chung (`develop`) không bị lỗi:
 
@@ -85,7 +174,7 @@ File duy nhất cả nhóm bắt buộc phải sửa chung là [routes/web.php](
 
 ---
 
-## 5. Cách Tích Hợp Giữa Các Thành Viên (Integration)
+## 6. Cách Tích Hợp Giữa Các Thành Viên (Integration)
 
 * **Giữa Frontend và Backend:**
   * Người làm Frontend (Quỳnh Anh, Thịnh) thiết kế giao diện tĩnh (HTML/CSS) trong thư mục `Views`.

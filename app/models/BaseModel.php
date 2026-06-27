@@ -18,7 +18,7 @@ abstract class BaseModel
     /**
      * Lấy tất cả bản ghi
      */
-    public function all()
+    public function findAll()
     {
         $stmt = $this->db->prepare("SELECT * FROM {$this->table} ORDER BY id DESC");
         $stmt->execute();
@@ -28,7 +28,7 @@ abstract class BaseModel
     /**
      * Tìm bản ghi theo ID
      */
-    public function find($id)
+    public function findById($id)
     {
         $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE id = :id LIMIT 1");
         $stmt->execute(['id' => $id]);
