@@ -1,7 +1,7 @@
 <?php
-namespace App\Models;
+namespace app\Models;
 
-use Core\Database;
+use core\Database;
 
 class Movie extends BaseModel
 {

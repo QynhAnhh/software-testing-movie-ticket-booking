@@ -1,4 +1,6 @@
 <?php
+namespace app\Models;
+use core\Database;
 
 class BaseModel
 {
@@ -32,6 +34,12 @@ class BaseModel
 
     public function create($data)
     {
+
+        if ($this->hasTimestamps()) {
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $data['updated_at'] = date('Y-m-d H:i:s');
+        }
+
         $columns = implode(', ', array_keys($data));
         $placeholders = ':' . implode(', :', array_keys($data));
         $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders})";
@@ -42,6 +50,10 @@ class BaseModel
 
     public function update($id, $data)
     {
+        if ($this->hasTimestamps()) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+        }
+
         $set = [];
         foreach ($data as $key => $value) {
             $set[] = "{$key} = :{$key}";
@@ -51,5 +63,10 @@ class BaseModel
         $sql = "UPDATE {$this->table} SET {$setStr} WHERE id = :id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($data);
+    }
+
+    protected function hasTimestamps()
+    {
+        return true; // Mặc định true, nếu bảng không có thì ghi đè
     }
 }
