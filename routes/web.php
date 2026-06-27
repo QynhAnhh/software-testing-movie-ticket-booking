@@ -1,17 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../app/controllers/HomeController.php';
+use App\Controllers\HomeController;
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+/** @var \App\Core\Router $router */
+$router = $app->getRouter();
 
-$basePath = '/movie-ticket-booking/public';
-$route = str_replace($basePath, '', $uri);
-
-if ($route === '' || $route === '/' || $route === '/index.php') {
-    $controller = new HomeController();
-    $controller->index();
-    exit;
-}
-
-http_response_code(404);
-echo '404 - Page Not Found';
+// Định nghĩa các route ở đây
+$router->get('/', [HomeController::class, 'index']);
+// Thêm các route khác sau này...
