@@ -1,59 +1,75 @@
-<!-- http://localhost/MOVIE-TICKET-BOOKING/public/index.php -->
 <?php
 
-require_once __DIR__ . '/../app/views/layouts/header.php';
-?>
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-<div class="banner-section">
-    <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <img src="/movie-ticket-booking/public/assets/img/tonghop-banner.jpg" alt="Banner 1">
-            </div>
-            <div class="swiper-slide">
-                <img src="/movie-ticket-booking/public/assets/img/minions&quaivat-banner.jpg" alt="Banner 2">
-            </div>
-            <div class="swiper-slide">
-                <img src="/movie-ticket-booking/public/assets/img/supergirl-banner.png" alt="Banner 3">
-            </div>
-            <div class="swiper-slide">
-                <img src="/movie-ticket-booking/public/assets/img/muave-banner.png" alt="Banner 3">
-            </div>
-        </div>
-        
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div>
-    </div>
-</div>
+use App\Core\App;
 
-<div class="container main-content" style="min-height: 400px; padding: 40px 20px;">
-    <h2>Phim Đang Chiếu</h2>
-    </div>
+// Hiển thị lỗi để dễ debug trong môi trường dev
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+// Load file .env nếu có
+$envFile = dirname(__DIR__) . '/.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) {
+            continue;
+        }
+        $parts = explode('=', $line, 2);
+        if (count($parts) === 2) {
+            $name = trim($parts[0]);
+            $value = trim($parts[1]);
+            // Loại bỏ dấu nháy kép/nháy đơn nếu có ở đầu/cuối giá trị
+            $value = trim($value, '"\'');
+            
+            if (!array_key_exists($name, $_SERVER) && !array_key_exists($name, $_ENV)) {
+                putenv(sprintf('%s=%s', $name, $value));
+                $_ENV[$name] = $value;
+                $_SERVER[$name] = $value;
+            }
+        }
+    }
+}
 
-<script>
-    var swiper = new Swiper(".mySwiper", {
-        spaceBetween: 0, // Đã chỉnh lại 0 để ảnh tràn viền mượt mà
-        centeredSlides: true,
-        loop: true, // Thêm loop để banner lặp lại liên tục
-        autoplay: {
-            delay: 3500, // Tăng thời gian delay để khách kịp đọc banner
-            disableOnInteraction: false,
-        },
-        pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-        },
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        },
-    });
-</script>
+// Autoloader đơn giản theo chuẩn PSR-4
+spl_autoload_register(function ($class) {
+    // Tiền tố namespace
+    $prefix = 'App\\';
 
-<?php
+    // Thư mục chứa code của namespace
+    $base_dir = dirname(__DIR__) . '/app/';
 
-require_once __DIR__ . '/../app/views/layouts/footer.php';
-?>
+    // Kiểm tra xem class có sử dụng tiền tố namespace hay không
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return; // Chuyển sang autoloader khác (nếu có)
+    }
+
+    // Lấy phần tên class (bỏ tiền tố namespace)
+    $relative_class = substr($class, $len);
+
+    // Thay thế namespace separator bằng directory separator, thêm .php
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+
+    // Nếu file tồn tại thì require nó
+    if (file_exists($file)) {
+        require $file;
+    }
+});
+
+// Load helpers
+require_once dirname(__DIR__) . '/helpers/functions.php';
+require_once dirname(__DIR__) . '/helpers/url_helper.php';
+
+// Khởi tạo ứng dụng
+$app = new App();
+
+// Load routes
+require_once dirname(__DIR__) . '/routes/web.php';
+
+// Chạy ứng dụng
+$app->run();
