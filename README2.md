@@ -51,10 +51,6 @@ Hệ thống được phát triển theo kiến trúc PHP MVC kết hợp MySQL,
    ```bash
    cd movie-ticket-booking
    ```
-4. **CHÚ Ý QUAN TRỌNG:** Phải chuyển sang nhánh `feature/architecture-one-page` (nhánh chứa cấu trúc mới nhất):
-   ```bash
-   git checkout feature/architecture-one-page
-   ```
 
 ## 2. Khởi tạo Cơ Sở Dữ Liệu (Database)
 
