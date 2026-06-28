@@ -9,14 +9,16 @@ require_once 'config.php';
 // 1. Kiểm tra xem dữ liệu có được gửi bằng phương thức POST hay không
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // Lấy dữ liệu từ form. 
-    // Dùng mysqli_real_escape_string() để chống lỗi SQL Injection khi user nhập nháy đơn (')
-    $email = mysqli_real_escape_string($conn, trim($_POST['email']));
+    // Lấy dữ liệu từ form.
+    $email = trim($_POST['email']);
     $password = $_POST['password']; // Mật khẩu không cần escape vì ta không đưa thẳng vào câu SQL, ta dùng hàm verify
 
     // 2. Kiểm tra email có tồn tại trong CSDL không
-    $sql = "SELECT * FROM users WHERE email = '$email' LIMIT 1";
-    $result = mysqli_query($conn, $sql);
+    // Sử dụng Prepared Statement để chống SQL Injection
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ? LIMIT 1");
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     
     // Nếu tìm thấy ít nhất 1 dòng (mysqli_num_rows > 0)
     if ($result && mysqli_num_rows($result) > 0) {
@@ -34,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'first_name' => $user['first_name'],
                 'last_name' => $user['last_name'],
                 'email' => $user['email'],
+                'phone' => $user['phone'],
                 'role' => $user['role'] // 'admin' hoặc 'user'
             ];
             

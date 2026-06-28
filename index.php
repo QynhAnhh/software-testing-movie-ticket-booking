@@ -17,11 +17,8 @@ require_once 'header.php';
  *    Kết quả trả về được lưu vào biến $result_movies.
  */
 $query_movies = "
-    SELECT m.*, mi.image_url 
-    FROM movies m 
-    LEFT JOIN movie_images mi ON m.id = mi.movie_id 
-    WHERE m.status = 'now_showing' AND m.is_active = 1 
-    GROUP BY m.id
+    SELECT * FROM movies 
+    WHERE status = 'now_showing' AND is_active = 1
 ";
 $result_movies = mysqli_query($conn, $query_movies);
 ?>
@@ -75,7 +72,7 @@ $result_movies = mysqli_query($conn, $query_movies);
                 
                 <!-- htmlspecialchars() giúp bảo vệ chống lỗi hiển thị ký tự đặc biệt (XSS) -->
                 <!-- Sử dụng toán tử Elvis (?:) nếu không có ảnh thì lấy ảnh default -->
-                <img src="<?php echo htmlspecialchars($movie['image_url'] ?: 'images/movies/default.jpg'); ?>" 
+                <img src="<?php echo htmlspecialchars($movie['images'] ?: 'images/movies/default.jpg'); ?>" 
                      alt="<?php echo htmlspecialchars($movie['title']); ?>" 
                      style="width: 100%; height: 350px; object-fit: cover;">
                 
