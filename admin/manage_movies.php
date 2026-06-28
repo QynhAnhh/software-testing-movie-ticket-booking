@@ -1,130 +1,28 @@
 <?php
 require_once '../config.php';
+require_once '../app/init.php';
 require_once 'admin_header.php';
 require_once 'admin_sidebar.php';
+
+use App\Controllers\MovieController;
+
+$controller = new MovieController();
+$actionResult = $controller->handleRequest();
 
 $success_msg = '';
 $error_msg = '';
 
-// Lấy tất cả genres để hiển thị trong form checkbox
-$genres_query = "SELECT * FROM genres ORDER BY name ASC";
-$all_genres = mysqli_query($conn, $genres_query);
-$genres_list = [];
-if ($all_genres) {
-    while ($g = mysqli_fetch_assoc($all_genres)) {
-        $genres_list[] = $g;
+if ($actionResult) {
+    if ($actionResult['status'] === 'success') {
+        $success_msg = $actionResult['message'];
+    } else {
+        $error_msg = $actionResult['message'];
     }
 }
 
-// --- XỬ LÝ POST REQUEST (Thêm, Sửa, Xóa Phim) ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $action = $_POST['action'];
-
-    if ($action === 'add') {
-        $title = trim($_POST['title']);
-        $description = trim($_POST['description']);
-        $director = trim($_POST['director']);
-        $cast = trim($_POST['cast']);
-        $age_restriction = (int)$_POST['age_restriction'];
-        $country = trim($_POST['country']);
-        $duration = (int)$_POST['duration'];
-        $screening_date = trim($_POST['screening_date']);
-        $images = trim($_POST['images']);
-        $trailer_url = trim($_POST['trailer_url']);
-        $status = $_POST['status'];
-        
-        $selected_genres = isset($_POST['genres']) ? $_POST['genres'] : [];
-
-        if (!empty($title) && !empty($country) && $duration > 0 && !empty($screening_date)) {
-            // Thêm phim
-            $stmt = mysqli_prepare($conn, "INSERT INTO movies (title, description, director, cast, age_restriction, country, duration, screening_date, images, trailer_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            mysqli_stmt_bind_param($stmt, "ssssissssss", $title, $description, $director, $cast, $age_restriction, $country, $duration, $screening_date, $images, $trailer_url, $status);
-            
-            if (mysqli_stmt_execute($stmt)) {
-                $new_movie_id = mysqli_insert_id($conn);
-                
-                // Thêm liên kết thể loại vào bảng movie_genre
-                if (!empty($selected_genres)) {
-                    $genre_stmt = mysqli_prepare($conn, "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?)");
-                    foreach ($selected_genres as $g_id) {
-                        mysqli_stmt_bind_param($genre_stmt, "ii", $new_movie_id, $g_id);
-                        mysqli_stmt_execute($genre_stmt);
-                    }
-                }
-                $success_msg = "Thêm phim thành công!";
-            } else {
-                $error_msg = "Lỗi khi thêm phim: " . mysqli_error($conn);
-            }
-        } else {
-            $error_msg = "Vui lòng nhập đầy đủ các trường bắt buộc!";
-        }
-    } 
-    elseif ($action === 'edit') {
-        $id = (int)$_POST['id'];
-        $title = trim($_POST['title']);
-        $description = trim($_POST['description']);
-        $director = trim($_POST['director']);
-        $cast = trim($_POST['cast']);
-        $age_restriction = (int)$_POST['age_restriction'];
-        $country = trim($_POST['country']);
-        $duration = (int)$_POST['duration'];
-        $screening_date = trim($_POST['screening_date']);
-        $images = trim($_POST['images']);
-        $trailer_url = trim($_POST['trailer_url']);
-        $status = $_POST['status'];
-        
-        $selected_genres = isset($_POST['genres']) ? $_POST['genres'] : [];
-
-        if ($id > 0 && !empty($title) && !empty($country) && $duration > 0 && !empty($screening_date)) {
-            // Cập nhật phim
-            $stmt = mysqli_prepare($conn, "UPDATE movies SET title=?, description=?, director=?, cast=?, age_restriction=?, country=?, duration=?, screening_date=?, images=?, trailer_url=?, status=? WHERE id=?");
-            mysqli_stmt_bind_param($stmt, "ssssissssssi", $title, $description, $director, $cast, $age_restriction, $country, $duration, $screening_date, $images, $trailer_url, $status, $id);
-            
-            if (mysqli_stmt_execute($stmt)) {
-                // Cập nhật thể loại: Xóa hết liên kết cũ, thêm lại liên kết mới
-                $del_genre = mysqli_prepare($conn, "DELETE FROM movie_genre WHERE movie_id = ?");
-                mysqli_stmt_bind_param($del_genre, "i", $id);
-                mysqli_stmt_execute($del_genre);
-
-                if (!empty($selected_genres)) {
-                    $genre_stmt = mysqli_prepare($conn, "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?)");
-                    foreach ($selected_genres as $g_id) {
-                        mysqli_stmt_bind_param($genre_stmt, "ii", $id, $g_id);
-                        mysqli_stmt_execute($genre_stmt);
-                    }
-                }
-                $success_msg = "Cập nhật phim thành công!";
-            } else {
-                $error_msg = "Lỗi khi cập nhật phim: " . mysqli_error($conn);
-            }
-        } else {
-            $error_msg = "Dữ liệu cập nhật không hợp lệ!";
-        }
-    } 
-    elseif ($action === 'delete') {
-        $id = (int)$_POST['id'];
-        if ($id > 0) {
-            $stmt = mysqli_prepare($conn, "DELETE FROM movies WHERE id = ?");
-            mysqli_stmt_bind_param($stmt, "i", $id);
-            if (mysqli_stmt_execute($stmt)) {
-                $success_msg = "Xóa phim thành công!";
-            } else {
-                $error_msg = "Lỗi khi xóa: " . mysqli_error($conn);
-            }
-        }
-    }
-}
-
-// Lấy danh sách phim kèm theo thể loại
-$query_movies = "
-    SELECT m.*, GROUP_CONCAT(g.id) as genre_ids, GROUP_CONCAT(g.name SEPARATOR ', ') as genre_names
-    FROM movies m
-    LEFT JOIN movie_genre mg ON m.id = mg.movie_id
-    LEFT JOIN genres g ON mg.genre_id = g.id
-    GROUP BY m.id
-    ORDER BY m.created_at DESC
-";
-$movies_result = mysqli_query($conn, $query_movies);
+// Lấy danh sách thể loại và phim từ controller
+$genres_list = $controller->getAllGenres();
+$movies_result = $controller->getAllMovies();
 ?>
 
 <div class="container-fluid">
@@ -166,8 +64,8 @@ $movies_result = mysqli_query($conn, $query_movies);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($movies_result && mysqli_num_rows($movies_result) > 0): ?>
-                            <?php while ($movie = mysqli_fetch_assoc($movies_result)): ?>
+                        <?php if (!empty($movies_result)): ?>
+                            <?php foreach ($movies_result as $movie): ?>
                                 <tr>
                                     <td>
                                         <img src="../<?= htmlspecialchars($movie['images'] ?: 'images/movies/default.jpg') ?>" 
@@ -210,7 +108,7 @@ $movies_result = mysqli_query($conn, $query_movies);
                                         </form>
                                     </td>
                                 </tr>
-                            <?php endwhile; ?>
+                            <?php endforeach; ?>
                         <?php else: ?>
                             <tr><td colspan="7" class="text-center text-muted py-4">Chưa có phim nào.</td></tr>
                         <?php endif; ?>

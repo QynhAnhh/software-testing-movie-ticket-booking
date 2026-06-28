@@ -1,85 +1,27 @@
 <?php
 require_once '../config.php';
+require_once '../app/init.php';
 require_once 'admin_header.php';
 require_once 'admin_sidebar.php';
+
+use App\Controllers\GenreController;
+
+$controller = new GenreController();
+$actionResult = $controller->handleRequest();
 
 $success_msg = '';
 $error_msg = '';
 
-// --- XỬ LÝ POST REQUEST (Thêm, Sửa, Xóa) ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $action = $_POST['action'];
-
-    if ($action === 'add') {
-        $name = trim($_POST['name']);
-        $description = trim($_POST['description']);
-
-        if (!empty($name)) {
-            // Kiểm tra trùng tên
-            $check_stmt = mysqli_prepare($conn, "SELECT id FROM genres WHERE name = ?");
-            mysqli_stmt_bind_param($check_stmt, "s", $name);
-            mysqli_stmt_execute($check_stmt);
-            $check_result = mysqli_stmt_get_result($check_stmt);
-
-            if (mysqli_num_rows($check_result) > 0) {
-                $error_msg = "Tên thể loại '$name' đã tồn tại!";
-            } else {
-                $stmt = mysqli_prepare($conn, "INSERT INTO genres (name, description) VALUES (?, ?)");
-                mysqli_stmt_bind_param($stmt, "ss", $name, $description);
-                if (mysqli_stmt_execute($stmt)) {
-                    $success_msg = "Thêm thể loại thành công!";
-                } else {
-                    $error_msg = "Lỗi khi thêm: " . mysqli_error($conn);
-                }
-            }
-        } else {
-            $error_msg = "Tên thể loại không được để trống!";
-        }
-    } 
-    elseif ($action === 'edit') {
-        $id = (int)$_POST['id'];
-        $name = trim($_POST['name']);
-        $description = trim($_POST['description']);
-
-        if (!empty($name) && $id > 0) {
-            // Kiểm tra trùng tên với id khác
-            $check_stmt = mysqli_prepare($conn, "SELECT id FROM genres WHERE name = ? AND id != ?");
-            mysqli_stmt_bind_param($check_stmt, "si", $name, $id);
-            mysqli_stmt_execute($check_stmt);
-            $check_result = mysqli_stmt_get_result($check_stmt);
-
-            if (mysqli_num_rows($check_result) > 0) {
-                $error_msg = "Tên thể loại '$name' đã tồn tại ở mục khác!";
-            } else {
-                $stmt = mysqli_prepare($conn, "UPDATE genres SET name = ?, description = ? WHERE id = ?");
-                mysqli_stmt_bind_param($stmt, "ssi", $name, $description, $id);
-                if (mysqli_stmt_execute($stmt)) {
-                    $success_msg = "Cập nhật thể loại thành công!";
-                } else {
-                    $error_msg = "Lỗi khi cập nhật: " . mysqli_error($conn);
-                }
-            }
-        } else {
-            $error_msg = "Dữ liệu không hợp lệ!";
-        }
-    } 
-    elseif ($action === 'delete') {
-        $id = (int)$_POST['id'];
-        if ($id > 0) {
-            $stmt = mysqli_prepare($conn, "DELETE FROM genres WHERE id = ?");
-            mysqli_stmt_bind_param($stmt, "i", $id);
-            if (mysqli_stmt_execute($stmt)) {
-                $success_msg = "Xóa thể loại thành công!";
-            } else {
-                $error_msg = "Lỗi khi xóa: " . mysqli_error($conn);
-            }
-        }
+if ($actionResult) {
+    if ($actionResult['status'] === 'success') {
+        $success_msg = $actionResult['message'];
+    } else {
+        $error_msg = $actionResult['message'];
     }
 }
 
-// Lấy danh sách genres
-$query = "SELECT * FROM genres ORDER BY id DESC";
-$genres_result = mysqli_query($conn, $query);
+// Lấy danh sách genres (mảng)
+$genres_list = $controller->getAllGenres();
 ?>
 
 <div class="container-fluid">
@@ -119,8 +61,8 @@ $genres_result = mysqli_query($conn, $query);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if ($genres_result && mysqli_num_rows($genres_result) > 0): ?>
-                            <?php while ($genre = mysqli_fetch_assoc($genres_result)): ?>
+                        <?php if (!empty($genres_list)): ?>
+                            <?php foreach ($genres_list as $genre): ?>
                                 <tr>
                                     <td><?= $genre['id'] ?></td>
                                     <td><strong><?= htmlspecialchars($genre['name']) ?></strong></td>
@@ -145,7 +87,7 @@ $genres_result = mysqli_query($conn, $query);
                                         </form>
                                     </td>
                                 </tr>
-                            <?php endwhile; ?>
+                            <?php endforeach; ?>
                         <?php else: ?>
                             <tr><td colspan="5" class="text-center text-muted py-4">Chưa có thể loại nào. Hãy thêm mới!</td></tr>
                         <?php endif; ?>
