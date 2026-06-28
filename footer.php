@@ -1,4 +1,6 @@
-</main> <footer class="main-footer">
+    </main> 
+    
+    <footer class="main-footer">
         <div class="container">
             <div class="footer-top">
                 <div class="footer-col">
@@ -22,21 +24,22 @@
                 <div class="footer-col">
                     <h3>HỆ THỐNG RẠP</h3>
                     <ul>
-                        <li><a href="/showtimes">Tất Cả Hệ Thống Rạp</a></li>
-                        <li><a href="/theater/1">Cinema Quốc Thanh (TP.HCM)</a></li>
-                        <li><a href="/theater/2">Cinema Sinh Viên (TP.HCM)</a></li>
-                        <li><a href="/theater/3">Cinema Đà Lạt (Lâm Đồng)</a></li>
-                        <li><a href="/theater/4">Cinema Lâm Đồng (Đức Trọng)</a></li>
+                        <li><a href="schedule.php">Tất Cả Hệ Thống Rạp</a></li>
+                        <li><a href="schedule.php?theater_id=1">Cinema Quốc Thanh (TP.HCM)</a></li>
+                        <li><a href="schedule.php?theater_id=2">Cinema Sinh Viên (TP.HCM)</a></li>
+                        <li><a href="schedule.php?theater_id=3">Cinema Đà Lạt (Lâm Đồng)</a></li>
+                        <li><a href="schedule.php?theater_id=4">Cinema Lâm Đồng (Đức Trọng)</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-col footer-col-right">
-                    <img src="/movie-ticket-booking/public/assets/images/logo.png" alt="Logo" class="footer-logo-main">
+                    <!-- Cập nhật đường dẫn ảnh -->
+                    <img src="images/logo.png" alt="Logo" class="footer-logo-main">
                     <div class="social-icons">
-                        <a href="#"><img src="/movie-ticket-booking/public/assets/svg/footer-facebook.svg" alt="Facebook"></a>
-                        <a href="#"><img src="/movie-ticket-booking/public/assets/svg/footer-zalo.svg" alt="Zalo"></a>
+                        <a href="#"><img src="images/svg/footer-facebook.svg" alt="Facebook"></a>
+                        <a href="#"><img src="images/svg/footer-zalo.svg" alt="Zalo"></a>
                     </div>
-                    <img src="/movie-ticket-booking/public/assets/img/bct.png" alt="Đã thông báo Bộ Công Thương" class="cert-img">
+                    <img src="images/bct.png" alt="Đã thông báo Bộ Công Thương" class="cert-img">
                 </div>
             </div>
 
@@ -44,7 +47,7 @@
 
             <div class="footer-bottom">
                 <div class="company-logo">
-                    <img src="/movie-ticket-booking/public/assets/images/logo.png" alt="Company Logo">
+                    <img src="images/logo.png" alt="Company Logo">
                 </div>
                 <div class="company-info">
                     <h4>CÔNG TY CỔ PHẦN MOVIE TICKET BOOKING</h4>
@@ -59,5 +62,8 @@
             </div>
         </div>
     </footer>
+    
+    <!-- Bạn có thể tạo file js/main.js sau này để viết JavaScript tuỳ chỉnh -->
+    <!-- <script src="js/main.js"></script> -->
 </body>
 </html>
