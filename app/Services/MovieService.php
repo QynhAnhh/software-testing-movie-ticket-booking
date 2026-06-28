@@ -50,4 +50,8 @@ class MovieService {
     public function getAllMovies() {
         return $this->model->getAllMoviesWithGenres();
     }
+
+    public function getNowShowingMovies() {
+        return $this->model->getNowShowingMovies();
+    }
 }

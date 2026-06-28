@@ -7,20 +7,12 @@
  */
 require_once 'header.php';
 
-/**
- * KIẾN THỨC PHP & SQL: Truy vấn dữ liệu từ MySQL
- * 
- * 1. Viết câu lệnh SQL: SELECT để lấy dữ liệu. 
- *    JOIN bảng movies với movie_images để lấy poster.
- * 
- * 2. mysqli_query(): Gửi câu lệnh SQL tới database để thực thi.
- *    Kết quả trả về được lưu vào biến $result_movies.
- */
-$query_movies = "
-    SELECT * FROM movies 
-    WHERE status = 'now_showing' AND is_active = 1
-";
-$result_movies = mysqli_query($conn, $query_movies);
+require_once 'header.php';
+
+use App\Controllers\MovieController;
+
+$movieController = new MovieController();
+$result_movies = $movieController->getNowShowingMovies();
 ?>
 
 <!-- BANNER -->
@@ -55,17 +47,10 @@ $result_movies = mysqli_query($conn, $query_movies);
     <div class="movie-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
         <?php 
         /**
-         * KIẾN THỨC PHP: Xử lý kết quả trả về từ database
-         * 
-         * mysqli_num_rows(): Đếm số lượng dòng dữ liệu trả về. Nếu > 0 nghĩa là có phim.
+         * Lặp qua mảng danh sách phim đang chiếu
          */
-        if ($result_movies && mysqli_num_rows($result_movies) > 0): 
-            
-            /**
-             * mysqli_fetch_assoc(): Lấy từng dòng dữ liệu và chuyển thành một mảng kết hợp (Associative Array).
-             * Vòng lặp while sẽ chạy cho đến khi lấy hết tất cả các dòng phim.
-             */
-            while ($movie = mysqli_fetch_assoc($result_movies)): 
+        if (!empty($result_movies)): 
+            foreach ($result_movies as $movie):
         ?>
             <!-- Hiển thị từng bộ phim -->
             <div class="movie-card" style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; padding-bottom: 15px; text-align: center; background: #fff;">
@@ -84,7 +69,7 @@ $result_movies = mysqli_query($conn, $query_movies);
                 </a>
             </div>
         <?php 
-            endwhile; 
+            endforeach; 
         else: 
         ?>
             <p>Hiện không có phim nào đang chiếu.</p>

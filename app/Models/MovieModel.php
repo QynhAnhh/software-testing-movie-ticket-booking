@@ -77,6 +77,18 @@ class MovieModel {
         return $movies;
     }
 
+    public function getNowShowingMovies() {
+        $query = "SELECT * FROM movies WHERE status = 'now_showing' ORDER BY id DESC";
+        $result = mysqli_query($this->conn, $query);
+        $movies = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $movies[] = $row;
+            }
+        }
+        return $movies;
+    }
+
     public function getError() {
         return mysqli_error($this->conn);
     }

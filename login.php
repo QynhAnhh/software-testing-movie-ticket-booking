@@ -1,6 +1,11 @@
 <?php
 require_once 'config.php';
 
+// Gọi Controller xử lý nếu có request POST
+use App\Controllers\AuthController;
+$authController = new AuthController();
+$authController->handleLogin();
+
 // Nếu người dùng đã đăng nhập rồi thì không cho vào trang login nữa, chuyển thẳng về trang chủ
 if (isset($_SESSION['user'])) {
     header("Location: index.php");
@@ -44,8 +49,8 @@ require_once 'header.php';
             </div>
         <?php endif; ?>
 
-        <!-- Form sẽ gửi dữ liệu (POST) tới file process_login.php để xử lý logic -->
-        <form action="process_login.php" method="POST">
+        <!-- Form sẽ gửi dữ liệu (POST) lại chính trang này (login.php) để xử lý qua Controller -->
+        <form action="" method="POST">
             <div style="margin-bottom: 15px;">
                 <label for="email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
                 <input type="email" id="email" name="email" required placeholder="Nhập email của bạn" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">

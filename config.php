@@ -25,20 +25,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Thông tin kết nối CSDL Laragon/XAMPP
-$host = 'localhost';
-$db   = 'movie_ticket_booking'; // Tên database đã thiết kế
-$user = 'root';
-$pass = ''; // Mật khẩu mặc định thường rỗng
+// Nạp các class tự động (Autoloader)
+require_once __DIR__ . '/app/init.php';
 
-// Thực hiện kết nối
-$conn = mysqli_connect($host, $user, $pass, $db);
-
-// Kiểm tra nếu kết nối thất bại
-if (!$conn) {
-    die("Kết nối CSDL thất bại. Lỗi: " . mysqli_connect_error());
-}
-
-// Set charset utf8mb4 để hiển thị đúng tiếng Việt có dấu
-mysqli_set_charset($conn, "utf8mb4");
+// Sử dụng lớp Database chung cho toàn bộ dự án để đồng bộ kết nối
+$conn = App\Config\Database::getConnection();
 ?>

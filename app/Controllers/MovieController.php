@@ -52,6 +52,10 @@ class MovieController {
         return $this->movieService->getAllMovies();
     }
 
+    public function getNowShowingMovies() {
+        return $this->movieService->getNowShowingMovies();
+    }
+
     public function getAllGenres() {
         return $this->genreService->getAllGenres();
     }
