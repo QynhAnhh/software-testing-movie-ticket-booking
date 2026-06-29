@@ -16,6 +16,15 @@ $theaters = [
     ['id' => 3, 'name' => 'Cinema Đà Lạt (Lâm Đồng)'],
     ['id' => 4, 'name' => 'Cinema Lâm Đồng (Đức Trọng)'],
 ];
+
+$sessionUser = $_SESSION['user'] ?? null;
+if (isset($_SESSION['user']) && !is_array($sessionUser)) {
+    unset($_SESSION['user']);
+    $sessionUser = null;
+}
+
+$isLoggedIn = is_array($sessionUser);
+$displayName = $isLoggedIn ? ($sessionUser['first_name'] ?? $sessionUser['email'] ?? 'User') : '';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -56,10 +65,10 @@ $theaters = [
                      * KIẾN THỨC PHP: Điều kiện (If/Else) và Session
                      * Nếu mảng $_SESSION có tồn tại key 'user' (tức là đã đăng nhập)
                      */
-                    if (isset($_SESSION['user'])): 
+                    if ($isLoggedIn): 
                     ?>
                         <div class="user-profile">
-                            <span>Hi, <?php echo htmlspecialchars($_SESSION['user']['first_name']); ?></span>
+                            <span>Hi, <?php echo htmlspecialchars($displayName); ?></span>
                             <a href="profile.php" title="Cài đặt tài khoản">
                                 <img src="images/svg/setting.svg" alt="Settings" class="setting-icon">
                             </a>
