@@ -7,14 +7,16 @@
   margin-top: auto;
 }
 
-/* --- PHẦN TRÊN (4 CỘT) --- */
+/* --- PHẦN TRÊN (3 CỘT DÀN ĐỀU) --- */
 .footer-top {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr); /* Chia không gian thành đúng 3 cột bằng nhau */
   gap: 30px;
   margin-bottom: 40px;
+  width: 100%;
 }
 
+/* Cột 1 và 2 giữ nguyên */
 .footer-col h3 {
   color: var(--text-light);
   font-size: 16px;
@@ -39,11 +41,11 @@
   color: var(--text-light); 
 }
 
-/* Cột 4 (Bên phải) */
+/* Cột 3 (Bên phải) */
 .footer-col-right {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start; /* Quan trọng: Đưa về flex-start để các logo/icon tựa vào lề trái của chính nó */
   gap: 20px;
 }
 
@@ -52,8 +54,10 @@
   object-fit: contain;
 }
 
+/* Căn lại dàn icon mạng xã hội để nó nằm bên phải */
 .social-icons {
   display: flex;
+  justify-content: flex-start; /* Đưa icon về lề trái */
   gap: 15px;
 }
 

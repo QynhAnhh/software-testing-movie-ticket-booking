@@ -14,19 +14,7 @@
                 <div class="footer-col">
                     <h3>HỖ TRỢ</h3>
                     <ul>
-                        <li><a href="#">Góp Ý</a></li>
                         <li><a href="#">Câu Hỏi Thường Gặp</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-col">
-                    <h3>HỆ THỐNG RẠP</h3>
-                    <ul>
-                        <li><a href="/showtimes">Tất Cả Hệ Thống Rạp</a></li>
-                        <li><a href="/theater/1">Cinema Quốc Thanh (TP.HCM)</a></li>
-                        <li><a href="/theater/2">Cinema Sinh Viên (TP.HCM)</a></li>
-                        <li><a href="/theater/3">Cinema Đà Lạt (Lâm Đồng)</a></li>
-                        <li><a href="/theater/4">Cinema Lâm Đồng (Đức Trọng)</a></li>
                     </ul>
                 </div>
 
