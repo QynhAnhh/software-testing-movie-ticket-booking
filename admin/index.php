@@ -148,7 +148,7 @@ $now_showing = mysqli_query($conn, $query_now_showing);
                         <?php while ($movie = mysqli_fetch_assoc($now_showing)): ?>
                             <li class="list-group-item d-flex justify-content-between align-items-center py-3">
                                 <div class="d-flex align-items-center">
-                                    <img src="../<?= htmlspecialchars($movie['images'] ?: 'images/movies/default.jpg') ?>"
+                                    <img src="<?= htmlspecialchars($movie['poster']) ?>"
                                          class="admin-poster admin-poster-sm" alt="<?= htmlspecialchars($movie['title']) ?>">
                                     <div class="ms-3">
                                         <h6 class="mb-1 fw-bold"><?= htmlspecialchars($movie['title']) ?></h6>
