@@ -7,6 +7,10 @@ $authController = new AuthController();
 $authController->handleLogin();
 
 // Nếu người dùng đã đăng nhập rồi thì không cho vào trang login nữa, chuyển thẳng về trang chủ
+if (isset($_SESSION['user']) && !is_array($_SESSION['user'])) {
+    unset($_SESSION['user']);
+}
+
 if (isset($_SESSION['user'])) {
     header("Location: index.php");
     exit;
