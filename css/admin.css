@@ -1,12 +1,12 @@
 /* Admin UI - Dark Cinema Theme */
 :root {
     --admin-bg: #0a0a0a;
-    --admin-surface: #151515;
-    --admin-surface-2: #202020;
-    --admin-surface-3: #272727;
+    --admin-surface: #1a1a1a;
+    --admin-surface-2: #242424;
+    --admin-surface-3: #303030;
     --admin-sidebar: #000000;
-    --admin-border: #333333;
-    --admin-border-soft: rgba(255, 255, 255, 0.08);
+    --admin-border: rgba(255, 255, 255, 0.18);
+    --admin-border-soft: rgba(255, 255, 255, 0.12);
     --admin-text: #f5f5f5;
     --admin-muted: #a7a7a7;
     --admin-danger: #e50914;
@@ -197,9 +197,9 @@ a:hover {
 .admin-card,
 .card {
     overflow: hidden;
-    border: 1px solid var(--admin-border) !important;
+    border: 1px solid var(--admin-border-soft) !important;
     border-radius: var(--admin-radius);
-    background: var(--admin-surface);
+    background: #1f1f1f;
     color: var(--admin-text);
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
 }
@@ -211,8 +211,8 @@ a:hover {
     justify-content: space-between;
     gap: 14px;
     padding: 16px 18px;
-    border-bottom: 1px solid var(--admin-border) !important;
-    background: #111111 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: #2b2b2b !important;
     color: var(--admin-text) !important;
 }
 
@@ -305,25 +305,27 @@ a:hover {
 
 /* Tables */
 .table-responsive {
+    background: #1f1f1f;
     scrollbar-color: var(--admin-secondary) var(--admin-surface);
 }
 
 .table.admin-table,
 .admin-table {
-    --bs-table-bg: transparent;
+    --bs-table-bg: #1f1f1f;
     --bs-table-color: var(--admin-text);
-    --bs-table-border-color: var(--admin-border);
-    --bs-table-hover-bg: var(--admin-surface-2);
+    --bs-table-border-color: rgba(255, 255, 255, 0.18);
+    --bs-table-hover-bg: #2b2b2b;
     --bs-table-hover-color: #ffffff;
     margin: 0;
+    background: #1f1f1f;
     color: var(--admin-text);
 }
 
 .admin-table thead th,
 .table-light th {
-    border-bottom: 1px solid var(--admin-border) !important;
-    background: #0f0f0f !important;
-    color: var(--admin-danger) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.32) !important;
+    background: #353535 !important;
+    color: #ffffff !important;
     font-size: 0.84rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -332,16 +334,23 @@ a:hover {
 .admin-table td,
 .admin-table th {
     padding: 14px 16px;
-    border-color: var(--admin-border) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
     vertical-align: middle;
 }
 
 .admin-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
     transition: background-color 0.2s ease;
 }
 
 .admin-table tbody tr:hover {
-    background: var(--admin-surface-2);
+    background: #2b2b2b;
+}
+
+.admin-table td,
+.admin-table td i,
+.admin-table th i {
+    color: #ffffff;
 }
 
 .admin-table strong {
@@ -351,13 +360,13 @@ a:hover {
 /* Lists and media */
 .admin-movie-list .list-group-item,
 .list-group-item {
-    border-color: var(--admin-border) !important;
-    background: var(--admin-surface) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    background: #1f1f1f !important;
     color: var(--admin-text) !important;
 }
 
 .admin-movie-list .list-group-item:hover {
-    background: var(--admin-surface-2) !important;
+    background: #2b2b2b !important;
 }
 
 .admin-poster {
