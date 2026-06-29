@@ -56,27 +56,29 @@ $movies_result = $controller->getAllMovies();
             <table class="table admin-table align-middle mb-0">
                 <thead>
                     <tr>
-                        <th width="8%">Ảnh</th>
+                        <th width="5%">ID</th>
+                        <th width="5%">Ảnh</th>
                         <th width="22%">Tên phim</th>
                         <th width="20%">Thể loại</th>
                         <th width="10%">Thời lượng</th>
-                        <th width="15%">Khởi chiếu</th>
+                        <th width="10%">Khởi chiếu</th>
                         <th width="10%">Trạng thái</th>
-                        <th width="15%" class="text-center">Hành động</th>
+                        <th width="20%" class="text-center">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!empty($movies_result)): ?>
                         <?php foreach ($movies_result as $movie): ?>
                             <tr>
+                                <td><?= $movie['id'] ?></td>
                                 <td>
-                                    <img src="../<?= htmlspecialchars($movie['images'] ?: 'images/movies/default.jpg') ?>"
+                                    <img src="<?= htmlspecialchars($movie['poster'] ?: 'images/movies/default.jpg') ?>"
                                          alt="<?= htmlspecialchars($movie['title']) ?>" class="admin-poster">
                                 </td>
                                 <td>
                                     <strong><?= htmlspecialchars($movie['title']) ?></strong>
                                     <br>
-                                    <span class="status-badge status-danger mt-2">T<?= $movie['age_restriction'] ?></span>
+                                    <span class="status-badge status-danger mt-2">Tuổi : <?= $movie['age_restriction'] ?></span>
                                 </td>
                                 <td>
                                     <span class="text-muted"><?= htmlspecialchars($movie['genre_names'] ?? 'Chưa cập nhật') ?></span>
