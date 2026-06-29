@@ -29,16 +29,16 @@ $now_showing = mysqli_query($conn, $query_now_showing);
 ?>
 
 <div class="container-fluid">
-    <div class="admin-page-header">
+    <div class="admin-page-header d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
         <div>
-            <h1>Dashboard tổng quan</h1>
-            <p>Theo dõi nhanh số lượng phim, người dùng, lượt đặt vé và doanh thu đã thanh toán.</p>
+            <h1 class="mb-0 text-white fw-bold">Dashboard tổng quan</h1>
+            <p class="mb-0 mt-2 text-muted">Theo dõi nhanh số lượng phim, người dùng, lượt đặt vé và doanh thu đã thanh toán.</p>
         </div>
     </div>
 
     <div class="row g-4 mb-5">
         <div class="col-sm-6 col-xl-3">
-            <div class="stat-card stat-card-danger h-100">
+            <div class="stat-card stat-card-danger h-100 d-flex align-items-center justify-content-between gap-3">
                 <div>
                     <div class="stat-label">Tổng số phim</div>
                     <h2 class="stat-value"><?= number_format($total_movies) ?></h2>
@@ -50,7 +50,7 @@ $now_showing = mysqli_query($conn, $query_now_showing);
         </div>
 
         <div class="col-sm-6 col-xl-3">
-            <div class="stat-card stat-card-success h-100">
+            <div class="stat-card stat-card-success h-100 d-flex align-items-center justify-content-between gap-3">
                 <div>
                     <div class="stat-label">Người dùng</div>
                     <h2 class="stat-value"><?= number_format($total_users) ?></h2>
@@ -62,7 +62,7 @@ $now_showing = mysqli_query($conn, $query_now_showing);
         </div>
 
         <div class="col-sm-6 col-xl-3">
-            <div class="stat-card stat-card-warning h-100">
+            <div class="stat-card stat-card-warning h-100 d-flex align-items-center justify-content-between gap-3">
                 <div>
                     <div class="stat-label">Lượt đặt vé</div>
                     <h2 class="stat-value"><?= number_format($total_bookings) ?></h2>
@@ -74,7 +74,7 @@ $now_showing = mysqli_query($conn, $query_now_showing);
         </div>
 
         <div class="col-sm-6 col-xl-3">
-            <div class="stat-card stat-card-info h-100">
+            <div class="stat-card stat-card-info h-100 d-flex align-items-center justify-content-between gap-3">
                 <div>
                     <div class="stat-label">Doanh thu</div>
                     <h2 class="stat-value"><?= number_format($total_revenue, 0, ',', '.') ?>đ</h2>
@@ -124,7 +124,7 @@ $now_showing = mysqli_query($conn, $query_now_showing);
                             <?php else: ?>
                                 <tr>
                                     <td colspan="4">
-                                        <div class="admin-empty">
+                                        <div class="admin-empty d-flex align-items-center justify-content-center gap-2">
                                             <i class="bi bi-ticket-perforated"></i>
                                             <span>Chưa có dữ liệu đặt vé.</span>
                                         </div>
@@ -160,7 +160,7 @@ $now_showing = mysqli_query($conn, $query_now_showing);
                         <?php endwhile; ?>
                     <?php else: ?>
                         <li class="list-group-item">
-                            <div class="admin-empty">
+                            <div class="admin-empty d-flex align-items-center justify-content-center gap-2">
                                 <i class="bi bi-camera-reels"></i>
                                 <span>Không có phim đang chiếu.</span>
                             </div>

@@ -25,10 +25,10 @@ $movies_result = $controller->getAllMovies();
 ?>
 
 <div class="container-fluid">
-    <div class="admin-page-header">
+    <div class="admin-page-header d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
         <div>
-            <h1>Quản lý phim</h1>
-            <p>Theo dõi danh mục phim, thông tin phát hành, thể loại và trạng thái chiếu.</p>
+            <h1 class="mb-0 text-white fw-bold">Quản lý phim</h1>
+            <p class="mb-0 mt-2 text-muted">Theo dõi danh mục phim, thông tin phát hành, thể loại và trạng thái chiếu.</p>
         </div>
         <button type="button" class="btn btn-netflix-red" data-bs-toggle="modal" data-bs-target="#addMovieModal">
             <i class="bi bi-plus-lg me-1"></i> Thêm phim
@@ -115,7 +115,7 @@ $movies_result = $controller->getAllMovies();
                     <?php else: ?>
                         <tr>
                             <td colspan="8">
-                                <div class="admin-empty">
+                                <div class="admin-empty d-flex align-items-center justify-content-center gap-2">
                                     <i class="bi bi-camera-reels"></i>
                                     <span>Chưa có phim nào. Hãy thêm phim đầu tiên.</span>
                                 </div>

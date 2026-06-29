@@ -24,10 +24,10 @@ $genres_list = $controller->getAllGenres();
 ?>
 
 <div class="container-fluid">
-    <div class="admin-page-header">
+    <div class="admin-page-header d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
         <div>
-            <h1>Quản lý thể loại</h1>
-            <p>Tổ chức danh mục thể loại để phim dễ lọc, dễ tìm và hiển thị nhất quán.</p>
+            <h1 class="mb-0 text-white fw-bold">Quản lý thể loại</h1>
+            <p class="mb-0 mt-2 text-muted">Tổ chức danh mục thể loại để phim dễ lọc, dễ tìm và hiển thị nhất quán.</p>
         </div>
         <button type="button" class="btn btn-netflix-red" data-bs-toggle="modal" data-bs-target="#addGenreModal">
             <i class="bi bi-plus-lg me-1"></i> Thêm thể loại
@@ -91,7 +91,7 @@ $genres_list = $controller->getAllGenres();
                     <?php else: ?>
                         <tr>
                             <td colspan="5">
-                                <div class="admin-empty">
+                                <div class="admin-empty d-flex align-items-center justify-content-center gap-2">
                                     <i class="bi bi-tags"></i>
                                     <span>Chưa có thể loại nào. Hãy thêm mới.</span>
                                 </div>
