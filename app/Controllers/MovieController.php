@@ -27,7 +27,7 @@ class MovieController {
                     'country' => trim($_POST['country'] ?? ''),
                     'duration' => (int)($_POST['duration'] ?? 0),
                     'screening_date' => trim($_POST['screening_date'] ?? ''),
-                    'images' => trim($_POST['images'] ?? ''),
+                    'poster' => 'https://image.tmdb.org/t/p/w500/'. ltrim(trim($_POST['poster'] ?? ''), '/'),
                     'trailer_url' => trim($_POST['trailer_url'] ?? ''),
                     'status' => $_POST['status'] ?? 'coming'
                 ];
@@ -50,6 +50,10 @@ class MovieController {
 
     public function getAllMovies() {
         return $this->movieService->getAllMovies();
+    }
+
+    public function getMovieById($id) {
+        return $this->movieService->getMovieById($id);
     }
 
     public function getNowShowingMovies() {

@@ -52,6 +52,17 @@ class GenreModel {
         }
         return $genres;
     }
+
+    public function getById($id) {
+        $stmt = mysqli_prepare($this->conn, "SELECT * FROM genres WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        if ($result && mysqli_num_rows($result) > 0) {
+            return mysqli_fetch_assoc($result);
+        }
+        return null;
+    }
     
     public function getError() {
         return mysqli_error($this->conn);

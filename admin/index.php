@@ -1,31 +1,13 @@
 <?php
 require_once '../config.php';
+require_once '../app/init.php';
 require_once 'admin_header.php';
 require_once 'admin_sidebar.php';
 
-// Dashboard statistics
-$result_movies = mysqli_query($conn, "SELECT COUNT(*) as count FROM movies");
-$total_movies = mysqli_fetch_assoc($result_movies)['count'];
+use App\Controllers\DashboardController;
 
-$result_users = mysqli_query($conn, "SELECT COUNT(*) as count FROM users WHERE role='user'");
-$total_users = mysqli_fetch_assoc($result_users)['count'];
-
-$result_bookings = mysqli_query($conn, "SELECT COUNT(*) as count FROM bookings");
-$total_bookings = mysqli_fetch_assoc($result_bookings)['count'];
-
-$result_revenue = mysqli_query($conn, "SELECT SUM(total_price) as total FROM bookings WHERE status='paid'");
-$total_revenue = mysqli_fetch_assoc($result_revenue)['total'] ?? 0;
-
-$query_recent_bookings = "
-    SELECT b.*, u.first_name, u.last_name
-    FROM bookings b
-    JOIN users u ON b.user_id = u.id
-    ORDER BY b.created_at DESC LIMIT 5
-";
-$recent_bookings = mysqli_query($conn, $query_recent_bookings);
-
-$query_now_showing = "SELECT * FROM movies WHERE status = 'now_showing' AND is_active = 1 LIMIT 5";
-$now_showing = mysqli_query($conn, $query_now_showing);
+$controller = new DashboardController();
+$data = $controller->index();
 ?>
 
 <div class="container-fluid">
@@ -36,98 +18,102 @@ $now_showing = mysqli_query($conn, $query_now_showing);
         </div>
     </div>
 
-    <div class="row g-4 mb-5">
+    <!-- Thống kê -->
+    <div class="row g-4 mb-4">
         <div class="col-sm-6 col-xl-3">
-            <div class="stat-card stat-card-danger h-100 d-flex align-items-center justify-content-between gap-3">
-                <div>
-                    <div class="stat-label">Tổng số phim</div>
-                    <h2 class="stat-value"><?= number_format($total_movies) ?></h2>
+            <div class="admin-card d-flex align-items-center h-100 p-4" style="background: linear-gradient(135deg, #F44336, #D32F2F);">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-white bg-opacity-25" style="width: 60px; height: 60px;">
+                    <i class="bi bi-film fs-2 text-white"></i>
                 </div>
-                <div class="stat-icon">
-                    <i class="bi bi-film"></i>
+                <div class="ms-4 text-white">
+                    <p class="mb-1 text-white text-opacity-75 fw-bold text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Tổng phim</p>
+                    <h3 class="mb-0 fw-bold"><?= number_format($data['total_movies']) ?></h3>
                 </div>
             </div>
         </div>
-
         <div class="col-sm-6 col-xl-3">
-            <div class="stat-card stat-card-success h-100 d-flex align-items-center justify-content-between gap-3">
-                <div>
-                    <div class="stat-label">Người dùng</div>
-                    <h2 class="stat-value"><?= number_format($total_users) ?></h2>
+            <div class="admin-card d-flex align-items-center h-100 p-4" style="background: linear-gradient(135deg, #4CAF50, #388E3C);">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-white bg-opacity-25" style="width: 60px; height: 60px;">
+                    <i class="bi bi-people fs-2 text-white"></i>
                 </div>
-                <div class="stat-icon">
-                    <i class="bi bi-people"></i>
+                <div class="ms-4 text-white">
+                    <p class="mb-1 text-white text-opacity-75 fw-bold text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Người dùng</p>
+                    <h3 class="mb-0 fw-bold"><?= number_format($data['total_users']) ?></h3>
                 </div>
             </div>
         </div>
-
         <div class="col-sm-6 col-xl-3">
-            <div class="stat-card stat-card-warning h-100 d-flex align-items-center justify-content-between gap-3">
-                <div>
-                    <div class="stat-label">Lượt đặt vé</div>
-                    <h2 class="stat-value"><?= number_format($total_bookings) ?></h2>
+            <div class="admin-card d-flex align-items-center h-100 p-4" style="background: linear-gradient(135deg, #2196F3, #1976D2);">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-white bg-opacity-25" style="width: 60px; height: 60px;">
+                    <i class="bi bi-ticket-perforated fs-2 text-white"></i>
                 </div>
-                <div class="stat-icon">
-                    <i class="bi bi-ticket-perforated"></i>
+                <div class="ms-4 text-white">
+                    <p class="mb-1 text-white text-opacity-75 fw-bold text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Vé đã bán</p>
+                    <h3 class="mb-0 fw-bold"><?= number_format($data['total_bookings']) ?></h3>
                 </div>
             </div>
         </div>
-
         <div class="col-sm-6 col-xl-3">
-            <div class="stat-card stat-card-info h-100 d-flex align-items-center justify-content-between gap-3">
-                <div>
-                    <div class="stat-label">Doanh thu</div>
-                    <h2 class="stat-value"><?= number_format($total_revenue, 0, ',', '.') ?>đ</h2>
+            <div class="admin-card d-flex align-items-center h-100 p-4" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-white bg-opacity-25" style="width: 60px; height: 60px;">
+                    <i class="bi bi-cash-coin fs-2 text-white"></i>
                 </div>
-                <div class="stat-icon">
-                    <i class="bi bi-cash-coin"></i>
+                <div class="ms-4 text-white">
+                    <p class="mb-1 text-white text-opacity-75 fw-bold text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Doanh thu</p>
+                    <h3 class="mb-0 fw-bold"><?= number_format($data['total_revenue'] / 1000000, 1) ?>M</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-xl-7">
-            <div class="admin-card h-100">
-                <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-                    <h5 class="mb-0 text-white"><i class="bi bi-clock-history me-2"></i>Đặt vé gần đây</h5>
-                    <a href="manage_booking.php" class="btn btn-sm btn-admin-secondary">Xem tất cả</a>
+    <!-- Đặt vé hôm nay -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="admin-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 text-white"><i class="bi bi-calendar-day me-2"></i>Đặt vé hôm nay (<?= $data['today_bookings_count'] ?> vé)</h5>
+                    <a href="manage_booking.php" class="btn btn-sm btn-admin-secondary">Quản lý vé</a>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover admin-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Mã đặt</th>
+                                <th>Mã vé</th>
                                 <th>Khách hàng</th>
-                                <th>Tổng tiền</th>
+                                <th>Phim</th>
+                                <th>Phòng</th>
+                                <th>Giờ chiếu</th>
+                                <th>Ghế</th>
+                                <th>Giá</th>
                                 <th>Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if ($recent_bookings && mysqli_num_rows($recent_bookings) > 0): ?>
-                                <?php while ($booking = mysqli_fetch_assoc($recent_bookings)): ?>
+                            <?php if (!empty($data['today_bookings_list'])): ?>
+                                <?php foreach ($data['today_bookings_list'] as $row): ?>
                                     <tr>
-                                        <td><strong><?= htmlspecialchars($booking['booking_code']) ?></strong></td>
-                                        <td><?= htmlspecialchars($booking['first_name'] . ' ' . $booking['last_name']) ?></td>
-                                        <td><?= number_format($booking['total_price'], 0, ',', '.') ?>đ</td>
+                                        <td><strong><?= htmlspecialchars($row['booking_code']) ?></strong></td>
+                                        <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
+                                        <td><?= htmlspecialchars($row['movie_name'] ?? '---') ?></td>
+                                        <td><?= htmlspecialchars($row['room_name'] ?? '---') ?></td>
+                                        <td><?= !empty($row['start_time']) ? date('H:i', strtotime($row['start_time'])) : '---' ?></td>
+                                        <td><?= htmlspecialchars($row['seats'] ?? '---') ?></td>
+                                        <td><?= number_format($row['total_price'], 0, ',', '.') ?>đ</td>
                                         <td>
-                                            <?php if ($booking['status'] == 'paid'): ?>
-                                                <span class="status-badge status-success">Đã thanh toán</span>
-                                            <?php elseif ($booking['status'] == 'pending'): ?>
-                                                <span class="status-badge status-warning">Chờ thanh toán</span>
+                                            <?php if ($row['status'] == 'paid'): ?>
+                                                <span class="badge bg-success">Đã thanh toán</span>
+                                            <?php elseif ($row['status'] == 'pending'): ?>
+                                                <span class="badge bg-warning text-dark">Chờ thanh toán</span>
                                             <?php else: ?>
-                                                <span class="status-badge status-danger">Đã hủy</span>
+                                                <span class="badge bg-danger">Đã hủy</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="4">
-                                        <div class="admin-empty d-flex align-items-center justify-content-center gap-2">
-                                            <i class="bi bi-ticket-perforated"></i>
-                                            <span>Chưa có dữ liệu đặt vé.</span>
-                                        </div>
+                                    <td colspan="8" class="text-center py-4 text-muted">
+                                        <i class="bi bi-ticket-perforated me-2"></i>Chưa có đặt vé nào hôm nay
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -136,37 +122,71 @@ $now_showing = mysqli_query($conn, $query_now_showing);
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="col-xl-5">
+    <!-- Phim phổ biến & Khách hàng thân thiết -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
             <div class="admin-card h-100">
-                <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-                    <h5 class="mb-0 text-white"><i class="bi bi-play-circle me-2"></i>Phim đang chiếu</h5>
-                    <a href="manage_movies.php" class="btn btn-sm btn-admin-secondary">Xem tất cả</a>
+                <h5 class="mb-3 text-white"><i class="bi bi-fire me-2 text-danger"></i>Phim phổ biến nhất</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover admin-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Phim</th>
+                                <th>Số vé</th>
+                                <th>Doanh thu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($data['popular_movies'])): ?>
+                                <?php foreach ($data['popular_movies'] as $row): ?>
+                                    <tr>
+                                        <td class="fw-bold text-white"><?= htmlspecialchars($row['movie_name']) ?></td>
+                                        <td><?= $row['ticket_count'] ?></td>
+                                        <td class="text-success fw-bold"><?= number_format($row['revenue'], 0, ',', '.') ?>đ</td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">Chưa có dữ liệu</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
-                <ul class="list-group list-group-flush admin-movie-list">
-                    <?php if ($now_showing && mysqli_num_rows($now_showing) > 0): ?>
-                        <?php while ($movie = mysqli_fetch_assoc($now_showing)): ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                                <div class="d-flex align-items-center">
-                                    <img src="<?= htmlspecialchars($movie['poster']) ?>"
-                                         class="admin-poster admin-poster-sm" alt="<?= htmlspecialchars($movie['title']) ?>">
-                                    <div class="ms-3">
-                                        <h6 class="mb-1 fw-bold"><?= htmlspecialchars($movie['title']) ?></h6>
-                                        <small class="text-muted"><i class="bi bi-clock me-1"></i><?= $movie['duration'] ?> phút</small>
-                                    </div>
-                                </div>
-                                <span class="status-badge status-danger">T<?= $movie['age_restriction'] ?></span>
-                            </li>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <li class="list-group-item">
-                            <div class="admin-empty d-flex align-items-center justify-content-center gap-2">
-                                <i class="bi bi-camera-reels"></i>
-                                <span>Không có phim đang chiếu.</span>
-                            </div>
-                        </li>
-                    <?php endif; ?>
-                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="admin-card h-100">
+                <h5 class="mb-3 text-white"><i class="bi bi-award me-2 text-warning"></i>Khách hàng thân thiết</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover admin-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Khách hàng</th>
+                                <th>Số vé</th>
+                                <th>Chi tiêu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($data['loyal_customers'])): ?>
+                                <?php foreach ($data['loyal_customers'] as $row): ?>
+                                    <tr>
+                                        <td class="fw-bold text-white"><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
+                                        <td><?= $row['ticket_count'] ?></td>
+                                        <td class="text-warning fw-bold"><?= number_format($row['total_spent'], 0, ',', '.') ?>đ</td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">Chưa có dữ liệu</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

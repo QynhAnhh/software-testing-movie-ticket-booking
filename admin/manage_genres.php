@@ -20,6 +20,12 @@ if ($actionResult) {
     }
 }
 
+// lấy thông tin thể loại nếu sửa
+$edit_genre = null;
+if (isset($_GET['edit_id'])) {
+    $edit_genre = $controller->getGenreById($_GET['edit_id']);
+}
+
 $genres_list = $controller->getAllGenres();
 ?>
 
@@ -29,23 +35,40 @@ $genres_list = $controller->getAllGenres();
             <h1 class="mb-0 text-white fw-bold">Quản lý thể loại</h1>
             <p class="mb-0 mt-2 text-muted">Tổ chức danh mục thể loại để phim dễ lọc, dễ tìm và hiển thị nhất quán.</p>
         </div>
-        <button type="button" class="btn btn-netflix-red" data-bs-toggle="modal" data-bs-target="#addGenreModal">
-            <i class="bi bi-plus-lg me-1"></i> Thêm thể loại
-        </button>
     </div>
 
     <?php if ($success_msg): ?>
-        <div class="alert admin-alert admin-alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i> <?= htmlspecialchars($success_msg) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-        </div>
+        <script>window.alert('<?= addslashes($success_msg) ?>');</script>
     <?php endif; ?>
     <?php if ($error_msg): ?>
-        <div class="alert admin-alert admin-alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i> <?= htmlspecialchars($error_msg) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-        </div>
+        <script>window.alert('Lỗi: <?= addslashes($error_msg) ?>');</script>
     <?php endif; ?>
+
+    <div class="admin-card mb-4">
+        <h5 class="mb-3 text-white"><i class="bi bi-tags me-2"></i><?= $edit_genre ? 'Cập nhật thể loại' : 'Thêm thể loại mới' ?></h5>
+        <form action="manage_genres.php" method="POST">
+            <input type="hidden" name="action" value="<?= $edit_genre ? 'edit' : 'add' ?>">
+            <?php if ($edit_genre): ?>
+                <input type="hidden" name="id" value="<?= $edit_genre['id'] ?>">
+            <?php endif; ?>
+            <div class="mb-3">
+                <label class="form-label">Tên thể loại <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="name" required placeholder="VD: Hành động, Hài hước..." value="<?= htmlspecialchars($edit_genre['name'] ?? '') ?>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mô tả (tùy chọn)</label>
+                <textarea class="form-control" name="description" rows="3" placeholder="Mô tả ngắn gọn về thể loại này..."><?= htmlspecialchars($edit_genre['description'] ?? '') ?></textarea>
+            </div>
+            <div class="mt-3 text-end">
+                <?php if ($edit_genre): ?>
+                    <a href="manage_genres.php" class="btn btn-admin-secondary me-2">Hủy</a>
+                <?php endif; ?>
+                <button type="submit" class="btn btn-netflix-red">
+                    <?= $edit_genre ? 'Lưu thay đổi' : 'Thêm mới' ?>
+                </button>
+            </div>
+        </form>
+    </div>
 
     <div class="admin-card">
         <h5 class="mb-3 text-white"><i class="bi bi-tags me-2"></i>Danh sách thể loại</h5>
@@ -53,11 +76,11 @@ $genres_list = $controller->getAllGenres();
             <table class="table table-hover admin-table align-middle mb-0">
                 <thead>
                     <tr>
-                        <th width="5%">ID</th>
-                        <th width="20%">Tên thể loại</th>
-                        <th width="40%">Mô tả</th>
-                        <th width="20%">Ngày tạo</th>
-                        <th width="15%" class="text-center">Hành động</th>
+                        <th>ID</th>
+                        <th>Tên thể loại</th>
+                        <th>Mô tả</th>
+                        <th>Ngày tạo</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,32 +92,26 @@ $genres_list = $controller->getAllGenres();
                                 <td><?= htmlspecialchars($genre['description'] ?? 'Không có mô tả') ?></td>
                                 <td><?= date('d/m/Y H:i', strtotime($genre['created_at'])) ?></td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-info admin-icon-btn me-1 edit-genre-btn"
-                                            title="Sửa thể loại"
-                                            aria-label="Sửa thể loại"
-                                            data-id="<?= $genre['id'] ?>"
-                                            data-name="<?= htmlspecialchars($genre['name'], ENT_QUOTES, 'UTF-8') ?>"
-                                            data-desc="<?= htmlspecialchars($genre['description'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <a href="manage_genres.php?edit_id=<?= $genre['id'] ?>" class="btn btn-sm btn-outline-info admin-icon-btn" title="Sửa thể loại">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
 
-                                    <form action="" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thể loại này? Phim thuộc thể loại này sẽ bị gỡ thẻ.');">
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="id" value="<?= $genre['id'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger admin-icon-btn" title="Xóa thể loại" aria-label="Xóa thể loại">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                        <form action="" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thể loại này? Phim thuộc thể loại này sẽ bị gỡ thẻ.');">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="<?= $genre['id'] ?>">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger admin-icon-btn" title="Xóa thể loại" aria-label="Xóa thể loại">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5">
-                                <div class="admin-empty d-flex align-items-center justify-content-center gap-2">
-                                    <i class="bi bi-tags"></i>
-                                    <span>Chưa có thể loại nào. Hãy thêm mới.</span>
-                                </div>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                <i class="bi bi-tags me-2"></i>Chưa có thể loại nào. Hãy thêm mới.
                             </td>
                         </tr>
                     <?php endif; ?>
@@ -103,79 +120,5 @@ $genres_list = $controller->getAllGenres();
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="addGenreModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="" method="POST">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-tags me-2"></i>Thêm thể loại mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="add">
-                    <div class="mb-3">
-                        <label class="form-label">Tên thể loại <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="name" required placeholder="VD: Hành động, Hài hước...">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả (tùy chọn)</label>
-                        <textarea class="form-control" name="description" rows="3" placeholder="Mô tả ngắn gọn về thể loại này..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-admin-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-netflix-red">Thêm mới</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="editGenreModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="" method="POST">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Cập nhật thể loại</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="edit">
-                    <input type="hidden" name="id" id="edit_id">
-                    <div class="mb-3">
-                        <label class="form-label">Tên thể loại <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="name" id="edit_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả (tùy chọn)</label>
-                        <textarea class="form-control" name="description" id="edit_desc" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-admin-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-netflix-red">Lưu thay đổi</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const editBtns = document.querySelectorAll('.edit-genre-btn');
-    const editModal = new bootstrap.Modal(document.getElementById('editGenreModal'));
-
-    editBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.getElementById('edit_id').value = this.getAttribute('data-id');
-            document.getElementById('edit_name').value = this.getAttribute('data-name');
-            document.getElementById('edit_desc').value = this.getAttribute('data-desc');
-
-            editModal.show();
-        });
-    });
-});
-</script>
 
 <?php require_once 'admin_footer.php'; ?>

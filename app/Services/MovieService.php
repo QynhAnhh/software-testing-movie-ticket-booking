@@ -11,8 +11,11 @@ class MovieService {
     }
 
     public function addMovie($data, $genreIds) {
-        if (empty($data['title']) || empty($data['country']) || $data['duration'] <= 0 || empty($data['screening_date'])) {
+        if (empty($data['title']) || empty($data['country']) || empty($data['screening_date'])) {
             return ['status' => 'error', 'message' => 'Vui lòng nhập đầy đủ các trường bắt buộc!'];
+        }
+        if ($data['duration'] <= 0){
+            return ['status' => 'error', 'message' => 'Vui lòng nhập thời lượng phim hợp lệ!'];
         }
 
         $new_movie_id = $this->model->insertMovie($data);
@@ -49,6 +52,11 @@ class MovieService {
 
     public function getAllMovies() {
         return $this->model->getAllMoviesWithGenres();
+    }
+
+    public function getMovieById($id) {
+        if ($id <= 0) return null;
+        return $this->model->getMovieByIdWithGenres($id);
     }
 
     public function getNowShowingMovies() {
