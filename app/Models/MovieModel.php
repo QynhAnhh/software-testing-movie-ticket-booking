@@ -62,8 +62,7 @@ class MovieModel {
             FROM movies m
             LEFT JOIN movie_genre mg ON m.id = mg.movie_id
             LEFT JOIN genres g ON mg.genre_id = g.id
-            GROUP BY m.id
-            ORDER BY m.created_at DESC
+            GROUP BY m.id DESC
         ";
         $result = mysqli_query($this->conn, $query_movies);
         $movies = [];
@@ -73,6 +72,25 @@ class MovieModel {
             }
         }
         return $movies;
+    }
+
+    public function getMovieByIdWithGenres($id) {
+        $query = "
+            SELECT m.*, GROUP_CONCAT(g.id) as genre_ids
+            FROM movies m
+            LEFT JOIN movie_genre mg ON m.id = mg.movie_id
+            LEFT JOIN genres g ON mg.genre_id = g.id
+            WHERE m.id = ?
+            GROUP BY m.id
+        ";
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        if ($result && mysqli_num_rows($result) > 0) {
+            return mysqli_fetch_assoc($result);
+        }
+        return null;
     }
 
     public function getNowShowingMovies() {

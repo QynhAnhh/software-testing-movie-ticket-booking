@@ -20,6 +20,12 @@ if ($actionResult) {
     }
 }
 
+// lấy thông tin phim nếu sửa
+$edit_movie = null;
+if (isset($_GET['edit_id'])) {
+    $edit_movie = $controller->getMovieById($_GET['edit_id']);
+}
+
 $genres_list = $controller->getAllGenres();
 $movies_result = $controller->getAllMovies();
 ?>
@@ -30,9 +36,6 @@ $movies_result = $controller->getAllMovies();
             <h1 class="mb-0 text-white fw-bold">Quản lý phim</h1>
             <p class="mb-0 mt-2 text-muted">Theo dõi danh mục phim, thông tin phát hành, thể loại và trạng thái chiếu.</p>
         </div>
-        <button type="button" class="btn btn-netflix-red" data-bs-toggle="modal" data-bs-target="#addMovieModal">
-            <i class="bi bi-plus-lg me-1"></i> Thêm phim
-        </button>
     </div>
 
     <?php if ($success_msg): ?>
@@ -47,6 +50,105 @@ $movies_result = $controller->getAllMovies();
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     <?php endif; ?>
+
+    <div class="admin-card mb-4">
+        <h5 class="mb-3 text-white"><i class="bi bi-camera-reels me-2"></i><?= $edit_movie ? 'Cập nhật phim' : 'Thêm phim mới' ?></h5>
+        <form action="manage_movies.php" method="POST">
+            <input type="hidden" name="action" value="<?= $edit_movie ? 'edit' : 'add' ?>">
+            <?php if ($edit_movie): ?>
+                <input type="hidden" name="id" value="<?= $edit_movie['id'] ?>">
+            <?php endif; ?>
+
+            <div class="row g-4">
+                <div class="col-md-7 admin-form-column">
+                    <div class="mb-3">
+                        <label class="form-label">Tên phim <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="title" required value="<?= htmlspecialchars($edit_movie['title'] ?? '') ?>">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Đạo diễn</label>
+                            <input type="text" class="form-control" name="director" value="<?= htmlspecialchars($edit_movie['director'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Giới hạn tuổi</label>
+                            <input type="number" class="form-control" name="age_restriction" min="0" value="<?= htmlspecialchars($edit_movie['age_restriction'] ?? 0) ?>">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Diễn viên</label>
+                        <input type="text" class="form-control" name="cast" placeholder="Cách nhau bằng dấu phẩy" value="<?= htmlspecialchars($edit_movie['cast'] ?? '') ?>">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Quốc gia <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="country" required value="<?= htmlspecialchars($edit_movie['country'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Thời lượng (phút) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="duration" required min="1" value="<?= htmlspecialchars($edit_movie['duration'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ngày khởi chiếu <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" name="screening_date" required value="<?= htmlspecialchars($edit_movie['screening_date'] ?? '') ?>">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả chi tiết</label>
+                        <textarea class="form-control" name="description" rows="4"><?= htmlspecialchars($edit_movie['description'] ?? '') ?></textarea>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="mb-3">
+                        <label class="form-label">Hình ảnh / Poster (URL)</label>
+                        <input type="text" class="form-control" name="poster" placeholder="https://..." value="<?= htmlspecialchars($edit_movie['poster'] ?? '') ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trailer (URL)</label>
+                        <input type="text" class="form-control" name="trailer_url" placeholder="https://youtube.com/..." value="<?= htmlspecialchars($edit_movie['trailer_url'] ?? '') ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-select" name="status">
+                            <option value="coming" <?= ($edit_movie['status'] ?? '') == 'coming' ? 'selected' : '' ?>>Sắp chiếu</option>
+                            <option value="now_showing" <?= ($edit_movie['status'] ?? 'now_showing') == 'now_showing' ? 'selected' : '' ?>>Đang chiếu</option>
+                            <option value="ended" <?= ($edit_movie['status'] ?? '') == 'ended' ? 'selected' : '' ?>>Ngừng chiếu</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block border-bottom border-secondary pb-2">Thể loại phim</label>
+                        <div class="row genre-checklist">
+                            <?php 
+                            $selected_genres = [];
+                            if ($edit_movie && !empty($edit_movie['genre_ids'])) {
+                                $selected_genres = explode(',', $edit_movie['genre_ids']);
+                            }
+                            foreach ($genres_list as $g): 
+                                $isChecked = in_array($g['id'], $selected_genres) ? 'checked' : '';
+                            ?>
+                                <div class="col-6 form-check">
+                                    <input class="form-check-input" type="checkbox" name="genres[]"
+                                           value="<?= $g['id'] ?>" id="g_<?= $g['id'] ?>" <?= $isChecked ?>>
+                                    <label class="form-check-label" for="g_<?= $g['id'] ?>">
+                                        <?= htmlspecialchars($g['name']) ?>
+                                    </label>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3 text-end">
+                <?php if ($edit_movie): ?>
+                    <a href="manage_movies.php" class="btn btn-admin-secondary me-2">Hủy</a>
+                <?php endif; ?>
+                <button type="submit" class="btn btn-netflix-red">
+                    <?= $edit_movie ? 'Lưu thay đổi' : 'Thêm phim' ?>
+                </button>
+            </div>
+        </form>
+    </div>
 
     <div class="admin-card">
         <h5 class="mb-3 text-white"><i class="bi bi-camera-reels me-2"></i>Danh sách phim</h5>
@@ -95,17 +197,14 @@ $movies_result = $controller->getAllMovies();
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-info admin-icon-btn me-1 edit-movie-btn"
-                                            title="Sửa phim"
-                                            aria-label="Sửa phim"
-                                            data-movie='<?= htmlspecialchars(json_encode($movie, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>'>
+                                    <a href="manage_movies.php?edit_id=<?= $movie['id'] ?>" class="btn btn-sm btn-outline-info admin-icon-btn me-1" title="Sửa phim">
                                         <i class="bi bi-pencil-square"></i>
-                                    </button>
+                                    </a>
 
                                     <form action="" method="POST" class="d-inline" onsubmit="return confirm('CẢNH BÁO: Xóa phim này sẽ xóa toàn bộ suất chiếu, vé và đánh giá liên quan. Bạn có chắc chắn không?');">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<?= $movie['id'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger admin-icon-btn" title="Xóa phim" aria-label="Xóa phim">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger admin-icon-btn" title="Xóa phim" >
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -127,149 +226,5 @@ $movies_result = $controller->getAllMovies();
         </div>
     </div>
 </div>
-
-<?php
-function renderMovieFormModal($modalId, $title, $actionValue, $genres_list) {
-?>
-<div class="modal fade" id="<?= $modalId ?>" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <form action="" method="POST" id="form_<?= $actionValue ?>">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-camera-reels me-2"></i><?= $title ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="<?= $actionValue ?>">
-                    <?php if ($actionValue == 'edit') echo '<input type="hidden" name="id" id="edit_movie_id">'; ?>
-
-                    <div class="row g-4">
-                        <div class="col-md-7 admin-form-column">
-                            <div class="mb-3">
-                                <label class="form-label">Tên phim <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="title" id="<?= $actionValue ?>_title" required>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Đạo diễn</label>
-                                    <input type="text" class="form-control" name="director" id="<?= $actionValue ?>_director">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Giới hạn tuổi</label>
-                                    <input type="number" class="form-control" name="age_restriction" id="<?= $actionValue ?>_age" min="0" value="0">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Diễn viên</label>
-                                <input type="text" class="form-control" name="cast" id="<?= $actionValue ?>_cast" placeholder="Cách nhau bằng dấu phẩy">
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Quốc gia <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="country" id="<?= $actionValue ?>_country" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Thời lượng (phút) <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" name="duration" id="<?= $actionValue ?>_duration" required min="1">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Ngày khởi chiếu <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="screening_date" id="<?= $actionValue ?>_date" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Mô tả chi tiết</label>
-                                <textarea class="form-control" name="description" id="<?= $actionValue ?>_desc" rows="4"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="col-md-5">
-                            <div class="mb-3">
-                                <label class="form-label">Hình ảnh / Poster (URL)</label>
-                                <input type="text" class="form-control" name="poster" id="<?= $actionValue ?>_poster" placeholder="https://...">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Trailer (URL)</label>
-                                <input type="text" class="form-control" name="trailer_url" id="<?= $actionValue ?>_trailer" placeholder="https://youtube.com/...">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Trạng thái</label>
-                                <select class="form-select" name="status" id="<?= $actionValue ?>_status">
-                                    <option value="coming">Sắp chiếu</option>
-                                    <option value="now_showing" selected>Đang chiếu</option>
-                                    <option value="ended">Ngừng chiếu</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label d-block border-bottom border-secondary pb-2">Thể loại phim</label>
-                                <div class="row genre-checklist">
-                                    <?php foreach ($genres_list as $g): ?>
-                                        <div class="col-6 form-check">
-                                            <input class="form-check-input genre-checkbox-<?= $actionValue ?>" type="checkbox" name="genres[]"
-                                                   value="<?= $g['id'] ?>" id="g_<?= $actionValue ?>_<?= $g['id'] ?>">
-                                            <label class="form-check-label" for="g_<?= $actionValue ?>_<?= $g['id'] ?>">
-                                                <?= htmlspecialchars($g['name']) ?>
-                                            </label>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-admin-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-netflix-red">
-                        <?= $actionValue == 'edit' ? 'Lưu thay đổi' : 'Thêm phim' ?>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<?php } ?>
-
-<?php renderMovieFormModal('addMovieModal', 'Thêm phim mới', 'add', $genres_list); ?>
-<?php renderMovieFormModal('editMovieModal', 'Cập nhật phim', 'edit', $genres_list); ?>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const editBtns = document.querySelectorAll('.edit-movie-btn');
-    const editModal = new bootstrap.Modal(document.getElementById('editMovieModal'));
-
-    editBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const movie = JSON.parse(this.getAttribute('data-movie'));
-
-            document.getElementById('edit_movie_id').value = movie.id;
-            document.getElementById('edit_title').value = movie.title || '';
-            document.getElementById('edit_director').value = movie.director || '';
-            document.getElementById('edit_age').value = movie.age_restriction || 0;
-            document.getElementById('edit_cast').value = movie.cast || '';
-            document.getElementById('edit_country').value = movie.country || '';
-            document.getElementById('edit_duration').value = movie.duration || '';
-            document.getElementById('edit_date').value = movie.screening_date || '';
-            document.getElementById('edit_desc').value = movie.description || '';
-            document.getElementById('edit_poster').value = movie.poster || '';
-            document.getElementById('edit_trailer').value = movie.trailer_url || '';
-            document.getElementById('edit_status').value = movie.status || 'now_showing';
-
-            document.querySelectorAll('.genre-checkbox-edit').forEach(cb => cb.checked = false);
-
-            if (movie.genre_ids) {
-                const genreIds = String(movie.genre_ids).split(',');
-                genreIds.forEach(id => {
-                    const checkbox = document.getElementById('g_edit_' + id.trim());
-                    if (checkbox) {
-                        checkbox.checked = true;
-                    }
-                });
-            }
-
-            editModal.show();
-        });
-    });
-});
-</script>
 
 <?php require_once 'admin_footer.php'; ?>

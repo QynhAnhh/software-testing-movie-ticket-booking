@@ -54,6 +54,11 @@ class MovieService {
         return $this->model->getAllMoviesWithGenres();
     }
 
+    public function getMovieById($id) {
+        if ($id <= 0) return null;
+        return $this->model->getMovieByIdWithGenres($id);
+    }
+
     public function getNowShowingMovies() {
         return $this->model->getNowShowingMovies();
     }

@@ -52,6 +52,10 @@ class MovieController {
         return $this->movieService->getAllMovies();
     }
 
+    public function getMovieById($id) {
+        return $this->movieService->getMovieById($id);
+    }
+
     public function getNowShowingMovies() {
         return $this->movieService->getNowShowingMovies();
     }
