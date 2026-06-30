@@ -56,4 +56,9 @@ class GenreService {
     public function getAllGenres() {
         return $this->model->getAll();
     }
+
+    public function getGenreById($id) {
+        if ($id <= 0) return null;
+        return $this->model->getById($id);
+    }
 }

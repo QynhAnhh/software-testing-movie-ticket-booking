@@ -36,4 +36,8 @@ class GenreController {
     public function getAllGenres() {
         return $this->service->getAllGenres();
     }
+
+    public function getGenreById($id) {
+        return $this->service->getGenreById($id);
+    }
 }
