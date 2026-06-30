@@ -54,14 +54,14 @@ $movies_result = $controller->getAllMovies();
             <table class="table table-hover admin-table align-middle mb-0">
                 <thead>
                     <tr>
-                        <th width="5%">ID</th>
-                        <th width="5%">Ảnh</th>
-                        <th width="22%">Tên phim</th>
-                        <th width="20%">Thể loại</th>
-                        <th width="10%">Thời lượng</th>
-                        <th width="10%">Khởi chiếu</th>
-                        <th width="10%">Trạng thái</th>
-                        <th width="20%" class="text-center">Hành động</th>
+                        <th >ID</th>
+                        <th >Ảnh</th>
+                        <th >Tên phim</th>
+                        <th >Thể loại</th>
+                        <th >Thời lượng</th>
+                        <th >Khởi chiếu</th>
+                        <th >Trạng thái</th>
+                        <th >Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,7 +70,7 @@ $movies_result = $controller->getAllMovies();
                             <tr>
                                 <td><?= $movie['id'] ?></td>
                                 <td>
-                                    <img src="<?= htmlspecialchars($movie['poster'] ?: 'images/movies/default.jpg') ?>"
+                                    <img src="<?= htmlspecialchars($movie['poster']) ?>"
                                          alt="<?= htmlspecialchars($movie['title']) ?>" class="admin-poster">
                                 </td>
                                 <td>
@@ -186,7 +186,7 @@ function renderMovieFormModal($modalId, $title, $actionValue, $genres_list) {
                         <div class="col-md-5">
                             <div class="mb-3">
                                 <label class="form-label">Hình ảnh / Poster (URL)</label>
-                                <input type="text" class="form-control" name="images" id="<?= $actionValue ?>_images" placeholder="https://...">
+                                <input type="text" class="form-control" name="poster" id="<?= $actionValue ?>_poster" placeholder="https://...">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Trailer (URL)</label>
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('edit_duration').value = movie.duration || '';
             document.getElementById('edit_date').value = movie.screening_date || '';
             document.getElementById('edit_desc').value = movie.description || '';
-            document.getElementById('edit_images').value = movie.images || '';
+            document.getElementById('edit_poster').value = movie.poster || '';
             document.getElementById('edit_trailer').value = movie.trailer_url || '';
             document.getElementById('edit_status').value = movie.status || 'now_showing';
 

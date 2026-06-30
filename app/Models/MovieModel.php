@@ -11,11 +11,11 @@ class MovieModel {
     }
 
     public function insertMovie($data) {
-        $stmt = mysqli_prepare($this->conn, "INSERT INTO movies (title, description, director, cast, age_restriction, country, duration, screening_date, images, trailer_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = mysqli_prepare($this->conn, "INSERT INTO movies (title, description, director, cast, age_restriction, country, duration, screening_date, poster, trailer_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         mysqli_stmt_bind_param($stmt, "ssssissssss", 
             $data['title'], $data['description'], $data['director'], $data['cast'], 
             $data['age_restriction'], $data['country'], $data['duration'], 
-            $data['screening_date'], $data['images'], $data['trailer_url'], $data['status']
+            $data['screening_date'], $data['poster'], $data['trailer_url'], $data['status']
         );
         if (mysqli_stmt_execute($stmt)) {
             return mysqli_insert_id($this->conn);
@@ -24,11 +24,11 @@ class MovieModel {
     }
 
     public function updateMovie($id, $data) {
-        $stmt = mysqli_prepare($this->conn, "UPDATE movies SET title=?, description=?, director=?, cast=?, age_restriction=?, country=?, duration=?, screening_date=?, images=?, trailer_url=?, status=? WHERE id=?");
+        $stmt = mysqli_prepare($this->conn, "UPDATE movies SET title=?, description=?, director=?, cast=?, age_restriction=?, country=?, duration=?, screening_date=?, poster=?, trailer_url=?, status=? WHERE id=?");
         mysqli_stmt_bind_param($stmt, "ssssissssssi", 
             $data['title'], $data['description'], $data['director'], $data['cast'], 
             $data['age_restriction'], $data['country'], $data['duration'], 
-            $data['screening_date'], $data['images'], $data['trailer_url'], $data['status'], $id
+            $data['screening_date'], $data['poster'], $data['trailer_url'], $data['status'], $id
         );
         return mysqli_stmt_execute($stmt);
     }
