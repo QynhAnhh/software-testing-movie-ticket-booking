@@ -4,17 +4,17 @@
                 <div class="footer-col">
                     <h3>GIỚI THIỆU</h3>
                     <ul>
-                        <li><a href="#">Về Chúng Tôi</a></li>
-                        <li><a href="#">Thoả Thuận Sử Dụng</a></li>
-                        <li><a href="#">Quy Chế Hoạt Động</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
+                        <li><a href="about.php">Về Chúng Tôi</a></li>
+                        <li><a href="terms.php">Thoả Thuận Sử Dụng</a></li>
+                        <li><a href="rules.php">Quy Chế Hoạt Động</a></li>
+                        <li><a href="privacy.php">Chính Sách Bảo Mật</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-col">
                     <h3>HỖ TRỢ</h3>
                     <ul>
-                        <li><a href="#">Câu Hỏi Thường Gặp</a></li>
+                        <li><a href="faq.php">Câu Hỏi Thường Gặp</a></li>
                     </ul>
                 </div>
 

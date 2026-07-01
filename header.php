@@ -26,6 +26,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="css/footer.css"> 
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/movies.css">
+    <link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
     <header class="main-header">
@@ -52,7 +53,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 </a>
             </div>
         <?php else: ?>
-            <a href="login.php" class="login-btn">
+            <a href="logreg.php" class="login-btn">
             Đăng nhập
             </a>
         <?php endif; ?>
@@ -62,7 +63,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <nav class="header-bottom">
             <a href="movie_list.php" class="nav-item">Phim</a>
-            <a href="#" class="nav-item">Hướng dẫn đặt vé</a>
+            <a href="guide.php" class="nav-item">Hướng dẫn đặt vé</a>
         </nav>
         </div>
     </header>

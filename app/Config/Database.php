@@ -8,9 +8,9 @@ class Database {
         if (self::$connection === null) {
             $host = 'localhost';
             $username = 'root';
-            $password = '123456';
+            $password = ''; // Mặc định của XAMPP là rỗng
             $database = 'movie_ticket_booking';
-            $port = '3308';
+            $port = '3308'; // Mặc định của MySQL là 3306
 
             $conn = mysqli_connect($host, $username, $password, $database, $port);
             if (!$conn) {
