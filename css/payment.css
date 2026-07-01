@@ -1,0 +1,161 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    background: #081224;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-container {
+    min-height: 100vh;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    background: linear-gradient(to right, #081224, #0b1730, #081224);
+    color: white;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.payment-container h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #ef4444;
+}
+
+/* ===== TOTAL AMOUNT ===== */
+.total-amount {
+    text-align: center;
+    padding: 25px;
+    background: #16253b;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border: 1px solid #1a2a44;
+}
+
+.total-amount .label {
+    color: #bfc9d8;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.total-amount .amount {
+    font-size: 34px;
+    font-weight: 700;
+    color: #ef4444;
+}
+
+.total-amount .note {
+    color: #bfc9d8;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+/* ===== METHOD TITLE ===== */
+.method-title {
+    color: #c6d1e0;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+/* ===== PAYMENT METHODS ===== */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.payment-methods form {
+    width: 100%;
+}
+
+.payment-btn {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #1a2a44;
+    border-radius: 12px;
+    background: transparent;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 500;
+}
+
+.payment-btn:hover {
+    border-color: #ef4444;
+    background: #16253b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+}
+
+.payment-btn .icon {
+    font-size: 26px;
+    width: 40px;
+    text-align: center;
+}
+
+/* ===== BACK BUTTON ===== */
+.btn-back {
+    width: 100%;
+    padding: 14px;
+    background: #34495e;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-back:hover {
+    background: #455a64;
+    transform: translateY(-2px);
+}
+
+/* ===== SECURE NOTE ===== */
+.secure-note {
+    text-align: center;
+    color: #bfc9d8;
+    font-size: 13px;
+    margin-top: 18px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+    .payment-container {
+        padding: 20px 15px;
+    }
+
+    .payment-container h1 {
+        font-size: 22px;
+    }
+
+    .total-amount .amount {
+        font-size: 26px;
+    }
+
+    .payment-btn {
+        font-size: 14px;
+        padding: 14px 16px;
+    }
+
+    .payment-btn .icon {
+        font-size: 22px;
+        width: 32px;
+    }
+}

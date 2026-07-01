@@ -55,6 +55,10 @@ require_once 'header.php';
 
         <!-- Form sẽ gửi dữ liệu (POST) lại chính trang này (login.php) để xử lý qua Controller -->
         <form action="" method="POST">
+            <!-- chuyển ng dùng sang login và quay lại trang họ muốn-->
+            <?php if (!empty($_GET['redirect'])): ?>
+                <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_GET['redirect']); ?>">
+            <?php endif; ?>
             <div style="margin-bottom: 15px;">
                 <label for="email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
                 <input type="email" id="email" name="email" required placeholder="Nhập email của bạn" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">

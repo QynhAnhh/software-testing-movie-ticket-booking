@@ -22,12 +22,17 @@ class AuthController {
             }
 
             $result = $this->authService->login($email, $password);
-
+            // chuyển hướng người dùng đến trang sau đăng nhập
             if ($result['status'] === 'success') {
                 if ($result['role'] === 'admin') {
                     header("Location: admin/index.php");
                 } else {
-                    header("Location: index.php");
+                    $redirect = trim($_POST['redirect'] ?? '');
+                    if (!empty($redirect)) {
+                        header("Location: " . $redirect);
+                    } else {
+                        header("Location: index.php");
+                    }
                 }
                 exit;
             } else {
