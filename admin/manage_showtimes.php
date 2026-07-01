@@ -23,6 +23,17 @@ if ($actionResult) {
 $showtimes_list = $controller->getAllShowtimes();
 $movies_list = $controller->getAllMovies();
 $rooms_list = $controller->getAllRooms();
+$edit_showtime = null;
+
+if (isset($_GET['edit_id'])) {
+    $edit_id = (int) $_GET['edit_id'];
+    foreach ($showtimes_list as $showtime) {
+        if ((int) $showtime['id'] === $edit_id) {
+            $edit_showtime = $showtime;
+            break;
+        }
+    }
+}
 ?>
 
 <div class="container-fluid">
@@ -31,23 +42,41 @@ $rooms_list = $controller->getAllRooms();
             <h1 class="mb-0 text-white fw-bold">Quản lý lịch chiếu</h1>
             <p class="mb-0 mt-2 text-muted">Gán suất chiếu cho phim và phòng. Giờ kết thúc có thể tự tính từ thời lượng phim nếu để trống.</p>
         </div>
-        <button type="button" class="btn btn-netflix-red" data-bs-toggle="modal" data-bs-target="#addShowtimeModal">
-            <i class="bi bi-plus-lg me-1"></i> Thêm suất chiếu
-        </button>
     </div>
 
     <?php if ($success_msg): ?>
-        <div class="alert admin-alert admin-alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle me-2"></i> <?= htmlspecialchars($success_msg) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     <?php endif; ?>
     <?php if ($error_msg): ?>
-        <div class="alert admin-alert admin-alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle me-2"></i> <?= htmlspecialchars($error_msg) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
         </div>
     <?php endif; ?>
+
+    <div class="admin-card mb-4">
+        <h5 class="mb-3 text-white">
+            <i class="bi bi-calendar-event me-2"></i><?= $edit_showtime ? 'Cập nhật suất chiếu' : 'Thêm suất chiếu' ?>
+        </h5>
+        <form action="manage_showtimes.php" method="POST">
+            <input type="hidden" name="action" value="<?= $edit_showtime ? 'edit' : 'add' ?>">
+            <?php if ($edit_showtime): ?>
+                <input type="hidden" name="id" value="<?= $edit_showtime['id'] ?>">
+            <?php endif; ?>
+            <?php renderShowtimeFormFields('showtime_form', $movies_list, $rooms_list, $edit_showtime); ?>
+            <div class="mt-3 text-end">
+                <?php if ($edit_showtime): ?>
+                    <a href="manage_showtimes.php" class="btn btn-outline-light me-2">Hủy</a>
+                <?php endif; ?>
+                <button type="submit" class="btn btn-netflix-red">
+                    <?= $edit_showtime ? 'Lưu thay đổi' : 'Thêm suất chiếu' ?>
+                </button>
+            </div>
+        </form>
+    </div>
 
     <div class="admin-card">
         <h5 class="mb-3 text-white"><i class="bi bi-calendar-event me-2"></i>Danh sách suất chiếu</h5>
@@ -85,17 +114,15 @@ $rooms_list = $controller->getAllRooms();
                                 <td><?= number_format((float)$showtime['base_price'], 0, ',', '.') ?> đ</td>
                                 <td>
                                     <?php if ($showtime['status'] === 'active'): ?>
-                                        <span class="status-badge status-success">Đang mở</span>
+                                        <span class="badge bg-success">Đang mở</span>
                                     <?php else: ?>
-                                        <span class="status-badge status-secondary">Đã hủy</span>
+                                        <span class="badge bg-secondary">Đã hủy</span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-info admin-icon-btn me-1 edit-showtime-btn"
-                                            title="Sửa suất chiếu"
-                                            data-showtime='<?= htmlspecialchars(json_encode($showtime, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8') ?>'>
+                                    <a href="manage_showtimes.php?edit_id=<?= $showtime['id'] ?>" class="btn btn-sm btn-outline-info admin-icon-btn me-1" title="Sửa suất chiếu">
                                         <i class="bi bi-pencil-square"></i>
-                                    </button>
+                                    </a>
                                     <form action="" method="POST" class="d-inline" onsubmit="return confirm('Xóa suất chiếu này? Vé đã đặt liên quan cũng sẽ bị ảnh hưởng.');">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<?= $showtime['id'] ?>">
@@ -123,7 +150,7 @@ $rooms_list = $controller->getAllRooms();
 </div>
 
 <?php
-function renderShowtimeFormFields($prefix, $movies_list, $rooms_list) {
+function renderShowtimeFormFields($prefix, $movies_list, $rooms_list, $showtime = null) {
 ?>
     <div class="row g-3">
         <div class="col-md-6">
@@ -131,7 +158,7 @@ function renderShowtimeFormFields($prefix, $movies_list, $rooms_list) {
             <select class="form-select" name="movie_id" id="<?= $prefix ?>_movie_id" required>
                 <option value="">-- Chọn phim --</option>
                 <?php foreach ($movies_list as $movie): ?>
-                    <option value="<?= $movie['id'] ?>" data-duration="<?= (int)$movie['duration'] ?>">
+                    <option value="<?= $movie['id'] ?>" data-duration="<?= (int)$movie['duration'] ?>" <?= (int)($showtime['movie_id'] ?? 0) === (int)$movie['id'] ? 'selected' : '' ?>>
                         <?= htmlspecialchars($movie['title']) ?> (<?= (int)$movie['duration'] ?> phút)
                     </option>
                 <?php endforeach; ?>
@@ -142,98 +169,37 @@ function renderShowtimeFormFields($prefix, $movies_list, $rooms_list) {
             <select class="form-select" name="room_id" id="<?= $prefix ?>_room_id" required>
                 <option value="">-- Chọn phòng --</option>
                 <?php foreach ($rooms_list as $room): ?>
-                    <option value="<?= $room['id'] ?>"><?= htmlspecialchars($room['theatre_name'] . ' - ' . $room['name']) ?></option>
+                    <option value="<?= $room['id'] ?>" <?= (int)($showtime['room_id'] ?? 0) === (int)$room['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($room['theatre_name'] . ' - ' . $room['name']) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </div>
         <div class="col-md-4">
             <label class="form-label">Ngày chiếu <span class="text-danger">*</span></label>
-            <input type="date" class="form-control" name="show_date" id="<?= $prefix ?>_show_date" required>
+            <input type="date" class="form-control" name="show_date" id="<?= $prefix ?>_show_date" required value="<?= htmlspecialchars($showtime['show_date'] ?? '') ?>">
         </div>
         <div class="col-md-4">
             <label class="form-label">Giờ bắt đầu <span class="text-danger">*</span></label>
-            <input type="time" class="form-control" name="start_time" id="<?= $prefix ?>_start_time" required>
+            <input type="time" class="form-control" name="start_time" id="<?= $prefix ?>_start_time" required value="<?= htmlspecialchars(isset($showtime['start_time']) ? substr($showtime['start_time'], 0, 5) : '') ?>">
         </div>
         <div class="col-md-4">
             <label class="form-label">Giờ kết thúc</label>
-            <input type="time" class="form-control" name="end_time" id="<?= $prefix ?>_end_time">
+            <input type="time" class="form-control" name="end_time" id="<?= $prefix ?>_end_time" value="<?= htmlspecialchars(isset($showtime['end_time']) ? substr($showtime['end_time'], 0, 5) : '') ?>">
             <div class="form-text">Để trống để tự tính từ thời lượng phim.</div>
         </div>
         <div class="col-md-6">
             <label class="form-label">Giá vé cơ bản (VNĐ) <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" name="base_price" id="<?= $prefix ?>_base_price" min="1000" step="1000" value="80000" required>
+            <input type="number" class="form-control" name="base_price" id="<?= $prefix ?>_base_price" min="1000" step="1000" value="<?= htmlspecialchars((string)($showtime['base_price'] ?? 80000)) ?>" required>
         </div>
         <div class="col-md-6">
             <label class="form-label">Trạng thái</label>
             <select class="form-select" name="status" id="<?= $prefix ?>_status">
-                <option value="active">Đang mở</option>
-                <option value="canceled">Đã hủy</option>
+                <option value="active" <?= ($showtime['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>Đang mở</option>
+                <option value="canceled" <?= ($showtime['status'] ?? '') === 'canceled' ? 'selected' : '' ?>>Đã hủy</option>
             </select>
         </div>
     </div>
 <?php } ?>
-
-<div class="modal fade" id="addShowtimeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form action="" method="POST">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-calendar-event me-2"></i>Thêm suất chiếu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="add">
-                    <?php renderShowtimeFormFields('add', $movies_list, $rooms_list); ?>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-admin-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-netflix-red">Thêm mới</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="editShowtimeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form action="" method="POST">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Cập nhật suất chiếu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="edit">
-                    <input type="hidden" name="id" id="edit_showtime_id">
-                    <?php renderShowtimeFormFields('edit', $movies_list, $rooms_list); ?>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-admin-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-netflix-red">Lưu thay đổi</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const editModal = new bootstrap.Modal(document.getElementById('editShowtimeModal'));
-    document.querySelectorAll('.edit-showtime-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const showtime = JSON.parse(this.getAttribute('data-showtime'));
-            document.getElementById('edit_showtime_id').value = showtime.id;
-            document.getElementById('edit_movie_id').value = showtime.movie_id;
-            document.getElementById('edit_room_id').value = showtime.room_id;
-            document.getElementById('edit_show_date').value = showtime.show_date;
-            document.getElementById('edit_start_time').value = showtime.start_time ? showtime.start_time.substring(0, 5) : '';
-            document.getElementById('edit_end_time').value = showtime.end_time ? showtime.end_time.substring(0, 5) : '';
-            document.getElementById('edit_base_price').value = showtime.base_price;
-            document.getElementById('edit_status').value = showtime.status;
-            editModal.show();
-        });
-    });
-});
-</script>
 
 <?php require_once 'admin_footer.php'; ?>
