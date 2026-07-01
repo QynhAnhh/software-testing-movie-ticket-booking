@@ -41,76 +41,62 @@ Hệ thống được phát triển theo kiến trúc PHP MVC kết hợp MySQL,
 
 # Environment Setup
 
-## 1. Install Required Software
+## 1. Tải Code (Clone)
+1. Mở Terminal (hoặc Git Bash, CMD) tại thư mục `htdocs` của XAMPP (thường là `C:\xampp\htdocs`):
+2. Chạy lệnh tải dự án:
+   ```bash
+   git clone https://github.com/huutienSE/movie-ticket-booking.git
+   ```
+3. Di chuyển vào thư mục dự án:
+   ```bash
+   cd movie-ticket-booking
+   ```
 
-* Laragon
-* Git
-* VS Code
+## 2. Khởi tạo Cơ Sở Dữ Liệu (Database)
 
-## 2. Clone Repository
+Dự án sử dụng cơ sở dữ liệu chung tên là: **`movie_ticket_booking`**. (User mặc định là `root`, pass rỗng `""`).
 
-```bash
-git clone <repository-url>
-```
+1. Mở bảng điều khiển **XAMPP Control Panel** và bấm **Start** 2 dịch vụ: `Apache` và `MySQL`.
+2. Truy cập phpMyAdmin: 👉 [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
+3. Tạo Database tên là `movie_ticket_booking` (Collation: `utf8mb4_general_ci`).
+4. Chọn tab **Import (Nhập)**, chọn file `Database/BookingTicketDatabase.sql` có trong thư mục dự án.
+5. Bấm **Go (Thực hiện)**.
 
-```bash
-cd movie-ticket-booking
-```
-
-## 3. Start Services
-
-Mở Laragon và khởi động:
-
-```txt
-Apache
-MySQL
-```
-
-Kiểm tra:
-
-```txt
-http://localhost
-```
-
-Nếu xuất hiện trang Laragon nghĩa là môi trường đã hoạt động.
-
-## 4. Create Database
-
-
-## 5. Run Project
-
-Truy cập:
-
-```txt
-http://localhost/movie-ticket-booking/public
-```
+## 3. Chạy Dự Án
+- 🏠 **Trang khách hàng:** [http://localhost/movie-ticket-booking/](http://localhost/movie-ticket-booking/)
+- 🔑 **Trang Đăng nhập:** [http://localhost/movie-ticket-booking/login.php](http://localhost/movie-ticket-booking/login.php)
+> **Tài khoản test (Admin):** `admin@example.com` / `password`
 
 ---
 
-# Project Structure
+# Project Structure (Hybrid MVC)
 
-```txt
+Từ Phase 2, tất cả tuân theo kiến trúc **Phân tầng (Hybrid MVC)**.
+
+```text
 movie-ticket-booking/
+├── app/                        # BỘ NÃO CỦA DỰ ÁN (Chứa toàn bộ PHP Logic)
+│   ├── Config/                 # Cấu hình chung
+│   │   └── Database.php        # Lớp kết nối CSDL duy nhất
+│   │
+│   ├── Models/                 # TẦNG 1: Tương tác Database
+│   │   ├── UserModel.php       # Chứa các câu SELECT, INSERT, UPDATE...
+│   │
+│   ├── Services/               # TẦNG 2: Xử lý nghiệp vụ (Business Logic)
+│   │   ├── AuthService.php     # Kiểm tra pass, check ghế trống, tính tiền...
+│   │
+│   ├── Controllers/            # TẦNG 3: Nhận Request & Điều hướng
+│   │   ├── AuthController.php  # Nhận $_POST từ form, gọi Service tương ứng
+│   │
+│   └── init.php                # File Autoloader (tự động nạp class)
 │
-├── app/
-│   ├── controllers/
-│   ├── models/
-│   ├── services/
-│   └── views/
+├── admin/                      # GIAO DIỆN ADMIN (HTML + PHP lấy data)
+│   ├── manage_movies.php       # Gọi Controller để lấy mảng data và foreach HTML
+│   └── ...
 │
-├── config/
-│
-├── database/
-│
-├── docs/
-│
-├── public/
-│   └── assets/
-│
-├── routes/
-│
-├── README.md
-└── .gitignore
+└── (Thư mục gốc)               # GIAO DIỆN KHÁCH HÀNG (Nằm ngay ngoài cùng)
+    ├── index.php               
+    └── login.php               
 ```
 
 ---
