@@ -19,10 +19,10 @@ class BookingController {
             $action = $_POST['action'];
             
             if ($action === 'book_ticket') {
-                if (!isset($_SESSION['user_id'])) {
+                if (!isset($_SESSION['user']['id'])) {
                     return ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.'];
                 }
-                $userId = $_SESSION['user_id'];
+                $userId = $_SESSION['user']['id'];
                 $showtimeId = (int)($_POST['showtime_id'] ?? 0);
                 $seatIds = $_POST['seats'] ?? []; // Array of seat IDs
                 $paymentMethod = $_POST['payment_method'] ?? 'cash';
@@ -31,10 +31,10 @@ class BookingController {
             }
             
             if ($action === 'cancel_ticket') {
-                if (!isset($_SESSION['user_id'])) {
+                if (!isset($_SESSION['user']['id'])) {
                     return ['status' => 'error', 'message' => 'Vui lòng đăng nhập.'];
                 }
-                $userId = $_SESSION['user_id'];
+                $userId = $_SESSION['user']['id'];
                 $bookingId = (int)($_POST['booking_id'] ?? 0);
                 
                 return $this->bookingService->cancelBooking($bookingId, $userId);

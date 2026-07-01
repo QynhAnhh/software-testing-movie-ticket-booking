@@ -19,11 +19,11 @@ class ReviewController {
             $action = $_POST['action'];
 
             if ($action === 'add_review') {
-                if (!isset($_SESSION['user_id'])) {
+                if (!isset($_SESSION['user']['id'])) {
                     return ['status' => 'error', 'message' => 'Vui lòng đăng nhập để bình luận.'];
                 }
                 
-                $userId = $_SESSION['user_id'];
+                $userId = $_SESSION['user']['id'];
                 $movieId = (int)($_POST['movie_id'] ?? 0);
                 $rating = (int)($_POST['rating'] ?? 5);
                 $comment = $_POST['comment'] ?? '';
