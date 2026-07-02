@@ -33,7 +33,7 @@ if (session_status() === PHP_SESSION_NONE) {
         <div class="container">
         <div class="header-top">
             <div class="logo">
-                <a href="index.php"><img src="images/logo.png" alt="Logo"></a>
+                <a href="index.php"><img src="images/logodUTH.png" alt="Logo"></a>
             </div>
             
             <div class="header-top-right">
@@ -47,13 +47,13 @@ if (session_status() === PHP_SESSION_NONE) {
     <div class="auth-section">
         <?php if (isset($_SESSION['user'])): ?>
             <div class="user-profile">
-                <span>Hi, <?php echo htmlspecialchars($_SESSION['user']['name']); ?></span>
-                <a href="settings.php" title="Cài đặt tài khoản">
+                <a href="settings.php" title="Cài đặt tài khoản" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
+                    <span>Hi, <?php echo htmlspecialchars(trim(($_SESSION['user']['first_name'] ?? '') . ' ' . ($_SESSION['user']['last_name'] ?? ''))); ?></span>
                     <img src="images/svg/setting.svg" alt="Settings" class="setting-icon">
                 </a>
             </div>
         <?php else: ?>
-            <a href="logreg.php" class="login-btn">
+            <a href="login.php" class="login-btn">
             Đăng nhập
             </a>
         <?php endif; ?>

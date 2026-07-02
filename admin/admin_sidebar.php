@@ -15,6 +15,18 @@
         <a href="manage_genres.php" class="nav-link <?= ($current_page == 'manage_genres.php') ? 'active' : '' ?>">
             <i class="bi bi-tags"></i> Quản lý Thể loại
         </a>
+        <a href="manage_theatres.php" class="nav-link <?= ($current_page == 'manage_theatres.php') ? 'active' : '' ?>">
+            <i class="bi bi-building"></i> Quản lý Rạp
+        </a>
+        <a href="manage_rooms.php" class="nav-link <?= ($current_page == 'manage_rooms.php') ? 'active' : '' ?>">
+            <i class="bi bi-door-open"></i> Quản lý Phòng
+        </a>
+        <a href="manage_seats.php" class="nav-link <?= ($current_page == 'manage_seats.php') ? 'active' : '' ?>">
+            <i class="bi bi-grid"></i> Quản lý Ghế
+        </a>
+        <a href="manage_showtimes.php" class="nav-link <?= ($current_page == 'manage_showtimes.php') ? 'active' : '' ?>">
+            <i class="bi bi-calendar-event"></i> Quản lý Lịch chiếu
+        </a>
         <a href="manage_booking.php" class="nav-link <?= ($current_page == 'manage_booking.php') ? 'active' : '' ?>">
             <i class="bi bi-ticket-perforated"></i> Quản lý Đặt vé
         </a>
