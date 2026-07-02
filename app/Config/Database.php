@@ -10,9 +10,9 @@ class Database {
             $username = 'root';
             $password = ''; // Mặc định của XAMPP là rỗng
             $database = 'movie_ticket_booking';
-            $port = '3308'; // Mặc định của MySQL là 3306
+            // $port = '3308'; // Mặc định của MySQL là 3306
 
-            $conn = mysqli_connect($host, $username, $password, $database, $port);
+            $conn = mysqli_connect($host, $username, $password, $database);
             if (!$conn) {
                 die("Connection failed: " . mysqli_connect_error());
             }
