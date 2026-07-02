@@ -12,7 +12,7 @@ class DashboardModel {
 
     public function getTodayBookings() {
         $query = "
-            SELECT b.id, b.booking_code, b.total_price, b.status, b.created_at, u.first_name, u.last_name, 
+            SELECT b.id, b.total_price, b.status, b.created_at, u.first_name, u.last_name, 
                    m.title as movie_name, r.name as room_name, st.start_time,
                    GROUP_CONCAT(CONCAT(s.seat_row, s.seat_number) SEPARATOR ', ') as seats
             FROM bookings b

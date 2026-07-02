@@ -10,6 +10,23 @@ class RoomModel {
         $this->conn = Database::getConnection();
     }
 
+    public function getAllRooms() {
+        $query = "
+            SELECT r.id, r.name, r.is_active, t.name AS theatre_name
+            FROM rooms r
+            INNER JOIN theatres t ON t.id = r.theatre_id
+            WHERE r.is_active = 1
+            ORDER BY t.name ASC, r.name ASC
+        ";
+        $result = mysqli_query($this->conn, $query);
+        $rooms = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $rooms[] = $row;
+            }
+        }
+        return $rooms;
+    }
     public function findById($id) {
         $stmt = mysqli_prepare($this->conn, "SELECT * FROM rooms WHERE id = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);

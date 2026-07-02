@@ -127,36 +127,6 @@ class ShowtimeModel {
         return $showtimes;
     }
 
-    public function getAllMovies() {
-        $query = "SELECT id, title, duration, status FROM movies ORDER BY title ASC";
-        $result = mysqli_query($this->conn, $query);
-        $movies = [];
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $movies[] = $row;
-            }
-        }
-        return $movies;
-    }
-
-    public function getAllRooms() {
-        $query = "
-            SELECT r.id, r.name, r.is_active, t.name AS theatre_name
-            FROM rooms r
-            INNER JOIN theatres t ON t.id = r.theatre_id
-            WHERE r.is_active = 1
-            ORDER BY t.name ASC, r.name ASC
-        ";
-        $result = mysqli_query($this->conn, $query);
-        $rooms = [];
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $rooms[] = $row;
-            }
-        }
-        return $rooms;
-    }
-
     public function getError() {
         return mysqli_error($this->conn);
     }
