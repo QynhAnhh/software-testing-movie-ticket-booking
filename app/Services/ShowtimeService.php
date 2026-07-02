@@ -1,8 +1,6 @@
 <?php
 namespace App\Services;
 
-use App\Models\MovieModel;
-use App\Models\RoomModel;
 use App\Models\ShowtimeModel;
 
 class ShowtimeService {
@@ -76,7 +74,6 @@ class ShowtimeService {
     }
 
     private function validate(&$data, $excludeId = null) {
-        if ($data['movie_id'] <= 0 || !$this->showtimeModel->movieExists($data['movie_id'])) {
             return ['status' => 'error', 'message' => 'Phim không hợp lệ!'];
         }
         if ($data['room_id'] <= 0 || !$this->showtimeModel->roomExists($data['room_id'])) {

@@ -8,7 +8,7 @@ class Database {
         if (self::$connection === null) {
             $host = 'localhost';
             $username = 'root';
-            $password = '';
+            $password = '1234';
             $database = 'movie_ticket_booking';
 
             $conn = mysqli_connect($host, $username, $password, $database);

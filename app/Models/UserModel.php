@@ -46,8 +46,8 @@ class UserModel {
 
     public function insert($data) {
         $stmt = mysqli_prepare($this->conn, "INSERT INTO users (first_name, last_name, email, password, phone, birth_date, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "sssssss", 
-            $data['first_name'], $data['last_name'], $data['email'], 
+        mysqli_stmt_bind_param($stmt, "sssssss",
+            $data['first_name'], $data['last_name'], $data['email'],
             $data['password'], $data['phone'], $data['birth_date'], $data['role']
         );
         return mysqli_stmt_execute($stmt);
@@ -56,14 +56,14 @@ class UserModel {
     public function update($id, $data) {
         if (!empty($data['password'])) {
             $stmt = mysqli_prepare($this->conn, "UPDATE users SET first_name=?, last_name=?, email=?, password=?, phone=?, birth_date=?, role=? WHERE id=?");
-            mysqli_stmt_bind_param($stmt, "sssssssi", 
-                $data['first_name'], $data['last_name'], $data['email'], 
+            mysqli_stmt_bind_param($stmt, "sssssssi",
+                $data['first_name'], $data['last_name'], $data['email'],
                 $data['password'], $data['phone'], $data['birth_date'], $data['role'], $id
             );
         } else {
             $stmt = mysqli_prepare($this->conn, "UPDATE users SET first_name=?, last_name=?, email=?, phone=?, birth_date=?, role=? WHERE id=?");
-            mysqli_stmt_bind_param($stmt, "ssssssi", 
-                $data['first_name'], $data['last_name'], $data['email'], 
+            mysqli_stmt_bind_param($stmt, "ssssssi",
+                $data['first_name'], $data['last_name'], $data['email'],
                 $data['phone'], $data['birth_date'], $data['role'], $id
             );
         }
@@ -89,7 +89,7 @@ class UserModel {
         }
 
         $query = "
-            SELECT u.*, 
+            SELECT u.*,
                    COUNT(b.id) as total_bookings,
                    COALESCE(SUM(CASE WHEN b.status='paid' THEN b.total_price ELSE 0 END), 0) as total_spent
             FROM users u
@@ -105,7 +105,7 @@ class UserModel {
         }
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
-        
+
         $users = [];
         if ($result) {
             while ($row = mysqli_fetch_assoc($result)) {
