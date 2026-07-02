@@ -57,7 +57,7 @@ class BookingModel {
 
     public function createTickets($bookingId, $showtimeId, $seatIds, $prices) {
         if (empty($seatIds)) return true;
-        $stmt = mysqli_prepare($this->conn, "INSERT INTO tickets (booking_id, showtime_id, seat_id, price, status) VALUES (?, ?, ?, ?, 'active')");
+        $stmt = mysqli_prepare($this->conn, "INSERT INTO tickets (booking_id, showtime_id, seat_id, price, status) VALUES (?, ?, ?, ?, 'booked')");
         $success = true;
         foreach ($seatIds as $index => $seatId) {
             $price = $prices[$index] ?? 0;

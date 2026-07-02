@@ -1,18 +1,17 @@
 <?php
-/*movie_detail.php- CHI TIẾT PHIM*/
+/* movie_details.php - Chi tiet phim */
 
 $pageCSS = ['css/movie.css'];
 require_once 'header.php';
 require_once 'app/init.php';
-// Import các Controller cần dùng
+
 use App\Controllers\MovieController;
 use App\Controllers\ShowtimeController;
 use App\Controllers\ReviewController;
 
-// lấy ID phim từ URL
 $movieId = (int)($_GET['id'] ?? 0);
 if ($movieId <= 0) {
-    echo "<p style='padding:40px;text-align:center;color:#fff;'>ID phim không hợp lệ.</p>";
+    echo "<p class='text-center text-white py-5'>ID phim không hợp lệ.</p>";
     require_once 'footer.php';
     exit;
 }
@@ -21,177 +20,310 @@ $movieController = new MovieController();
 $showtimeController = new ShowtimeController();
 $reviewController = new ReviewController();
 
-// Xử lý gửi review
 $reviewResult = $reviewController->handleRequest();
-
-// Lấy thông tin phim
 $movie = $movieController->getMovieById($movieId);
+
 if (!$movie) {
-    echo "<p style='padding:40px;text-align:center;color:#fff;'>Không tìm thấy phim.</p>";
+    echo "<p class='text-center text-white py-5'>Không tìm thấy phim.</p>";
     require_once 'footer.php';
     exit;
 }
 
-// Lấy lịch chiếu và review
 $showtimes = $showtimeController->getShowtimesByMovie($movieId);
 $reviews = $reviewController->getReviewsByMovie($movieId);
+
+$posterPath = $movie['images'] ?? $movie['poster'] ?? 'images/movies/default.jpg';
+if (empty($posterPath)) {
+    $posterPath = 'images/movies/default.jpg';
+}
+if (!preg_match('/^https?:\/\//i', $posterPath) && !file_exists($posterPath)) {
+    $posterPath = 'images/movies/default.jpg';
+}
+
+$showtimesByDate = [];
+foreach ($showtimes as $showtime) {
+    $showtimesByDate[$showtime['show_date']][] = $showtime;
+}
+
+$formatDate = function ($date) {
+    if (empty($date)) {
+        return 'Đang cập nhật';
+    }
+    return date('d/m/Y', strtotime($date));
+};
+
+$formatDateWithDay = function ($date) {
+    if (empty($date)) {
+        return 'Đang cập nhật';
+    }
+
+    $days = [
+        1 => 'Thứ Hai',
+        2 => 'Thứ Ba',
+        3 => 'Thứ Tư',
+        4 => 'Thứ Năm',
+        5 => 'Thứ Sáu',
+        6 => 'Thứ Bảy',
+        7 => 'Chủ Nhật',
+    ];
+    $timestamp = strtotime($date);
+    $dayName = $days[(int)date('N', $timestamp)] ?? '';
+
+    return date('d/m/Y', $timestamp) . ' - ' . $dayName;
+};
+
+$title = htmlspecialchars($movie['title'] ?? 'Phim');
+$genres = htmlspecialchars($movie['genre_names'] ?? 'Đang cập nhật');
+$director = htmlspecialchars($movie['director'] ?? 'Đang cập nhật');
+$cast = htmlspecialchars($movie['cast'] ?? 'Đang cập nhật');
+$country = htmlspecialchars($movie['country'] ?? 'Đang cập nhật');
+$duration = (int)($movie['duration'] ?? 0);
+$ageRestriction = (int)($movie['age_restriction'] ?? 0);
+$description = htmlspecialchars($movie['description'] ?? 'Chưa có mô tả cho phim này.');
 ?>
 
 <div class="movie-details-page">
-    <div class="movie-details-container">
+    <div class="container py-4 py-lg-5">
+        <a href="index.php" class="btn btn-outline-light movie-back-link mb-4">
+            <i class="bi bi-arrow-left"></i>
+            Quay lại trang chủ
+        </a>
 
-        <!-- Nút quay lại -->
-        <a href="index.php" class="btn-back">← Quay lại trang chủ</a>
+        <section class="row g-4 align-items-start mb-5">
+            <div class="col-lg-4">
+                <div class="movie-poster-panel">
+                    <img src="<?php echo htmlspecialchars($posterPath); ?>"
+                         alt="<?php echo $title; ?>"
+                         onerror="this.src='images/movies/default.jpg'; this.onerror=null;">
 
-        <!-- ===== THÔNG TIN PHIM ===== -->
-        <div class="movie-detail-card">
-            <div class="movie-detail-poster">
-                <?php
-                // ===== XỬ LÝ ẢNH =====
-                // Xác định đường dẫn ảnh
-                $imagePath = 'images/movies/default.jpg';
-                
-                // Kiểm tra các nguồn ảnh
-                if (!empty($movie['images'])) {
-                    $imagePath = $movie['images'];
-                } elseif (!empty($movie['poster'])) {
-                    $imagePath = $movie['poster'];
-                }
-                
-                // Kiểm tra file ảnh có tồn tại không
-                if (!file_exists($imagePath)) {
-                    $imagePath = 'images/movies/default.jpg';
-                }
-                ?>
-                <img src="<?php echo htmlspecialchars($imagePath); ?>"
-                     alt="<?php echo htmlspecialchars($movie['title'] ?? 'Phim'); ?>"
-                     onerror="this.src='images/movies/default.jpg'; this.onerror=null;">
-                     <!-- Hiển thị rating nếu có -->
-                <?php if (!empty($movie['rating'])): ?>
-                <div class="movie-detail-rating">⭐ <?php echo number_format($movie['rating'], 1); ?>/10</div>
-                <?php endif; ?>
-            </div>
-                      <!-- Thông tin phim -->
-            <div class="movie-detail-info">
-                <h1><?php echo htmlspecialchars($movie['title'] ?? 'Không có tiêu đề'); ?></h1>
-                    <!-- Thể loại phim -->
-                <?php if (!empty($movie['genre_names'])): ?>
-                <div class="movie-detail-genre"><?php echo htmlspecialchars($movie['genre_names']); ?></div>
-                <?php endif; ?>
-
-                <div class="movie-detail-meta">
-                    <span>⏱ <?php echo $movie['duration'] ?? 'Đang cập nhật'; ?> phút</span>
-                    <span>🌍 <?php echo htmlspecialchars($movie['country'] ?? 'Đang cập nhật'); ?></span>
-                    <span>🔞 <?php echo $movie['age_restriction'] ?? 'Đang cập nhật'; ?>+</span>
-                </div>
-
-                <p class="movie-detail-description"><?php echo htmlspecialchars($movie['description'] ?? 'Chưa có mô tả'); ?></p>
-
-                <div class="movie-detail-grid">
-                    <p><strong>Đạo diễn:</strong> <?php echo htmlspecialchars($movie['director'] ?? 'Đang cập nhật'); ?></p>
-                    <p><strong>Diễn viên:</strong> <?php echo htmlspecialchars($movie['cast'] ?? 'Đang cập nhật'); ?></p>
-                    <p><strong>Thể loại:</strong> <?php echo htmlspecialchars($movie['genre_names'] ?? 'Đang cập nhật'); ?></p>
-                    <p><strong>Quốc gia:</strong> <?php echo htmlspecialchars($movie['country'] ?? 'Đang cập nhật'); ?></p>
-                    <p><strong>Thời lượng:</strong> <?php echo $movie['duration'] ?? 'Đang cập nhật'; ?> phút</p>
-                    <p><strong>Giới hạn tuổi:</strong> <?php echo $movie['age_restriction'] ?? 'Đang cập nhật'; ?>+</p>
+                    <?php if (!empty($movie['rating'])): ?>
+                        <span class="movie-rating-badge">
+                            <i class="bi bi-star-fill"></i>
+                            <?php echo number_format((float)$movie['rating'], 1); ?>/10
+                        </span>
+                    <?php endif; ?>
                 </div>
             </div>
-        </div>
 
-        <!-- ===== LỊCH CHIẾU ===== -->
-        <div class="showtimes-section">
-            <h2 class="section-title">🎬 Lịch Chiếu <span>Showtimes</span></h2>
+            <div class="col-lg-8">
+                <div class="movie-info-panel">
+                    <h1 class="movie-title"><?php echo $title; ?></h1>
 
-            <?php if (empty($showtimes)): ?>
-                <p class="no-showtimes">😅 Hiện chưa có lịch chiếu cho phim này.</p>
-            <?php else: ?>
-                <div class="showtime-grid">
-                    <?php foreach ($showtimes as $st): ?>
-                    <div class="showtime-card">
-                        <div class="showtime-date">📅 <?php echo date('d/m/Y', strtotime($st['show_date'])); ?></div>
-                        <div class="showtime-time"><?php echo date('H:i', strtotime($st['start_time'])); ?> - <?php echo date('H:i', strtotime($st['end_time'])); ?></div>
-                        <div class="showtime-room">  <!-- Tên rạp và phòng -->
-                            🏢 <?php echo htmlspecialchars($st['theatre_name'] ?? 'Rạp'); ?> - <?php echo htmlspecialchars($st['room_name']); ?>
+                    <div class="movie-meta-card row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="movie-meta-item">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <span><strong>Đánh giá:</strong> <?php echo !empty($movie['rating']) ? number_format((float)$movie['rating'], 1) . '/10' : 'Đang cập nhật'; ?></span>
+                            </div>
                         </div>
-                          <!-- Giá vé -->
-                        <div class="showtime-price">💵 <?php echo number_format($st['base_price']); ?>đ</div> 
-                        <a href="booking.php?showtime_id=<?php echo $st['id']; ?>" class="btn-book">
-                            Chọn Ghế & Đặt Vé
-                        </a>
+                        <div class="col-md-6">
+                            <div class="movie-meta-item">
+                                <i class="bi bi-calendar-event"></i>
+                                <span><strong>Khởi chiếu:</strong> <?php echo $formatDate($movie['screening_date'] ?? null); ?></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="movie-meta-item">
+                                <i class="bi bi-clock-fill"></i>
+                                <span><strong>Thời lượng:</strong> <?php echo $duration > 0 ? $duration . ' phút' : 'Đang cập nhật'; ?></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="movie-meta-item">
+                                <i class="bi bi-person-video2"></i>
+                                <span><strong>Đạo diễn:</strong> <?php echo $director; ?></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="movie-meta-item">
+                                <i class="bi bi-film"></i>
+                                <span><strong>Thể loại:</strong> <?php echo $genres; ?></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="movie-meta-item">
+                                <i class="bi bi-shield-lock-fill"></i>
+                                <span><strong>Độ tuổi:</strong> <?php echo $ageRestriction > 0 ? $ageRestriction . '+' : 'Phổ biến'; ?></span>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="movie-section-text mb-4">
+                        <h2>Diễn viên</h2>
+                        <p><?php echo $cast; ?></p>
+                    </div>
+
+                    <div class="movie-section-text mb-4">
+                        <h2>Nội dung phim</h2>
+                        <p><?php echo nl2br($description); ?></p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <?php if (!empty($movie['trailer_url'])): ?>
+                            <a href="<?php echo htmlspecialchars($movie['trailer_url']); ?>"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="btn btn-warning fw-bold">
+                                <i class="bi bi-play-fill"></i>
+                                Xem Trailer
+                            </a>
+                        <?php endif; ?>
+                        <span class="movie-country-chip">
+                            <i class="bi bi-globe2"></i>
+                            <?php echo $country; ?>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="movie-surface mb-5">
+            <div class="section-heading">
+                <h2>
+                    <i class="bi bi-calendar3"></i>
+                    Lịch Chiếu
+                </h2>
+            </div>
+
+            <?php if (empty($showtimesByDate)): ?>
+                <div class="empty-state">
+                    Hiện chưa có lịch chiếu cho phim này.
+                </div>
+            <?php else: ?>
+                <div class="d-flex flex-column gap-4">
+                    <?php foreach ($showtimesByDate as $showDate => $items): ?>
+                        <div class="showtime-day-card">
+                            <h3>
+                                <i class="bi bi-calendar-fill"></i>
+                                <?php echo $formatDateWithDay($showDate); ?>
+                            </h3>
+
+                            <div class="row g-3">
+                                <?php foreach ($items as $showtime): ?>
+                                    <div class="col-lg-6">
+                                        <article class="showtime-card h-100">
+                                            <div class="d-flex justify-content-between gap-3 mb-3">
+                                                <div>
+                                                    <h4>
+                                                        <i class="bi bi-geo-alt-fill"></i>
+                                                        <?php echo htmlspecialchars($showtime['theatre_name'] ?? 'Rạp'); ?>
+                                                    </h4>
+                                                    <p><?php echo htmlspecialchars($showtime['address'] ?? 'Đang cập nhật địa chỉ'); ?></p>
+                                                </div>
+                                                <span class="showtime-price">
+                                                    <?php echo number_format((float)($showtime['base_price'] ?? 0), 0, ',', '.'); ?>đ
+                                                </span>
+                                            </div>
+
+                                            <div class="showtime-facts">
+                                                <span>
+                                                    <i class="bi bi-clock-fill"></i>
+                                                    <?php echo date('H:i', strtotime($showtime['start_time'])); ?>
+                                                </span>
+                                                <span>
+                                                    <i class="bi bi-display"></i>
+                                                    <?php echo htmlspecialchars($showtime['room_name'] ?? 'Phòng chiếu'); ?>
+                                                </span>
+                                                <span class="text-success">
+                                                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                                                    <?php echo (int)($showtime['available_seats'] ?? 0); ?> ghế
+                                                </span>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between align-items-center gap-3 mt-3">
+                                                <small class="showtime-end-time">
+                                                    Kết thúc <?php echo date('H:i', strtotime($showtime['end_time'])); ?>
+                                                </small>
+                                                <a href="booking.php?showtime_id=<?php echo (int)$showtime['id']; ?>" class="btn btn-danger btn-book">
+                                                    <i class="bi bi-ticket-perforated"></i>
+                                                    Đặt vé
+                                                </a>
+                                            </div>
+                                        </article>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
-        </div>
+        </section>
 
-        <!-- ===== ĐÁNH GIÁ & BÌNH LUẬN ===== -->
-        <div class="showtimes-section" style="margin-top: 30px;">
-            <h2 class="section-title">💬 Đánh Giá & Bình Luận</h2>
+        <section class="movie-surface">
+            <div class="section-heading">
+                <h2>
+                    <i class="bi bi-chat-left-text-fill"></i>
+                    Đánh Giá & Bình Luận
+                </h2>
+            </div>
 
             <?php if (isset($reviewResult)): ?>
-                <div style="padding: 12px 20px; border-radius: 8px; margin-bottom: 20px;
-                    background: <?php echo $reviewResult['status'] === 'success' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'; ?>;
-                    color: <?php echo $reviewResult['status'] === 'success' ? '#22c55e' : '#ef4444'; ?>;
-                    border: 1px solid <?php echo $reviewResult['status'] === 'success' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'; ?>;">
-                    <?php echo $reviewResult['message']; ?>
+                <div class="review-alert <?php echo $reviewResult['status'] === 'success' ? 'is-success' : 'is-error'; ?>">
+                    <?php echo htmlspecialchars($reviewResult['message']); ?>
                 </div>
             <?php endif; ?>
 
-            <!-- Form viết bình luận -->
-            <div style="background: rgba(15,27,46,0.6); padding: 24px; border-radius: 14px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.06);">
-                <h3 style="color:#fff; margin-bottom:16px;">✏️ Viết bình luận của bạn</h3>
+            <div class="review-form-panel mb-4">
+                <h3>Viết bình luận của bạn</h3>
+
                 <?php if (isset($_SESSION['user'])): ?>
-                    <form method="POST" action="" style="display:flex; flex-direction:column; gap:14px;">
+                    <form method="POST" action="" class="row g-3">
                         <input type="hidden" name="action" value="add_review">
                         <input type="hidden" name="movie_id" value="<?php echo $movieId; ?>">
 
-                        <div>
-                            <label style="color:#bfc9d8; font-size:14px; display:block; margin-bottom:6px;">⭐ Số sao (1-5):</label>
-                            <select name="rating" style="background:#0f1b2e; color:#fff; border:1px solid rgba(255,255,255,0.12); padding:10px 16px; border-radius:8px; font-size:15px; width:160px;">
-                                <option value="5">⭐⭐⭐⭐⭐ 5 Sao</option>
-                                <option value="4">⭐⭐⭐⭐ 4 Sao</option>
-                                <option value="3">⭐⭐⭐ 3 Sao</option>
-                                <option value="2">⭐⭐ 2 Sao</option>
-                                <option value="1">⭐ 1 Sao</option>
+                        <div class="col-md-3">
+                            <label class="form-label" for="rating">Số sao</label>
+                            <select id="rating" name="rating" class="form-select movie-form-control">
+                                <option value="5">5 Sao</option>
+                                <option value="4">4 Sao</option>
+                                <option value="3">3 Sao</option>
+                                <option value="2">2 Sao</option>
+                                <option value="1">1 Sao</option>
                             </select>
                         </div>
-                        <!-- Nhập bình luận -->
-                        <div>
-                            <label style="color:#bfc9d8; font-size:14px; display:block; margin-bottom:6px;">💬 Bình luận:</label>
-                            <textarea name="comment" rows="4" required placeholder="Nhập cảm nhận của bạn về bộ phim..."
-                                style="width:100%; background:#0f1b2e; color:#fff; border:1px solid rgba(255,255,255,0.12);
-                                       padding:12px 16px; border-radius:8px; font-size:15px; resize:vertical; font-family:inherit;"></textarea>
+
+                        <div class="col-md-9">
+                            <label class="form-label" for="comment">Bình luận</label>
+                            <textarea id="comment"
+                                      name="comment"
+                                      rows="4"
+                                      required
+                                      class="form-control movie-form-control"
+                                      placeholder="Nhập cảm nhận của bạn về bộ phim..."></textarea>
                         </div>
-                         <!-- Nút gửi -->
-                        <button type="submit" style="align-self:flex-start; padding:12px 32px; background:linear-gradient(135deg,#ef4444,#dc2626);
-                            color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;
-                            transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                            Gửi đánh giá
-                        </button>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-danger fw-bold">
+                                Gửi đánh giá
+                            </button>
+                        </div>
                     </form>
                 <?php else: ?>
-                    <p style="color:#bfc9d8;">Vui lòng <a href="login.php" style="color:#ef4444; font-weight:600;">đăng nhập</a> để viết bình luận.</p>
+                    <p class="mb-0 text-secondary">
+                        Vui lòng <a href="login.php" class="movie-inline-link">đăng nhập</a> để viết bình luận.
+                    </p>
                 <?php endif; ?>
             </div>
 
-            <!-- Danh sách review -->
             <?php if (empty($reviews)): ?>
-                <p class="no-showtimes">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
-            <?php else: ?>
-                <?php foreach ($reviews as $rev): ?>
-                <div style="background:rgba(15,27,46,0.5); border-radius:12px; padding:18px 22px; margin-bottom:14px;
-                            border: 1px solid rgba(255,255,255,0.05);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-                        <strong style="color:#fff;"><?php echo htmlspecialchars($rev['first_name'] . ' ' . $rev['last_name']); ?></strong>
-                        <span style="color:#facc15; font-size:18px;"><?php echo str_repeat('⭐', (int)$rev['rating']); ?></span>
-                    </div>
-                    <p style="color:#c6d1e0; font-style:italic; margin-bottom:6px;">"<?php echo htmlspecialchars($rev['comment']); ?>"</p>
-                    <small style="color:#6b7280;"><?php echo date('d/m/Y H:i', strtotime($rev['created_at'])); ?></small>
+                <div class="empty-state">
+                    Chưa có đánh giá nào. Hãy là người đầu tiên!
                 </div>
-                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="d-flex flex-column gap-3">
+                    <?php foreach ($reviews as $review): ?>
+                        <article class="review-card">
+                            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                <strong><?php echo htmlspecialchars(($review['first_name'] ?? '') . ' ' . ($review['last_name'] ?? '')); ?></strong>
+                                <span class="review-stars"><?php echo str_repeat('★', (int)$review['rating']); ?></span>
+                            </div>
+                            <p><?php echo htmlspecialchars($review['comment'] ?? ''); ?></p>
+                            <small><?php echo date('d/m/Y H:i', strtotime($review['created_at'] ?? 'now')); ?></small>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
             <?php endif; ?>
-        </div>
-
+        </section>
     </div>
 </div>
 

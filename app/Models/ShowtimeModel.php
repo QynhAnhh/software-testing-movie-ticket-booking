@@ -13,8 +13,15 @@ class ShowtimeModel {
     public function getShowtimesByMovie($movie_id, $date = null) {
         $sql = "SELECT st.*, 
                        r.name as room_name,
+                       r.total_seats,
                        t.name as theatre_name,
-                       t.address
+                       t.address,
+                       (
+                           SELECT COUNT(*)
+                           FROM tickets tk
+                           WHERE tk.showtime_id = st.id
+                             AND tk.status <> 'canceled'
+                       ) as booked_seats
                 FROM showtimes st
                 JOIN rooms r ON st.room_id = r.id
                 JOIN theatres t ON r.theatre_id = t.id
@@ -36,6 +43,9 @@ class ShowtimeModel {
         $result = $stmt->get_result();
         $showtimes = [];
         while ($row = $result->fetch_assoc()) {
+            $row['booked_seats'] = (int)($row['booked_seats'] ?? 0);
+            $row['total_seats'] = (int)($row['total_seats'] ?? 0);
+            $row['available_seats'] = max($row['total_seats'] - $row['booked_seats'], 0);
             $showtimes[] = $row;
         }
         return $showtimes;
@@ -49,7 +59,10 @@ class ShowtimeModel {
                        t.address,
                        m.title as movie_title,
                        m.id as movie_id,
-                       m.poster
+                       m.poster,
+                       m.duration,
+                       m.country,
+                       m.age_restriction
                 FROM showtimes st
                 JOIN rooms r ON st.room_id = r.id
                 JOIN theatres t ON r.theatre_id = t.id

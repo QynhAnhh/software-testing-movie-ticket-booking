@@ -37,7 +37,7 @@ class BookingService {
             $seatPrice = $basePrice;
             foreach ($allSeats as $seat) {
                 if ($seat['id'] == $seatId) {
-                    $seatPrice += $seat['base_price_extra'] ?? 0;
+                    $seatPrice += $seat['base_price_extra'] ?? $seat['seat_type_price'] ?? 0;
                     break;
                 }
             }

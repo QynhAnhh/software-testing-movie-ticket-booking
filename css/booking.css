@@ -1,691 +1,461 @@
-/* ============================================================
-   BOOKING PAGE - ĐẶT VÉ PHIM
-   ============================================================ */
+:root {
+    --booking-bg: #0a0a0a;
+    --booking-surface: #1f1f1f;
+    --booking-surface-2: #2a2a2a;
+    --booking-border: rgba(255, 255, 255, 0.1);
+    --booking-border-strong: rgba(255, 255, 255, 0.18);
+    --booking-text: #f5f5f5;
+    --booking-muted: #a7a7a7;
+    --booking-red: #e50914;
+    --booking-red-hover: #b20710;
+    --booking-success: #22c55e;
+    --booking-radius: 10px;
+}
 
 .booking-page {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 30px 20px 60px;
     min-height: 100vh;
-    background: linear-gradient(135deg, #081224 0%, #0b1730 50%, #081224 100%); /*nền màu background*/
-    
+    background: var(--booking-bg);
+    color: var(--booking-text);
 }
 
-.booking-container {
-    max-width: 900px;
-    margin: 0 auto;
+.booking-page .container {
+    max-width: 1320px;
 }
 
-   /* TOP BAR - TIÊU ĐỀ + NÚT QUAY LẠI */
-.booking-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 0 20px 0;
-    margin-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    flex-wrap: wrap;  /* Cho phép xuống dòng khi màn hình nhỏ */
-    gap: 15px;
+.booking-page .btn-danger {
+    border-color: var(--booking-red);
+    background: var(--booking-red);
 }
 
-.booking-top-bar .booking-title {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+.booking-page .btn-danger:hover,
+.booking-page .btn-danger:focus {
+    border-color: var(--booking-red-hover);
+    background: var(--booking-red-hover);
 }
 
-.booking-top-bar .booking-title .eyebrow {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    width: fit-content;
-}
-
-.booking-top-bar .booking-title h1 {
-    color: #fff;
-    font-size: 24px;
-    margin: 0;
-    font-weight: 700;
-}
-
-.back-link-top {
+.booking-eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.06);
-    color: #bfc9d8;
-    text-decoration: none;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.3s ease;
-    font-size: 14px;
-    font-weight: 500;
-    white-space: nowrap;
+    margin-bottom: 8px;
+    color: var(--booking-red);
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
-.back-link-top:hover {
-    background: rgba(239, 68, 68, 0.15);
+.booking-page-title {
+    margin: 0;
     color: #fff;
-    border-color: rgba(239, 68, 68, 0.3);
-    transform: translateX(-3px);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.05;
 }
 
-/* ============================================================
-   HEADER: POSTER + THÔNG TIN PHIM
-   ============================================================ */
-.booking-header {
-    display: flex;
-    gap: 30px;
-    background: linear-gradient(145deg, #16253b, #1a2a44);
-    border-radius: 16px;
-    padding: 25px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+.booking-back-link {
+    border-color: var(--booking-border-strong);
+    color: var(--booking-muted);
 }
 
-.movie-poster {
-    flex: 0 0 150px;
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.movie-poster img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    display: block;
-}
-
-.movie-rating {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #facc15;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: bold;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.movie-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.movie-info h1 {
+.booking-back-link:hover {
+    border-color: var(--booking-red);
+    background: rgba(229, 9, 20, 0.14);
     color: #fff;
-    font-size: 26px;
-    margin: 0 0 8px 0;
+}
+
+.booking-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: var(--booking-radius);
     font-weight: 700;
 }
-/* Các thẻ meta (thời lượng, quốc gia, tuổi) */
-.movie-meta {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
+
+.booking-alert.is-error {
+    border: 1px solid rgba(229, 9, 20, 0.4);
+    background: rgba(229, 9, 20, 0.14);
+    color: #ffb4bb;
 }
 
-.movie-meta span {
-    color: #bfc9d8;
-    font-size: 14px;
-    background: rgba(255, 255, 255, 0.06);
-    padding: 4px 14px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.back-link {
-    color: #facc15;
-    text-decoration: none;
-    font-size: 14px;
-    transition: all 0.3s;
-}
-
-.back-link:hover {
+.booking-alert a {
     color: #fff;
-    transform: translateX(-3px);
-}
-
-/* ============================================================
-   THÔNG TIN SUẤT CHIẾU
-   ============================================================ */
-.showtime-info {
-    background: linear-gradient(145deg, #16253b, #1a2a44);
-    border-radius: 16px;
-    padding: 20px 25px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.showtime-info h2 {
-    color: #facc15;
-    font-size: 18px;
-    margin: 0 0 15px 0;
-    font-weight: 600;
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-}
-
-.info-item {
-    display: flex;
-    flex-direction: column;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.info-item .label {
-    color: #6b7280;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.info-item .value {
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.info-item .value.price {
-    color: #facc15;
-    font-size: 18px;
-}
-
-/* =================================
-   ALERT: báo lỗi
-   ================================= */
-.alert {
-    padding: 14px 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    font-weight: 600;
-}
-
-.alert.error {
-    background: rgba(239, 68, 68, 0.16);
-    color: #fecaca;
-    border: 1px solid rgba(239, 68, 68, 0.35);
-}
-
-.alert a {
-    color: #facc15;
     text-decoration: underline;
 }
 
-/* ============================================================
-   BOOKING FORM
-   ============================================================ */
-.booking-form {
+.booking-summary,
+.seat-panel {
+    border: 1px solid var(--booking-border);
+    border-radius: var(--booking-radius);
+    background: var(--booking-surface);
+}
+
+.booking-summary {
+    position: sticky;
+    top: 96px;
+    padding: 22px;
+}
+
+.booking-summary-poster {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.booking-summary h2 {
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.booking-summary-list {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 12px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--booking-border-strong);
 }
 
-/* ============================================================
-   CHỌN GHẾ
-   ============================================================ */
-.seat-selection {
-    background: linear-gradient(145deg, #16253b, #1a2a44);
-    border-radius: 16px;
-    padding: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.seat-selection h2 {
-    color: #facc15;
-    font-size: 18px;
-    margin: 0 0 15px 0;
-    font-weight: 600;
-}
-
-/* Legend */
-.legend {
+.booking-summary-list > div {
     display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 15px;
-    color: #bfc9d8;
-    font-size: 13px;
+    gap: 10px;
+    color: var(--booking-muted);
 }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.booking-summary-list i {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: var(--booking-red);
 }
 
-.legend-swatch {
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.legend-swatch.selected {
-    background: #ef4444;    /* Màu đỏ cho ghế đã chọn */
-    border-color: #ef4444;
-}
-
-.legend-swatch.unavailable {
-    background: #475569; /* Màu xám cho ghế đã đặt */
-    border-color: #475569;
-}
-
-.legend-swatch.vip {
-    background: #facc15; /* Màu vàng cho ghế VIP */
-    border-color: #facc15;
-}
-
-/* Screen */
-.screen {
-    text-align: center;
+.booking-summary-list strong {
+    display: block;
     color: #fff;
-    font-size: 13px;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 6px;
-    margin-bottom: 20px;
-    letter-spacing: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.05);
-    text-transform: uppercase;
+    line-height: 1.3;
 }
 
-/* Seat Grid */
-.seat-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 8px;
+.booking-summary-list small {
+    display: block;
+    margin-top: 4px;
+    color: var(--booking-muted);
+    line-height: 1.4;
 }
 
-.seat-option {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 0;
-    border-radius: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.04);
-    color: #e5e7eb;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 13px;
-    font-weight: 600;
+.booking-price-box,
+.booking-total {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: var(--booking-radius);
+    background: var(--booking-surface-2);
 }
 
-.seat-option:hover:not(.disabled) {
-    transform: translateY(-2px);
-    border-color: #ef4444;
-    background: rgba(239, 68, 68, 0.1);
-}
-
-.seat-option input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.seat-option .seat-label {
-    font-weight: 600;
-}
-
-.seat-option.selected {
-    background: rgba(239, 68, 68, 0.25);
-    border-color: #ef4444;
-    transform: scale(1.05);
-}
-
-.seat-option.selected .seat-label {
-    color: #fff;
-}
-
-.seat-option.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    background: rgba(71, 85, 105, 0.2);
-    border-color: rgba(71, 85, 105, 0.2);
-}
-
-.seat-option.vip {
-    border-color: #facc15;
-    background: rgba(250, 204, 21, 0.08);
-}
-
-.seat-option.vip.selected {
-    background: rgba(250, 204, 21, 0.2);
-    border-color: #facc15;
-}
-
-/* ============================================================
-   THANH TOÁN
-   ============================================================ */
-.payment-section {
-    background: linear-gradient(145deg, #16253b, #1a2a44);
-    border-radius: 16px;
-    padding: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.payment-section h2 {
-    color: #facc15;
-    font-size: 18px;
-    margin: 0 0 15px 0;
-    font-weight: 600;
-}
-
-/* Total Box */
-.total-box {
+.booking-price-box {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
-    background: rgba(239, 68, 68, 0.08);
-    border-radius: 12px;
-    border: 1px solid rgba(239, 68, 68, 0.15);
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.total-label {
-    color: #bfc9d8;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.total-amount {
-    color: #facc15;
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.seat-count {
-    color: #6b7280;
-    font-size: 14px;
-}
-
-/* Payment Methods */
-.payment-methods {
-    display: flex;
     gap: 12px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+}
+
+.booking-price-box span,
+.booking-total span {
+    color: var(--booking-muted);
+}
+
+.booking-price-box strong,
+.booking-total strong {
+    color: #fff;
+    font-size: 1.28rem;
+}
+
+.booking-total #totalDisplay {
+    color: var(--booking-red);
+    font-size: 1.55rem;
+}
+
+.selected-seat-list {
+    min-height: 24px;
+    margin-top: 6px;
+    color: #fff;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.payment-block {
+    margin-top: 18px;
+}
+
+.payment-block h3 {
+    margin: 0 0 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.payment-methods {
+    display: grid;
+    gap: 10px;
 }
 
 .payment-option {
     display: flex;
+    min-height: 48px;
     align-items: center;
     gap: 10px;
-    padding: 12px 20px;
-    border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 12px;
+    border: 1px solid var(--booking-border);
+    border-radius: var(--booking-radius);
+    background: var(--booking-surface-2);
+    color: var(--booking-muted);
     cursor: pointer;
-    transition: all 0.2s ease;
-    flex: 1;
-    min-width: 100px;
-    justify-content: center;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-.payment-option:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
+.payment-option:hover,
 .payment-option.active {
-    border-color: #ef4444;
-    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(229, 9, 20, 0.65);
+    background: rgba(229, 9, 20, 0.14);
+    color: #fff;
 }
 
-.payment-option input[type="radio"] {
+.payment-option input {
     display: none;
 }
 
-.payment-icon {
-    font-size: 20px;
+.payment-option i {
+    color: var(--booking-red);
 }
 
-.payment-name {
-    color: #e5e7eb;
-    font-size: 14px;
-    font-weight: 600;
+.booking-submit {
+    min-height: 52px;
+    margin-top: 18px;
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
-/* Confirm Button */
-.btn-confirm {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: #fff;
-    font-size: 18px;
+.booking-submit:disabled {
+    border-color: #444;
+    background: #444;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.seat-panel {
+    padding: 28px;
+}
+
+.seat-legend {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+    padding: 18px;
+    border-radius: var(--booking-radius);
+    background: #191919;
+}
+
+.seat-legend span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--booking-muted);
     font-weight: 700;
+}
+
+.seat-swatch {
+    display: inline-block;
+    width: 26px;
+    height: 22px;
+    border-radius: 6px;
+}
+
+.seat-swatch.available {
+    background: var(--booking-surface-2);
+}
+
+.seat-swatch.selected {
+    background: var(--booking-red);
+}
+
+.seat-swatch.booked {
+    background: #5c5c5c;
+}
+
+.seat-swatch.vip {
+    background: rgba(245, 158, 11, 0.75);
+}
+
+.screen-wrap {
+    margin: 0 auto 34px;
+    text-align: center;
+}
+
+.screen-glow {
+    width: 82%;
+    height: 10px;
+    margin: 0 auto 18px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #777, transparent);
+    box-shadow: 0 14px 32px rgba(229, 9, 20, 0.4);
+}
+
+.screen-wrap span {
+    color: var(--booking-muted);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.seat-map {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.seat-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+}
+
+.row-label {
+    color: var(--booking-red);
+    font-weight: 900;
+    text-align: center;
+}
+
+.seat-row-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--seat-columns), 46px);
+    justify-content: center;
+    gap: 10px;
+}
+
+.seat-option {
+    position: relative;
+    display: flex;
+    aspect-ratio: 1 / 1;
+    width: 46px;
+    min-width: 46px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--booking-border);
+    border-radius: 7px;
+    background: var(--booking-surface-2);
+    color: #fff;
     cursor: pointer;
-    transition: all 0.3s ease;
-    letter-spacing: 1px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
 }
 
-.btn-confirm:hover {
+.seat-option.after-aisle {
+    margin-left: 24px;
+}
+
+.seat-option input {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.seat-option input:disabled {
+    cursor: not-allowed;
+}
+
+.seat-option span {
+    pointer-events: none;
+}
+
+.seat-option:hover:not(.disabled) {
+    border-color: rgba(229, 9, 20, 0.8);
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(239, 68, 68, 0.4);
 }
 
-.btn-confirm:active {
-    transform: translateY(0);
+.seat-option.selected {
+    border-color: var(--booking-red);
+    background: var(--booking-red);
+    transform: scale(1.04);
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+.seat-option.disabled {
+    background: #5c5c5c;
+    color: #bfbfbf;
+    cursor: not-allowed;
+    opacity: 0.82;
+}
 
-/* Tablet */
-@media (max-width: 768px) {
-    .booking-top-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        padding-bottom: 15px;
+.seat-option.vip:not(.selected):not(.disabled) {
+    border-color: rgba(245, 158, 11, 0.6);
+    background: rgba(245, 158, 11, 0.18);
+}
+
+.empty-seat-map {
+    padding: 36px 20px;
+    border: 1px dashed var(--booking-border-strong);
+    border-radius: var(--booking-radius);
+    background: var(--booking-surface-2);
+    color: var(--booking-muted);
+    text-align: center;
+}
+
+@media (max-width: 1199.98px) {
+    .seat-option.after-aisle {
+        margin-left: 18px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .booking-summary {
+        position: relative;
+        top: auto;
     }
 
-    .booking-top-bar .booking-title h1 {
-        font-size: 20px;
+    .booking-summary-poster {
+        max-width: 260px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .seat-panel {
+        padding: 20px;
+        overflow-x: auto;
     }
 
-    .back-link-top {
-        padding: 8px 16px;
-        font-size: 13px;
+    .seat-legend {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .seat-map {
+        min-width: 650px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .booking-page-title {
+        font-size: 2rem;
+    }
+
+    .booking-back-link {
         width: 100%;
         justify-content: center;
     }
 
-    .booking-header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 20px;
-    }
-
-    .movie-poster {
-        flex: 0 0 auto;
-        width: 140px;
-    }
-
-    .movie-poster img {
-        height: 200px;
-    }
-
-    .movie-info h1 {
-        font-size: 22px;
-    }
-
-    .movie-meta {
-        justify-content: center;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .seat-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 6px;
-    }
-
-    .seat-option {
-        padding: 8px 0;
-        font-size: 12px;
-    }
-
-    .total-box {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .total-amount {
-        font-size: 24px;
-    }
-
-    .payment-methods {
-        flex-direction: column;
-    }
-
-    .payment-option {
-        padding: 10px 16px;
-    }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-    .booking-page {
-        padding: 15px 10px 30px;
-    }
-
-    .booking-top-bar .booking-title h1 {
-        font-size: 18px;
-    }
-
-    .back-link-top {
-        padding: 8px 14px;
-        font-size: 12px;
-    }
-
-    .booking-header {
-        padding: 15px;
-    }
-
-    .movie-poster {
-        width: 120px;
-    }
-
-    .movie-poster img {
-        height: 170px;
-    }
-
-    .movie-info h1 {
-        font-size: 18px;
-    }
-
-    .movie-meta span {
-        font-size: 12px;
-        padding: 3px 10px;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-
-    .info-item {
-        padding: 6px 10px;
-    }
-
-    .info-item .value {
-        font-size: 13px;
-    }
-
-    .seat-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 4px;
-    }
-
-    .seat-option {
-        padding: 6px 0;
-        font-size: 11px;
-        border-radius: 6px;
-    }
-
-    .legend {
-        gap: 8px;
-        font-size: 11px;
-    }
-
-    .legend-swatch {
-        width: 14px;
-        height: 14px;
-    }
-
-    .total-amount {
-        font-size: 20px;
-    }
-
-    .btn-confirm {
-        padding: 14px;
-        font-size: 16px;
-    }
-}
-
-/* Mobile nhỏ */
-@media (max-width: 360px) {
-    .seat-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 4px;
-    }
-
-    .seat-option {
-        padding: 4px 0;
-        font-size: 10px;
-    }
-
-    .info-grid {
+    .seat-legend {
         grid-template-columns: 1fr;
-        gap: 6px;
-    }
-
-    .payment-option {
-        min-width: 80px;
-        padding: 8px 12px;
-        font-size: 12px;
-    }
-
-    .total-amount {
-        font-size: 18px;
-    }
-
-    .btn-confirm {
-        padding: 12px;
-        font-size: 14px;
     }
 }
