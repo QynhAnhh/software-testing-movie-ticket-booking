@@ -46,8 +46,7 @@ class AuthController
     public function handleRegister()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: registration.php");
-            exit;
+            return;
         }
 
         $data = [
