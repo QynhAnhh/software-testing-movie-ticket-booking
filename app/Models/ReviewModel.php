@@ -49,6 +49,22 @@ class ReviewModel {
         ];
     }
 
+    public function create($data) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "INSERT INTO reviews (user_id, movie_id, rating, comment) VALUES (?, ?, ?, ?)"
+        );
+        mysqli_stmt_bind_param(
+            $stmt,
+            "iiis",
+            $data['user_id'],
+            $data['movie_id'],
+            $data['rating'],
+            $data['comment']
+        );
+        return mysqli_stmt_execute($stmt);
+    }
+
     public function getError() {
         return mysqli_error($this->conn);
     }
