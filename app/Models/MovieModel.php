@@ -95,9 +95,40 @@ class MovieModel {
         return null;
     }
 
-    public function getNowShowingMovies() {
-        $query = "SELECT * FROM movies WHERE status = 'now_showing' ORDER BY id DESC";
-        $result = mysqli_query($this->conn, $query);
+    public function getNowShowingMovies($limit = null) {
+        return $this->getMoviesByStatus('now_showing', 'DESC', $limit);
+    }
+
+    public function getComingMovies($limit = null) {
+        return $this->getMoviesByStatus('coming', 'ASC', $limit);
+    }
+
+    private function getMoviesByStatus($status, $sortDirection, $limit = null) {
+        $sortDirection = strtoupper($sortDirection) === 'ASC' ? 'ASC' : 'DESC';
+        $limit = $limit !== null ? (int)$limit : null;
+
+        $query = "
+            SELECT m.*, GROUP_CONCAT(g.name SEPARATOR ', ') AS genre_names
+            FROM movies m
+            LEFT JOIN movie_genre mg ON m.id = mg.movie_id
+            LEFT JOIN genres g ON mg.genre_id = g.id
+            WHERE m.status = ?
+              AND m.is_active = 1
+            GROUP BY m.id
+            ORDER BY m.screening_date {$sortDirection}, m.id DESC
+        ";
+
+        if ($limit !== null && $limit > 0) {
+            $query .= " LIMIT ?";
+            $stmt = mysqli_prepare($this->conn, $query);
+            mysqli_stmt_bind_param($stmt, "si", $status, $limit);
+        } else {
+            $stmt = mysqli_prepare($this->conn, $query);
+            mysqli_stmt_bind_param($stmt, "s", $status);
+        }
+
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
         $movies = [];
         if ($result) {
             while ($row = mysqli_fetch_assoc($result)) {
