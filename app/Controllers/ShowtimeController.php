@@ -20,7 +20,6 @@ class ShowtimeController {
                     'room_id' => (int)($_POST['room_id'] ?? 0),
                     'show_date' => trim($_POST['show_date'] ?? ''),
                     'start_time' => trim($_POST['start_time'] ?? ''),
-                    'end_time' => trim($_POST['end_time'] ?? ''),
                     'base_price' => (float)($_POST['base_price'] ?? 0),
                     'status' => $_POST['status'] ?? 'active',
                 ];

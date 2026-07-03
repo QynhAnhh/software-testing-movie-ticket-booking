@@ -95,23 +95,11 @@ class ShowtimeService {
         }
         $data['start_time'] = $startTime;
 
-        if (empty($data['end_time'])) {
-            $duration = $this->showtimeModel->getMovieDuration($data['movie_id']);
-            if ($duration <= 0) {
-                return ['status' => 'error', 'message' => 'Không thể tính giờ kết thúc. Vui lòng nhập thủ công hoặc cập nhật thời lượng phim.'];
-            }
-            $data['end_time'] = $this->computeEndTime($startTime, $duration);
-        } else {
-            $endTime = $this->normalizeTime($data['end_time']);
-            if (!$endTime) {
-                return ['status' => 'error', 'message' => 'Giờ kết thúc không hợp lệ!'];
-            }
-            $data['end_time'] = $endTime;
+        $duration = $this->showtimeModel->getMovieDuration($data['movie_id']);
+        if ($duration <= 0) {
+            return ['status' => 'error', 'message' => 'Không thể tính giờ kết thúc. Vui lòng cập nhật thời lượng phim.'];
         }
-
-        if (strtotime($data['end_time']) <= strtotime($data['start_time'])) {
-            return ['status' => 'error', 'message' => 'Giờ kết thúc phải sau giờ bắt đầu!'];
-        }
+        $data['end_time'] = $this->computeEndTime($startTime, $duration);
 
         if ($data['base_price'] <= 0) {
             return ['status' => 'error', 'message' => 'Giá vé cơ bản phải lớn hơn 0!'];
