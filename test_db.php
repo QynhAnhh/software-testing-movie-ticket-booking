@@ -1,7 +1,7 @@
 <?php
-$c = mysqli_connect("localhost", "root", "123456", "movie_ticket_booking", "3308");
-$r = mysqli_query($c, "DESCRIBE users");
-while ($row = mysqli_fetch_assoc($r)) {
-    echo $row["Field"] . " - " . $row["Type"] . PHP_EOL;
+$c = mysqli_connect("localhost", "root", "", "movie_ticket_booking", "3308");
+$r = mysqli_query($c, "SELECT title FROM movies LIMIT 10");
+while ($row = mysqli_fetch_array($r)) {
+    echo $row[0] . PHP_EOL;
 }
 ?>

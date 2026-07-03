@@ -69,7 +69,7 @@ require_once 'header.php';
 
                 <input type="email" name="email" required placeholder="Email" />
                 <input type="password" name="password" required placeholder="Mật khẩu" />
-                <a href="#">Quên mật khẩu?</a>
+
                 <button type="submit" style="margin-top: 10px;">Đăng nhập</button>
             </form>
         </div>

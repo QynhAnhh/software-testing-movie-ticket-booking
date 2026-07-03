@@ -27,6 +27,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/movies.css">
     <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/booking_history.css">
 </head>
 <body>
     <header class="main-header">
@@ -47,7 +48,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <div class="auth-section">
         <?php if (isset($_SESSION['user'])): ?>
             <div class="user-profile">
-                <a href="settings.php" title="Cài đặt tài khoản" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
+                <a href="profile.php" title="Cài đặt tài khoản" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
                     <span>Hi, <?php echo htmlspecialchars(trim(($_SESSION['user']['first_name'] ?? '') . ' ' . ($_SESSION['user']['last_name'] ?? ''))); ?></span>
                     <img src="images/svg/setting.svg" alt="Settings" class="setting-icon">
                 </a>
