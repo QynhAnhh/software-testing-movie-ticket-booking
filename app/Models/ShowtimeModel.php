@@ -18,6 +18,29 @@ class ShowtimeModel {
         return mysqli_fetch_assoc($result);
     }
 
+    public function getDetailById($id) {
+        $query = "
+            SELECT st.id AS showtime_id, st.movie_id, st.room_id, st.show_date,
+                   st.start_time, st.end_time, st.base_price, st.status,
+                   m.title AS movie_title, m.poster AS movie_poster,
+                   m.duration AS movie_duration, m.age_restriction AS movie_age_restriction,
+                   r.name AS room_name,
+                   t.id AS theatre_id, t.name AS theatre_name,
+                   t.address AS theatre_address, t.city AS theatre_city
+            FROM showtimes st
+            INNER JOIN movies m ON m.id = st.movie_id
+            INNER JOIN rooms r ON r.id = st.room_id
+            INNER JOIN theatres t ON t.id = r.theatre_id
+            WHERE st.id = ?
+            LIMIT 1
+        ";
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        return $result ? mysqli_fetch_assoc($result) : null;
+    }
+
     public function findConflict($roomId, $showDate, $startTime, $excludeId = null) {
         if ($excludeId) {
             $stmt = mysqli_prepare(

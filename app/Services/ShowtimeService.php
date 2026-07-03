@@ -61,6 +61,14 @@ class ShowtimeService {
         return $this->model->getAllWithDetails();
     }
 
+    public function getShowtimeDetail($showtimeId) {
+        $showtimeId = (int)$showtimeId;
+        if ($showtimeId <= 0) {
+            return null;
+        }
+        return $this->model->getDetailById($showtimeId);
+    }
+
     public function getShowtimesByMovieId($movieId) {
         $movieId = (int)$movieId;
         if ($movieId <= 0) {
