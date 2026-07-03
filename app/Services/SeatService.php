@@ -188,32 +188,21 @@ class SeatService {
     /**
      * Lấy sơ đồ ghế (có trạng thái booked/available)
      */
-    public function getSeatMap($showtime_id, $room_id) {
-        if ($showtime_id <= 0 || $room_id <= 0) {
-            return [];
-        }
-
-        $allSeats = $this->getSeatsByRoom($room_id);
-        $bookedSeats = array_map('intval', $this->getBookedSeats($showtime_id));
-
-        $seatMap = [];
-
-        foreach ($allSeats as $seat) {
-            $seatId = (int)$seat['id'];
-
-            if ((int)$seat['is_active'] !== 1) {
-                $seat['status'] = 'inactive';
-            } elseif (in_array($seatId, $bookedSeats, true)) {
-                $seat['status'] = 'booked';
-            } else {
-                $seat['status'] = 'available';
+     public function getSeatsByRoomId($roomId) {
+            $roomId = (int)$roomId;
+            if ($roomId <= 0) {
+                return [];
             }
-
-            $seatMap[] = $seat;
+            return $this->model->getByRoomIdWithType($roomId);
         }
 
-        return $seatMap;
-    }
+        public function getAllRooms() {
+            return $this->roomModel->getAllWithTheatre();
+        }
+
+        public function getAllSeatTypes() {
+            return $this->seatTypeModel->getAll();
+        }
 
     /**
      * Lấy thông tin ghế theo danh sách ID

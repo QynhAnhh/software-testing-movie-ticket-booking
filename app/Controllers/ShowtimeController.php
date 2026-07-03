@@ -99,20 +99,23 @@ class ShowtimeController {
     // =========================
 
 
-    public function getShowtimesByMovie($movieId) {
 
-        return $this->service
-            ->getShowtimesByMovie($movieId);
-    }
-
-
-    // alias FE movie_details.php
+//     public function getShowtimesByMovie($movieId) {
+//         return $this->service->getShowtimesByMovie((int)$movieId);
+//     }
 
     public function getShowtimesByMovieId($movieId) {
-
-        return $this->service
-            ->getShowtimesByMovie($movieId);
+        return $this->service->getShowtimesByMovie($movieId);
     }
+
+    public function getShowtimeDetails($showtimeId) {
+        return $this->service->getShowtimeDetails((int)$showtimeId);
+    }
+
+    public function getShowtimeDetail($showtimeId) {
+        return $this->service->getShowtimeDetails((int)$showtimeId);
+    }
+
 
 
     public function getShowtimeById($id) {
@@ -121,10 +124,4 @@ class ShowtimeController {
             ->getShowtimeDetails($id);
     }
 
-
-    public function getShowtimeDetails($id) {
-
-        return $this->service
-            ->getShowtimeDetails($id);
-    }
 }

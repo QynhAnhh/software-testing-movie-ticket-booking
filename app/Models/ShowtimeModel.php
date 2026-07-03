@@ -315,136 +315,75 @@ class ShowtimeModel
     }
 
     public function getShowtimesByMovie($movieId) {
-
         $query = "
-            SELECT
-                st.id AS showtime_id,
-                st.*,
-
-                r.name AS room_name,
-
-                t.name AS theatre_name,
-                t.address AS theatre_address,
-
-                m.title AS movie_title
-
+            SELECT st.id AS showtime_id, st.movie_id, st.room_id, st.show_date,
+                   st.start_time, st.end_time, st.base_price, st.status,
+                   r.name AS room_name,
+                   t.id AS theatre_id, t.name AS theatre_name,
+                   t.address AS theatre_address, t.city AS theatre_city
             FROM showtimes st
-
-            INNER JOIN rooms r
-                ON r.id = st.room_id
-
-            INNER JOIN theatres t
-                ON t.id = r.theatre_id
-
-            INNER JOIN movies m
-                ON m.id = st.movie_id
-
-            WHERE
-                st.movie_id = ?
-                AND st.status = 'active'
-                AND st.show_date >= CURDATE()
-
-            ORDER BY
-                st.show_date ASC,
-                st.start_time ASC
+            INNER JOIN rooms r ON r.id = st.room_id
+            INNER JOIN theatres t ON t.id = r.theatre_id
+            WHERE st.movie_id = ?
+              AND st.status = 'active'
+              AND st.show_date >= CURDATE()
+            ORDER BY st.show_date ASC, st.start_time ASC
         ";
-
-
-        $stmt = mysqli_prepare(
-            $this->conn,
-            $query
-        );
-
-
-        mysqli_stmt_bind_param(
-            $stmt,
-            "i",
-            $movieId
-        );
-
-
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $movieId);
         mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-
-        $result =
-            mysqli_stmt_get_result($stmt);
-
-
-        $data = [];
-
-
-        while ($row =
-            mysqli_fetch_assoc($result)) {
-
-            $data[] = $row;
+        $showtimes = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $showtimes[] = $row;
+            }
         }
-
-
-        return $data;
+        return $showtimes;
     }
 
-
-
-
-    public function getShowtimeDetails($id) {
-
+    public function getShowtimeDetails($showtimeId) {
         $query = "
             SELECT
-
                 st.id AS showtime_id,
-                st.*,
+                st.id,
+                st.movie_id,
+                st.room_id,
+                st.show_date,
+                st.start_time,
+                st.end_time,
+                st.base_price,
+                st.status,
 
                 r.name AS room_name,
 
                 t.name AS theatre_name,
                 t.address AS theatre_address,
+                t.city AS theatre_city,
 
                 m.title AS movie_title,
+                m.poster AS movie_poster,
                 m.poster,
-                m.duration
-
+                m.duration,
+                m.country,
+                m.age_restriction
             FROM showtimes st
-
-
-            INNER JOIN rooms r
-                ON r.id = st.room_id
-
-
-            INNER JOIN theatres t
-                ON t.id = r.theatre_id
-
-
-            INNER JOIN movies m
-                ON m.id = st.movie_id
-
-
+            INNER JOIN rooms r ON r.id = st.room_id
+            INNER JOIN theatres t ON t.id = r.theatre_id
+            INNER JOIN movies m ON m.id = st.movie_id
             WHERE st.id = ?
-
             LIMIT 1
         ";
 
-
-        $stmt =
-            mysqli_prepare(
-                $this->conn,
-                $query
-            );
-
-
-        mysqli_stmt_bind_param(
-            $stmt,
-            "i",
-            $id
-        );
-
-
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $showtimeId);
         mysqli_stmt_execute($stmt);
 
-
-        $result =
-            mysqli_stmt_get_result($stmt);
-
+        $result = mysqli_stmt_get_result($stmt);
 
         return mysqli_fetch_assoc($result);
     }
+
+
 }
