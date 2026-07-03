@@ -189,20 +189,13 @@ class SeatService {
      * Lấy sơ đồ ghế (có trạng thái booked/available)
      */
      public function getSeatsByRoomId($roomId) {
-            $roomId = (int)$roomId;
-            if ($roomId <= 0) {
-                return [];
-            }
-            return $this->model->getByRoomIdWithType($roomId);
+        $roomId = (int)$roomId;
+        if ($roomId <= 0) {
+            return [];
         }
+        return $this->model->getByRoomIdWithType($roomId);
+    }
 
-        public function getAllRooms() {
-            return $this->roomModel->getAllWithTheatre();
-        }
-
-        public function getAllSeatTypes() {
-            return $this->seatTypeModel->getAll();
-        }
 
     /**
      * Lấy thông tin ghế theo danh sách ID

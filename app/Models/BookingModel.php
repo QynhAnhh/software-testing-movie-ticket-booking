@@ -41,6 +41,38 @@ class BookingModel {
         return false;
     }
 
+    public function cancelBooking($bookingId, $userId) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "
+            UPDATE bookings
+            SET status = 'canceled'
+            WHERE id = ?
+              AND user_id = ?
+              AND status != 'canceled'
+            "
+        );
+
+        mysqli_stmt_bind_param($stmt, "ii", $bookingId, $userId);
+        mysqli_stmt_execute($stmt);
+
+        if (mysqli_stmt_affected_rows($stmt) > 0) {
+            $stmtTicket = mysqli_prepare(
+                $this->conn,
+                "
+                UPDATE tickets
+                SET status = 'canceled'
+                WHERE booking_id = ?
+                "
+            );
+
+            mysqli_stmt_bind_param($stmtTicket, "i", $bookingId);
+
+            return mysqli_stmt_execute($stmtTicket);
+        }
+
+        return false;
+    }
     public function getBookingsByUser($userId) {
         $query = "
             SELECT
@@ -81,5 +113,44 @@ class BookingModel {
 
     public function getError() {
         return mysqli_error($this->conn);
+    }
+
+    public function getTotalBookings()  {
+        $result = mysqli_query(
+            $this->conn,
+            "SELECT COUNT(*) AS count FROM bookings"
+        );
+
+        if ($result) {
+            return (int) mysqli_fetch_assoc($result)['count'];
+        }
+
+        return 0;
+    }
+
+    public function getTotalRevenue() {
+        $result = mysqli_query(
+            $this->conn,
+            "SELECT SUM(total_price) AS total FROM bookings WHERE status = 'paid'"
+        );
+
+        if ($result) {
+            return mysqli_fetch_assoc($result)['total'] ?? 0;
+        }
+
+        return 0;
+    }
+
+    public function getTodayBookingsCount() {
+        $result = mysqli_query(
+            $this->conn,
+            "SELECT COUNT(*) AS count FROM bookings WHERE DATE(created_at) = CURDATE()"
+        );
+
+        if ($result) {
+            return (int) mysqli_fetch_assoc($result)['count'];
+        }
+
+        return 0;
     }
 }

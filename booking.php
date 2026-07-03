@@ -6,19 +6,48 @@ use App\Controllers\SeatController;
 use App\Controllers\TicketController;
 use App\Controllers\BookingController;
 
-$showtimeId = (int)($_GET['showtime_id'] ?? 0);
-if ($showtimeId <= 0) {
-    header('Location: index.php');
-    exit;
-}
-
 $showtimeController = new ShowtimeController();
 $seatController = new SeatController();
 $ticketController = new TicketController();
 $bookingController = new BookingController();
 
-$showtime = $showtimeController->getShowtimeDetail($showtimeId);
+$result = $bookingController->handleRequest();
+if ($result) {
+    if ($result['status'] === 'success') {
+        header(
+            "Location: booking_history.php"
+        );
+        exit;
+    }
+    echo "
+        <script>
+            alert('{$result['message']}');
+        </script>
+    ";
+}
 
+$showtimeId = (int)(
+    $_GET['showtime_id']
+    ??
+    $_POST['showtime_id']
+    ??
+    0
+);
+
+if ($showtimeId <= 0) {
+    header('Location: index.php');
+    exit;
+}
+
+if ($result) {
+    if ($result['status'] === 'success') {
+        header("Location: booking_history.php");
+        exit;
+    }
+    echo "<script>alert('{$result['message']}')</script>";
+}
+
+$showtime = $showtimeController->getShowtimeDetail($showtimeId);
 if (!$showtime) {
     echo "<script>alert('Suất chiếu không tồn tại!'); window.location='index.php';</script>";
     exit;
@@ -403,21 +432,74 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
         });
     });
 
+//     confirmButton.addEventListener('click', () => {
+//         const selected = getSelectedSeatButtons();
+//         if (!selected.length) {
+//             return;
+//         }
+//
+//         const payment = document.querySelector('input[name="payment_method"]:checked');
+//         const seatNames = selected.map((seat) => seat.dataset.seatName).join(', ');
+//         const total = selected.reduce((sum, seat) => sum + Number(seat.dataset.price || 0), 0);
+//
+//         alert(
+//             'Ghế đã chọn: ' + seatNames +
+//             '\nPhương thức thanh toán: ' + (payment ? payment.parentElement.textContent.trim() : 'Chưa chọn') +
+//             '\nTổng tiền: ' + formatter.format(total) + 'đ'
+//         );
+//     });
+
+
     confirmButton.addEventListener('click', () => {
         const selected = getSelectedSeatButtons();
         if (!selected.length) {
+            alert("Vui lòng chọn ghế");
             return;
         }
 
-        const payment = document.querySelector('input[name="payment_method"]:checked');
-        const seatNames = selected.map((seat) => seat.dataset.seatName).join(', ');
-        const total = selected.reduce((sum, seat) => sum + Number(seat.dataset.price || 0), 0);
-
-        alert(
-            'Ghế đã chọn: ' + seatNames +
-            '\nPhương thức thanh toán: ' + (payment ? payment.parentElement.textContent.trim() : 'Chưa chọn') +
-            '\nTổng tiền: ' + formatter.format(total) + 'đ'
+        const payment = document.querySelector(
+            'input[name="payment_method"]:checked'
         );
+
+        const form = document.createElement('form');
+        form.method = "POST";
+        form.action = "booking.php";
+        // action
+        let action = document.createElement('input');
+
+        action.type = "hidden";
+        action.name = "action";
+        action.value = "book_ticket";
+
+        form.appendChild(action);
+
+        // showtime id
+        let showtime = document.createElement('input');
+
+        showtime.type = "hidden";
+        showtime.name = "showtime_id";
+        showtime.value = "<?= $showtimeId ?>";
+
+        form.appendChild(showtime);
+
+        // payment
+        let paymentInput = document.createElement('input');
+
+        paymentInput.type = "hidden";
+        paymentInput.name = "payment_method";
+        paymentInput.value = payment.value;
+
+        form.appendChild(paymentInput);
+        // selected seats
+        selected.forEach(seat => {
+            let input = document.createElement('input');
+            input.type = "hidden";
+            input.name = "seats[]";
+            input.value = seat.dataset.seatId;
+            form.appendChild(input);
+        });
+        document.body.appendChild(form);
+        form.submit();
     });
 </script>
 
