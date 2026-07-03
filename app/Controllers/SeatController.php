@@ -59,4 +59,8 @@ class SeatController {
     public function getAllSeatTypes() {
         return $this->service->getAllSeatTypes();
     }
+
+    public function getSeatMap($showtimeId, $roomId) {
+        return $this->seatService->getSeatMap($showtimeId, $roomId);
+    }
 }

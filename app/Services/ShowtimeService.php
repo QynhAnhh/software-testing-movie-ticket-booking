@@ -137,4 +137,19 @@ class ShowtimeService {
         $start = strtotime($startTime);
         return date('H:i:s', $start + ($durationMinutes * 60));
     }
+
+    public function getShowtimesByMovie($movieId, $date = null) {
+        if ($movieId <= 0) return [];
+        return $this->model->getShowtimesByMovie($movieId, $date);
+    }
+
+    public function getShowtimeDetails($showtimeId) {
+        if ($showtimeId <= 0) return null;
+        return $this->model->getShowtimeDetails($showtimeId);
+    }
+
+    public function getShowtimeById($id) {
+        if ($id <= 0) return null;
+        return $this->model->getById($id);
+    }
 }

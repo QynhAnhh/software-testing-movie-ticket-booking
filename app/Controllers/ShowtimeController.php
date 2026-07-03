@@ -52,4 +52,16 @@ class ShowtimeController {
     public function getAllRooms() {
         return $this->service->getAllRooms();
     }
+
+    public function getShowtimesByMovie($movie_id) {
+        return $this->showtimeService->getShowtimesByMovie($movie_id);
+    }
+
+    public function getShowtimeById($id) {
+        return $this->showtimeService->getShowtimeById($id);
+    }
+
+    public function getShowtimeDetails($id) {
+        return $this->showtimeService->getShowtimeDetails($id);
+    }
 }
