@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap');
 /* --- BANNER QUẢNG CÁO (SWIPER) --- */
 .banner-section {
     width: 100%;
@@ -22,12 +23,10 @@
     display: block;
     width: 100%;
     height: 100%;
-    /* Object-fit: cover giúp ảnh không bị méo khi co dãn màn hình */
     object-fit: cover; 
     object-position: center;
 }
 
-/* Tùy chỉnh màu sắc cho nút Next/Prev và dấu chấm trang (Pagination) */
 .banner-section .swiper-button-next,
 .banner-section .swiper-button-prev {
     color: rgba(255, 255, 255, 0.7); 
@@ -42,4 +41,196 @@
 .banner-section .swiper-pagination-bullet-active {
     background: var(--text-light);
     opacity: 1;
+}
+
+/* --- SECTION PHIM ĐANG CHIẾU --- */
+.movie-list-section {
+    position: relative;
+    padding: 60px 20px 40px;
+}
+
+.section-title {
+    font-family: 'Anton', sans-serif;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+    color: var(--text-light);
+}
+
+/* Card Phim */
+.movie-card {
+    display: flex;
+    flex-direction: column;
+    background: transparent !important;
+    height: auto !important;
+}
+
+/* Khung chứa ảnh & Overlay */
+.movie-poster-box {
+    position: relative;
+    width: 100%;
+    height: 380px; /* Ép cứng chiều cao để khung không bị xẹp */
+    display: block; /* Đảm bảo khung là khối độc lập */
+    background-color: #1f2937;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Nhãn độ tuổi */
+.age-rating {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    z-index: 2;
+    font-weight: bold;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif; 
+    transition: all 0.28s ease; 
+}
+
+.movie-poster-box:hover .age-rating {
+    transform: translateY(-30px);
+    opacity: 0;
+    visibility: hidden;
+}
+
+.age-rating .format {
+    background-color: #facc15;
+    color: #000;
+    padding: 5px 10px;
+}
+
+.age-rating .age {
+    padding: 5px 10px;
+}
+
+/* Overlay khi Hover */
+.movie-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+/* Kích thước và căn chỉnh cho icon ảnh trong overlay */
+.info-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    opacity: 0.9; /* Làm mờ nhẹ để nhìn dịu mắt hơn */
+    display: block;
+}
+
+.movie-poster-box:hover .movie-overlay {
+    opacity: 1;
+}
+
+.movie-overlay h4 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.movie-overlay ul {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+    font-size: 14px;
+    color: #d1d5db;
+}
+
+.movie-overlay ul li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Tên phim dưới ảnh */
+.movie-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 15px;
+    min-height: 45px;
+}
+
+/* Khu vực nút bấm */
+.movie-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: auto; /* Quan trọng: Đẩy nút rớt xuống sát mép dưới cùng của thẻ */
+}
+
+.btn-trailer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: var(--text-light);
+    transition: color 0.3s;
+}
+
+.btn-trailer:hover {
+    color: var(--primary-yellow);
+}
+
+.btn-book {
+    background-color: var(--primary-yellow);
+    color: #000;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-align: center;
+    flex: 1;
+    transition: background-color 0.3s;
+}
+
+.btn-book:hover {
+    background-color: #eab308;
+}
+
+/* Tùy chỉnh Nút điều hướng Slider ra ngoài (Dùng chung cho cả 2 mục phim) */
+.custom-nav-prev, .custom-nav-next,
+.coming-nav-prev, .coming-nav-next {
+    color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+}
+.custom-nav-prev, .coming-nav-prev { left: 0px; }
+.custom-nav-next, .coming-nav-next { right: 0px; }
+
+.movie-list-section .swiper {
+    padding: 0 40px; 
 }
