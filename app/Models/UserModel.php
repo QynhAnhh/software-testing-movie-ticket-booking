@@ -70,6 +70,30 @@ class UserModel {
         return mysqli_stmt_execute($stmt);
     }
 
+    public function updateProfile($id, $data) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "UPDATE users SET first_name = ?, last_name = ?, email = ?, phone = ?, birth_date = ? WHERE id = ?"
+        );
+        mysqli_stmt_bind_param(
+            $stmt,
+            "sssssi",
+            $data['first_name'],
+            $data['last_name'],
+            $data['email'],
+            $data['phone'],
+            $data['birth_date'],
+            $id
+        );
+        return mysqli_stmt_execute($stmt);
+    }
+
+    public function updatePassword($id, $password) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE users SET password = ? WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "si", $password, $id);
+        return mysqli_stmt_execute($stmt);
+    }
+
     public function delete($id) {
         $stmt = mysqli_prepare($this->conn, "DELETE FROM users WHERE id = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);

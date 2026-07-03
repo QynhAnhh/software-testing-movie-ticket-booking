@@ -91,6 +91,14 @@ class TicketService {
         return $this->model->getByBookingId($bookingId);
     }
 
+    public function getTotalTicketsByUser($userId) {
+        $userId = (int)$userId;
+        if ($userId <= 0) {
+            return 0;
+        }
+        return $this->model->getTotalTicketsByUser($userId);
+    }
+
     private function validate(&$data, $excludeTicketId = null) {
         $data['booking_id'] = (int)($data['booking_id'] ?? 0);
         $data['showtime_id'] = (int)($data['showtime_id'] ?? 0);

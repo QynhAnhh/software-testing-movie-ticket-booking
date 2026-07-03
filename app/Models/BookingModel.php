@@ -88,6 +88,24 @@ class BookingModel {
         return 0;
     }
 
+    public function getTotalSpentByUser($userId) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT SUM(t.price) AS total_spent
+             FROM tickets t
+             INNER JOIN bookings b ON b.id = t.booking_id
+             WHERE b.user_id = ?
+               AND b.status = 'paid'
+               AND t.status != 'canceled'"
+        );
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = $result ? mysqli_fetch_assoc($result) : null;
+
+        return ($row && $row['total_spent'] !== null) ? (int)$row['total_spent'] : 0;
+    }
+
     public function getTodayBookingsCount() {
         $result = mysqli_query($this->conn, "SELECT COUNT(*) as count FROM bookings WHERE DATE(created_at) = CURDATE()");
         if ($result) {

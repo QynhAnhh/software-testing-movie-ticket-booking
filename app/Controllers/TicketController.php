@@ -54,4 +54,8 @@ class TicketController {
     public function getTicketsByBookingId($bookingId) {
         return $this->service->getTicketsByBookingId((int)$bookingId);
     }
+
+    public function getTotalTicketsByUser($userId) {
+        return $this->service->getTotalTicketsByUser((int)$userId);
+    }
 }

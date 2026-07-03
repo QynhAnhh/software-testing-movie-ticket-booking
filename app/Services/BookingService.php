@@ -105,4 +105,12 @@ class BookingService {
         }
         return $this->bookingModel->getBookingsByUser($userId);
     }
+
+    public function getTotalSpentByUser($userId) {
+        $userId = (int)$userId;
+        if ($userId <= 0) {
+            return 0;
+        }
+        return $this->bookingModel->getTotalSpentByUser($userId);
+    }
 }
