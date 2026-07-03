@@ -127,6 +127,35 @@ class ShowtimeModel {
         return $showtimes;
     }
 
+    public function getByMovieId($movieId) {
+        $query = "
+            SELECT st.id AS showtime_id, st.movie_id, st.room_id, st.show_date,
+                   st.start_time, st.end_time, st.base_price, st.status,
+                   r.name AS room_name,
+                   t.id AS theatre_id, t.name AS theatre_name,
+                   t.address AS theatre_address, t.city AS theatre_city
+            FROM showtimes st
+            INNER JOIN rooms r ON r.id = st.room_id
+            INNER JOIN theatres t ON t.id = r.theatre_id
+            WHERE st.movie_id = ?
+              AND st.status = 'active'
+              AND st.show_date >= CURDATE()
+            ORDER BY st.show_date ASC, st.start_time ASC
+        ";
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $movieId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $showtimes = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $showtimes[] = $row;
+            }
+        }
+        return $showtimes;
+    }
+
     public function getAllMovies() {
         $query = "SELECT id, title, duration, status FROM movies ORDER BY title ASC";
         $result = mysqli_query($this->conn, $query);

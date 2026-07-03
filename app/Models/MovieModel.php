@@ -76,7 +76,9 @@ class MovieModel {
 
     public function getMovieByIdWithGenres($id) {
         $query = "
-            SELECT m.*, GROUP_CONCAT(g.id) as genre_ids
+            SELECT m.*, 
+                   GROUP_CONCAT(g.id) as genre_ids,
+                   GROUP_CONCAT(g.name SEPARATOR ', ') as genre_names
             FROM movies m
             LEFT JOIN movie_genre mg ON m.id = mg.movie_id
             LEFT JOIN genres g ON mg.genre_id = g.id

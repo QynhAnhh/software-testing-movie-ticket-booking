@@ -45,6 +45,10 @@ class ShowtimeController {
         return $this->service->getAllShowtimes();
     }
 
+    public function getShowtimesByMovieId($movieId) {
+        return $this->service->getShowtimesByMovieId($movieId);
+    }
+
     public function getAllMovies() {
         return $this->service->getAllMovies();
     }
