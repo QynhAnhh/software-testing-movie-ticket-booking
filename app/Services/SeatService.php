@@ -189,14 +189,26 @@ class SeatService {
      * Lấy sơ đồ ghế (có trạng thái booked/available)
      */
     public function getSeatMap($showtime_id, $room_id) {
-        if ($showtime_id <= 0 || $room_id <= 0) return [];
+        if ($showtime_id <= 0 || $room_id <= 0) {
+            return [];
+        }
 
         $allSeats = $this->getSeatsByRoom($room_id);
-        $bookedSeats = $this->getBookedSeats($showtime_id);
+        $bookedSeats = array_map('intval', $this->getBookedSeats($showtime_id));
 
         $seatMap = [];
+
         foreach ($allSeats as $seat) {
-            $seat['status'] = in_array($seat['id'], $bookedSeats) ? 'booked' : 'available';
+            $seatId = (int)$seat['id'];
+
+            if ((int)$seat['is_active'] !== 1) {
+                $seat['status'] = 'inactive';
+            } elseif (in_array($seatId, $bookedSeats, true)) {
+                $seat['status'] = 'booked';
+            } else {
+                $seat['status'] = 'available';
+            }
+
             $seatMap[] = $seat;
         }
 

@@ -125,7 +125,7 @@ class SeatModel {
         $sql = "SELECT s.*, st.name as seat_type_name, st.price as seat_type_price
                 FROM seats s
                 LEFT JOIN seat_types st ON s.seat_type_id = st.id
-                WHERE s.room_id = ? AND s.is_active = 1
+                WHERE s.room_id = ?
                 ORDER BY s.seat_row, s.seat_number";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $room_id);
