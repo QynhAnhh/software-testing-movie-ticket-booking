@@ -174,7 +174,7 @@ class SeatService {
      */
     public function getSeatsByRoom($room_id) {
         if ($room_id <= 0) return [];
-        return $this->seatModel->getByRoom($room_id);
+        return $this->model->getByRoom($room_id);
     }
 
     /**
@@ -182,7 +182,7 @@ class SeatService {
      */
     public function getBookedSeats($showtime_id) {
         if ($showtime_id <= 0) return [];
-        return $this->seatModel->getBookedSeats($showtime_id);
+        return $this->model->getBookedSeats($showtime_id);
     }
 
     /**
