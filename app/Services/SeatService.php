@@ -73,6 +73,38 @@ class SeatService {
         return ['status' => 'error', 'message' => 'Lỗi khi xóa ghế: ' . $this->model->getError()];
     }
 
+    public function bulkDeleteSeats($roomId, $startRow, $endRow, $startNumber, $endNumber) {
+        if ($roomId <= 0 || !$this->roomModel->findById($roomId)) {
+            return ['status' => 'error', 'message' => 'Phòng chiếu không hợp lệ!'];
+        }
+
+        $startRow = strtoupper(trim($startRow));
+        $endRow = strtoupper(trim($endRow));
+        $start = ord($startRow);
+        $end = ord($endRow);
+
+        if ($start < ord('A') || $start > ord('H') || $end < ord('A') || $end > ord('H') || $start > $end) {
+            return ['status' => 'error', 'message' => 'Khoảng hàng ghế phải từ A đến H và hợp lệ!'];
+        }
+
+        if ($startNumber < 1 || $startNumber > 12 || $endNumber < 1 || $endNumber > 12 || $startNumber > $endNumber) {
+            return ['status' => 'error', 'message' => 'Khoảng số ghế phải từ 1 đến 12 và hợp lệ!'];
+        }
+
+        $total = $this->model->countByRange($roomId, $startRow, $endRow, $startNumber, $endNumber);
+        if ($total === 0) {
+            return ['status' => 'error', 'message' => 'Không có ghế nào trong khoảng đã chọn.'];
+        }
+
+        $deleted = $this->model->deleteByRange($roomId, $startRow, $endRow, $startNumber, $endNumber);
+        if ($deleted === false) {
+            return ['status' => 'error', 'message' => 'Lỗi khi xóa ghế hàng loạt: ' . $this->model->getError()];
+        }
+
+        $this->syncRoomTotalSeats($roomId);
+        return ['status' => 'success', 'message' => "Xóa thành công $deleted ghế."];
+    }
+
     public function generateSeats($roomId, $startRow, $endRow, $seatsPerRow, $seatTypeId) {
         if ($roomId <= 0 || !$this->roomModel->findById($roomId)) {
             return ['status' => 'error', 'message' => 'Phòng chiếu không hợp lệ!'];
@@ -137,6 +169,57 @@ class SeatService {
 
     public function getAllSeatTypes() {
         return $this->seatTypeModel->getAll();
+    }
+
+    public function quickAddSeat($roomId, $seatRow) {
+        if ($roomId <= 0 || !$this->roomModel->findById($roomId)) {
+            return ['status' => 'error', 'message' => 'Phòng chiếu không hợp lệ!'];
+        }
+
+        $seatRow = strtoupper(trim($seatRow));
+        if (!preg_match('/^[A-H]$/', $seatRow)) {
+            return ['status' => 'error', 'message' => 'Hàng ghế không hợp lệ!'];
+        }
+
+        $seatNumber = $this->model->getNextSeatNumber($roomId, $seatRow);
+        if ($seatNumber > 12) {
+            return ['status' => 'error', 'message' => 'Hàng này đã đạt tối đa 12 ghế!'];
+        }
+
+        $types = $this->seatTypeModel->getAll();
+        if (empty($types)) {
+            return ['status' => 'error', 'message' => 'Chưa có loại ghế trong hệ thống!'];
+        }
+
+        return $this->addSeat([
+            'room_id' => $roomId,
+            'seat_row' => $seatRow,
+            'seat_number' => $seatNumber,
+            'seat_type_id' => (int) $types[0]['id'],
+            'is_active' => true,
+        ]);
+    }
+
+    public function getDisplayRows($roomId, $showRow = null) {
+        $rows = $this->model->getRowLettersByRoom($roomId);
+        $showRow = strtoupper(trim((string) $showRow));
+        if ($showRow !== '' && preg_match('/^[A-H]$/', $showRow) && !in_array($showRow, $rows, true)) {
+            $rows[] = $showRow;
+        }
+        sort($rows);
+        return $rows;
+    }
+
+    public function getNextRowLetter(array $displayRows) {
+        if (empty($displayRows)) {
+            return 'A';
+        }
+        $last = end($displayRows);
+        $nextCode = ord($last) + 1;
+        if ($nextCode > ord('H')) {
+            return null;
+        }
+        return chr($nextCode);
     }
 
     private function validate($data, $excludeId = null) {
