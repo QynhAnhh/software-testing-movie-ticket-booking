@@ -347,17 +347,15 @@ INSERT INTO rooms (theatre_id, name, total_seats) VALUES
 -- seat_types
 INSERT INTO seat_types (name, price) VALUES
 ('REGULAR', 0),
-('VIP', 20000),
-('COUPLE', 50000);
+('VIP', 20000);
 
 -- Seats: mỗi phòng có 8 hàng (A-H), mỗi hàng 12 ghế.
--- A-C: REGULAR, D-G: VIP, H: COUPLE.
+-- A-C: REGULAR, D-H: VIP.
 INSERT INTO seats (room_id, seat_row, seat_number, seat_type_id)
 SELECT r.id, seat_rows.seat_row, seat_numbers.seat_number,
        CASE
            WHEN seat_rows.seat_row IN ('A', 'B', 'C') THEN 1
-           WHEN seat_rows.seat_row IN ('D', 'E', 'F', 'G') THEN 2
-           ELSE 3
+           ELSE 2
        END AS seat_type_id
 FROM rooms r
 CROSS JOIN (
