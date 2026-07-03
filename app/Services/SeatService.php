@@ -131,6 +131,14 @@ class SeatService {
         return $this->model->getAllWithDetails($roomId);
     }
 
+    public function getSeatsByRoomId($roomId) {
+        $roomId = (int)$roomId;
+        if ($roomId <= 0) {
+            return [];
+        }
+        return $this->model->getByRoomIdWithType($roomId);
+    }
+
     public function getAllRooms() {
         return $this->roomModel->getAllWithTheatre();
     }
