@@ -4,21 +4,14 @@ namespace App\Controllers;
 
 use App\Services\BookingService;
 
-class BookingController
-{
-    private $bookingService;
+class BookingController {
+    private $service;
 
-    public function __construct()
-    {
-        $this->bookingService = new BookingService();
+    public function __construct() {
+        $this->service = new BookingService();
     }
 
-    public function handleRequest()
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
+    public function handleRequest() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return null;
         }
@@ -26,19 +19,12 @@ class BookingController
         $action = $_POST['action'] ?? '';
 
         if ($action === 'book_ticket') {
-            if (!isset($_SESSION['user']['id'])) {
-                return [
-                    'status' => 'error',
-                    'message' => 'Vui lòng đăng nhập để đặt vé.'
-                ];
-            }
-
-            $userId = (int) $_SESSION['user']['id'];
-            $showtimeId = (int) ($_POST['showtime_id'] ?? 0);
+            $userId = (int)($_SESSION['user']['id'] ?? 0);
+            $showtimeId = (int)($_POST['showtime_id'] ?? 0);
             $seatIds = $_POST['seats'] ?? [];
             $paymentMethod = $_POST['payment_method'] ?? 'cash';
 
-            return $this->bookingService->processBooking(
+            return $this->service->processBooking(
                 $userId,
                 $showtimeId,
                 $seatIds,
@@ -49,8 +35,7 @@ class BookingController
         return null;
     }
 
-    public function getUserBookings($userId)
-    {
-        return $this->bookingService->getUserBookings((int) $userId);
+    public function getUserBookings($userId) {
+        return $this->service->getUserBookings((int)$userId);
     }
 }

@@ -1,19 +1,23 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\BookingModel;
 use App\Models\ShowtimeModel;
 use App\Models\SeatModel;
+use App\Models\TicketModel;
 
 class BookingService {
     private $bookingModel;
     private $showtimeModel;
     private $seatModel;
+    private $ticketModel;
 
     public function __construct() {
         $this->bookingModel = new BookingModel();
         $this->showtimeModel = new ShowtimeModel();
         $this->seatModel = new SeatModel();
+        $this->ticketModel = new TicketModel();
     }
 
     public function processBooking($userId, $showtimeId, $seatIds, $paymentMethod) {
@@ -30,6 +34,7 @@ class BookingService {
         }
 
         $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
+
         if (!in_array($paymentMethod, $allowedPaymentMethods, true)) {
             $paymentMethod = 'cash';
         }
@@ -37,17 +42,18 @@ class BookingService {
         $showtime = $this->showtimeModel->getShowtimeDetails($showtimeId);
 
         if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
-            return ['status' => 'error', 'message' => 'Suất chiếu hiện không khả dụng.'];
+            return ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'];
         }
 
         $seatIds = array_values(array_unique(array_map('intval', $seatIds)));
+
         $selectedSeats = $this->seatModel->getByIds($seatIds);
 
         if (count($selectedSeats) !== count($seatIds)) {
             return ['status' => 'error', 'message' => 'Danh sách ghế không hợp lệ.'];
         }
 
-        $prices = [];
+        $seatPrices = [];
         $totalPrice = 0;
 
         foreach ($seatIds as $seatId) {
@@ -65,20 +71,25 @@ class BookingService {
             }
 
             if ((int)$seat['room_id'] !== (int)$showtime['room_id']) {
-                return ['status' => 'error', 'message' => 'Ghế không thuộc phòng chiếu của suất chiếu này.'];
+                return ['status' => 'error', 'message' => 'Ghế không thuộc phòng chiếu này.'];
             }
 
             if ((int)$seat['is_active'] !== 1) {
-                return ['status' => 'error', 'message' => 'Có ghế đang không khả dụng.'];
+                return ['status' => 'error', 'message' => 'Có ghế không khả dụng.'];
             }
 
-            if ($this->bookingModel->isSeatBooked($showtimeId, $seatId)) {
-                return ['status' => 'error', 'message' => 'Có ghế vừa được người khác đặt. Vui lòng chọn ghế khác.'];
+            if ($this->ticketModel->isSeatBooked($showtimeId, $seatId)) {
+                return ['status' => 'error', 'message' => 'Có ghế vừa được đặt. Vui lòng chọn ghế khác.'];
             }
 
-            $ticketPrice = (float)$showtime['base_price'] + (float)$seat['seat_type_price'];
-            $prices[] = $ticketPrice;
-            $totalPrice += $ticketPrice;
+            $price = (float)$showtime['base_price'] + (float)($seat['seat_type_price'] ?? 0);
+
+            $seatPrices[] = [
+                'seat_id' => $seatId,
+                'price' => $price
+            ];
+
+            $totalPrice += $price;
         }
 
         $this->bookingModel->beginTransaction();
@@ -90,7 +101,9 @@ class BookingService {
                 throw new \Exception('Không thể tạo booking.');
             }
 
-            if (!$this->bookingModel->createTickets($bookingId, $showtimeId, $seatIds, $prices)) {
+            $ticketsCreated = $this->ticketModel->createMany($bookingId, $showtimeId, $seatPrices);
+
+            if (!$ticketsCreated) {
                 throw new \Exception('Không thể tạo vé.');
             }
 
@@ -106,7 +119,7 @@ class BookingService {
 
             return [
                 'status' => 'error',
-                'message' => 'Có lỗi xảy ra khi đặt vé: ' . $e->getMessage()
+                'message' => 'Có lỗi xảy ra khi đặt vé.'
             ];
         }
     }
