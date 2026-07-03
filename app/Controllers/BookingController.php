@@ -33,4 +33,8 @@ class BookingController {
     public function getUserBookings($userId) {
         return $this->bookingService->getUserBookings($userId);
     }
+
+    public function getTotalSpentByUser($userId) {
+        return $this->bookingService->getTotalSpentByUser((int)$userId);
+    }
 }

@@ -183,6 +183,24 @@ class TicketModel {
         return $this->fetchAll($result);
     }
 
+    public function getTotalTicketsByUser($userId) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT COUNT(t.id) AS total_tickets
+             FROM tickets t
+             INNER JOIN bookings b ON b.id = t.booking_id
+             WHERE b.user_id = ?
+               AND b.status = 'paid'
+               AND t.status != 'canceled'"
+        );
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = $result ? mysqli_fetch_assoc($result) : null;
+
+        return $row ? (int)$row['total_tickets'] : 0;
+    }
+
     public function getError() {
         return mysqli_error($this->conn);
     }
