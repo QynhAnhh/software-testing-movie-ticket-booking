@@ -10,6 +10,7 @@ class Database {
             $username = 'root';
             $password = '';
             $database = 'movie_ticket_booking';
+            $port = 3307;
 
             $conn = mysqli_connect($host, $username, $password, $database);
             if (!$conn) {
