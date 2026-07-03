@@ -76,36 +76,56 @@ class UserModel {
         return mysqli_stmt_execute($stmt);
     }
 
-    public function searchUsers($keyword = '') {
-        $where = "WHERE 1=1";
-        $params = [];
-        $types = "";
-
-        if (!empty($keyword)) {
-            $where .= " AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)";
-            $search = "%" . $keyword . "%";
-            array_push($params, $search, $search, $search, $search);
-            $types .= "ssss";
-        }
-
+    public function getAll() {
         $query = "
             SELECT u.*, 
                    COUNT(b.id) as total_bookings,
                    COALESCE(SUM(CASE WHEN b.status='paid' THEN b.total_price ELSE 0 END), 0) as total_spent
             FROM users u
             LEFT JOIN bookings b ON u.id = b.user_id
-            $where
+            GROUP BY u.id
+            ORDER BY u.id DESC
+        ";
+
+        $result = mysqli_query($this->conn, $query);
+        return $this->fetchUsers($result);
+    }
+
+    public function getByFilter($keyword) {
+        $keyword = trim($keyword);
+        if ($keyword === '') {
+            return $this->getAll();
+        }
+
+        $search = "%" . $keyword . "%";
+        $query = "
+            SELECT u.*, 
+                   COUNT(b.id) as total_bookings,
+                   COALESCE(SUM(CASE WHEN b.status='paid' THEN b.total_price ELSE 0 END), 0) as total_spent
+            FROM users u
+            LEFT JOIN bookings b ON u.id = b.user_id
+            WHERE u.first_name LIKE ?
+               OR u.last_name LIKE ?
+               OR CONCAT(u.first_name, ' ', u.last_name) LIKE ?
+               OR u.email LIKE ?
+               OR u.phone LIKE ?
             GROUP BY u.id
             ORDER BY u.id DESC
         ";
 
         $stmt = mysqli_prepare($this->conn, $query);
-        if (!empty($params)) {
-            mysqli_stmt_bind_param($stmt, $types, ...$params);
-        }
+        mysqli_stmt_bind_param($stmt, "sssss", $search, $search, $search, $search, $search);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
-        
+
+        return $this->fetchUsers($result);
+    }
+
+    public function searchUsers($keyword = '') {
+        return trim($keyword) === '' ? $this->getAll() : $this->getByFilter($keyword);
+    }
+
+    private function fetchUsers($result) {
         $users = [];
         if ($result) {
             while ($row = mysqli_fetch_assoc($result)) {
