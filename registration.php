@@ -3,7 +3,7 @@ require_once 'config.php';
 use App\Controllers\AuthController;
 
 $authController = new AuthController();
-$authController->handleLogin();
+$authController->handleRegister();
 
 if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
     if (($_SESSION['user']['role'] ?? '') === 'admin') {
@@ -29,29 +29,12 @@ require_once 'header.php';
 </style>
 
 <div class="auth-page-wrapper">
-    <div class="auth-container" id="container">
+    <!-- Notice we add the "active" class here to show the registration panel -->
+    <div class="auth-container active" id="container">
         
         <div class="form-container sign-up">
-            <!-- Dummy form for visual transition -->
-            <form action="javascript:void(0);">
-                <h1>Tạo tài khoản</h1>
-                <div class="input-row">
-                    <input type="text" placeholder="Họ" />
-                    <input type="text" placeholder="Tên" />
-                </div>
-                <input type="email" placeholder="Email" />
-                <input type="text" placeholder="Số điện thoại" />
-                <div class="input-row">
-                    <input type="password" placeholder="Mật khẩu" />
-                    <input type="password" placeholder="Xác nhận" />
-                </div>
-                <button type="button" style="margin-top: 10px;">Đăng ký</button>
-            </form>
-        </div>
-
-        <div class="form-container sign-in">
             <form action="" method="POST">
-                <h1>Đăng nhập</h1>
+                <h1>Tạo tài khoản</h1>
                 
                 <?php if (isset($_SESSION['error_msg'])): ?>
                     <div style="background:#f8d7da;color:#721c24;padding:10px;border-radius:5px;margin-bottom:15px;text-align:center;width:100%;font-size:14px;">
@@ -60,17 +43,28 @@ require_once 'header.php';
                     </div>
                 <?php endif; ?>
 
-                <?php if (isset($_SESSION['success_msg'])): ?>
-                    <div style="background:#d4edda;color:#155724;padding:10px;border-radius:5px;margin-bottom:15px;text-align:center;width:100%;font-size:14px;">
-                        <?= $_SESSION['success_msg']; ?>
-                        <?php unset($_SESSION['success_msg']); ?>
-                    </div>
-                <?php endif; ?>
+                <div class="input-row">
+                    <input type="text" name="first_name" placeholder="Họ" required />
+                    <input type="text" name="last_name" placeholder="Tên" required />
+                </div>
+                <input type="email" name="email" placeholder="Email" required />
+                <input type="text" name="phone" placeholder="Số điện thoại" required />
+                <div class="input-row">
+                    <input type="password" name="password" placeholder="Mật khẩu" required />
+                    <input type="password" name="confirm_password" placeholder="Xác nhận mật khẩu" required />
+                </div>
+                <button type="submit" style="margin-top: 10px;">Đăng ký</button>
+            </form>
+        </div>
 
-                <input type="email" name="email" required placeholder="Email" />
-                <input type="password" name="password" required placeholder="Mật khẩu" />
-
-                <button type="submit" style="margin-top: 10px;">Đăng nhập</button>
+        <div class="form-container sign-in">
+            <!-- Dummy form for visual transition -->
+            <form action="javascript:void(0);">
+                <h1>Đăng nhập</h1>
+                <input type="email" placeholder="Email" />
+                <input type="password" placeholder="Mật khẩu" />
+                <a href="#">Quên mật khẩu?</a>
+                <button type="button" style="margin-top: 10px;">Đăng nhập</button>
             </form>
         </div>
         
@@ -93,14 +87,14 @@ require_once 'header.php';
 
 <script>
     const container = document.getElementById('container');
-    const registerBtn = document.getElementById('register');
+    const loginBtn = document.getElementById('login');
 
-    if(registerBtn) {
-        registerBtn.addEventListener('click', () => {
-            container.classList.add("active");
+    if(loginBtn) {
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove("active");
             // Wait for animation to complete before redirecting
             setTimeout(() => {
-                window.location.href = 'registration.php';
+                window.location.href = 'login.php';
             }, 600); // 600ms match css transition
         });
     }

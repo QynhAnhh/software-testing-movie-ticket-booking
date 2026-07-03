@@ -62,7 +62,8 @@ class MovieModel {
             FROM movies m
             LEFT JOIN movie_genre mg ON m.id = mg.movie_id
             LEFT JOIN genres g ON mg.genre_id = g.id
-            GROUP BY m.id DESC
+            GROUP BY m.id
+            ORDER BY m.created_at DESC
         ";
         $result = mysqli_query($this->conn, $query_movies);
         $movies = [];
@@ -96,10 +97,8 @@ class MovieModel {
     public function getNowShowingMovies() {
         $query = "
             SELECT m.*, 
-                   mi.image_url as poster,
                    GROUP_CONCAT(g.name SEPARATOR ', ') as genres
             FROM movies m
-            LEFT JOIN movie_images mi ON m.id = mi.movie_id
             LEFT JOIN movie_genre mg ON m.id = mg.movie_id
             LEFT JOIN genres g ON mg.genre_id = g.id
             WHERE m.status = 'now_showing'
@@ -118,10 +117,8 @@ class MovieModel {
     public function getComingSoonMovies() {
         $query = "
             SELECT m.*, 
-                   mi.image_url as poster,
                    GROUP_CONCAT(g.name SEPARATOR ', ') as genres
             FROM movies m
-            LEFT JOIN movie_images mi ON m.id = mi.movie_id
             LEFT JOIN movie_genre mg ON m.id = mg.movie_id
             LEFT JOIN genres g ON mg.genre_id = g.id
             WHERE m.status = 'coming'

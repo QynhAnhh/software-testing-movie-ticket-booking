@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="footer-col footer-col-right">
-                    <img src="images/logo.png" alt="Logo" class="footer-logo-main">
+                    <img src="images/logodUTH.png" alt="Logo" class="footer-logo-main">
                     <div class="social-icons">
                         <a href="#"><img src="images/svg/footer-facebook.svg" alt="Facebook"></a>
                         <a href="#"><img src="images/svg/footer-zalo.svg" alt="Zalo"></a>
@@ -32,7 +32,7 @@
 
             <div class="footer-bottom">
                 <div class="company-logo">
-                    <img src="images/logo.png" alt="Company Logo">
+                    <img src="images/logonUTH.png" alt="Company Logo">
                 </div>
                 <div class="company-info">
                     <h4>CÔNG TY CỔ PHẦN MOVIE TICKET BOOKING</h4>

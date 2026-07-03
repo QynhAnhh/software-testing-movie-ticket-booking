@@ -19,4 +19,8 @@ class BookingController {
             }
         }
     }
+
+    public function getUserBookings($userId) {
+        return $this->bookingService->getUserBookings($userId);
+    }
 }
