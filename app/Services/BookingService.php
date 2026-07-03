@@ -106,6 +106,34 @@ class BookingService {
         return $this->bookingModel->getBookingsByUser($userId);
     }
 
+    public function cancelBooking($userId, $bookingId) {
+        $userId = (int)$userId;
+        $bookingId = (int)$bookingId;
+
+        if ($userId <= 0) {
+            return ['status' => 'error', 'message' => 'Vui lòng đăng nhập để hủy vé!'];
+        }
+
+        if ($bookingId <= 0) {
+            return ['status' => 'error', 'message' => 'Booking không hợp lệ!'];
+        }
+
+        $booking = $this->bookingModel->getByIdAndUser($bookingId, $userId);
+        if (!$booking) {
+            return ['status' => 'error', 'message' => 'Không tìm thấy booking cần hủy!'];
+        }
+
+        if ($booking['status'] === 'canceled') {
+            return ['status' => 'error', 'message' => 'Booking này đã được hủy trước đó!'];
+        }
+
+        if (!$this->bookingModel->cancelBookingForUser($bookingId, $userId)) {
+            return ['status' => 'error', 'message' => 'Lỗi khi hủy booking: ' . $this->bookingModel->getError()];
+        }
+
+        return ['status' => 'success', 'message' => 'Hủy vé thành công!'];
+    }
+
     public function getTotalSpentByUser($userId) {
         $userId = (int)$userId;
         if ($userId <= 0) {

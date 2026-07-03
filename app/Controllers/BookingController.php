@@ -22,6 +22,13 @@ class BookingController {
 
                 return $this->bookingService->processBooking($userId, $showtimeId, $seatIds, $paymentMethod);
             }
+
+            if ($action === 'cancel_booking') {
+                $userId = (int)($_SESSION['user']['id'] ?? 0);
+                $bookingId = (int)($_POST['booking_id'] ?? 0);
+
+                return $this->bookingService->cancelBooking($userId, $bookingId);
+            }
         }
         return null;
     }
@@ -32,6 +39,10 @@ class BookingController {
 
     public function getUserBookings($userId) {
         return $this->bookingService->getUserBookings($userId);
+    }
+
+    public function cancelBooking($userId, $bookingId) {
+        return $this->bookingService->cancelBooking((int)$userId, (int)$bookingId);
     }
 
     public function getTotalSpentByUser($userId) {
