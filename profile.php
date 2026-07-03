@@ -30,141 +30,7 @@ $totalSpent = (int)($overview['total_spent'] ?? 0);
 require_once 'header.php';
 ?>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-<style>
-    .profile-page {
-        background: #0b1120;
-        color: #fff;
-        padding: 30px 0 50px;
-    }
-
-    .profile-card {
-        background: #1a1a1a;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 10px;
-    }
-
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 20px;
-        background: linear-gradient(135deg, #e50914, #b20710);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .profile-avatar i {
-        font-size: 52px;
-        color: #fff;
-    }
-
-    .profile-muted {
-        color: #aaa;
-    }
-
-    .profile-menu .btn {
-        background: #2a2a2a;
-        border: 1px solid transparent;
-        color: #fff;
-        text-align: left;
-        height: 46px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .profile-menu .btn:hover,
-    .profile-menu .btn.active {
-        border-color: #e50914;
-        color: #fff;
-    }
-
-    .profile-stat {
-        min-height: 150px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .profile-stat i {
-        font-size: 40px;
-        margin-bottom: 10px;
-    }
-
-    .profile-stat h3 {
-        font-size: 36px;
-        font-weight: 700;
-        margin: 0;
-    }
-
-    .profile-form .form-label {
-        color: #aaa;
-        font-weight: 600;
-    }
-
-    .profile-form .form-control {
-        background: #2a2a2a;
-        border: 1px solid #333;
-        color: #fff;
-        min-height: 45px;
-    }
-
-    .profile-form .form-control:focus {
-        background: #2a2a2a;
-        border-color: #e50914;
-        color: #fff;
-        box-shadow: 0 0 0 0.2rem rgba(229, 9, 20, 0.18);
-    }
-
-    .profile-form .form-control::placeholder {
-        color: #777;
-    }
-
-    .profile-section-title {
-        font-size: 24px;
-        font-weight: 700;
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .btn-profile-primary {
-        background: #e50914;
-        border-color: #e50914;
-        color: #fff;
-        height: 45px;
-        padding: 0 28px;
-        font-weight: 700;
-    }
-
-    .btn-profile-primary:hover {
-        background: #b20710;
-        border-color: #b20710;
-        color: #fff;
-    }
-
-    .btn-profile-warning {
-        background: #f59e0b;
-        border-color: #f59e0b;
-        color: #111827;
-        height: 45px;
-        padding: 0 28px;
-        font-weight: 700;
-    }
-
-    .btn-profile-warning:hover {
-        background: #d97706;
-        border-color: #d97706;
-        color: #111827;
-    }
-</style>
+<link rel="stylesheet" href="css/profile.css">
 
 <div class="profile-page">
     <div class="container">
@@ -192,7 +58,7 @@ require_once 'header.php';
                         <i class="bi bi-ticket-perforated-fill"></i>
                         <span>Lịch sử đặt vé</span>
                     </a>
-                    <a href="logout.php" class="btn btn-danger border-0" style="background: #f44336;">
+                    <a href="logout.php" class="btn btn-profile-logout">
                         <i class="bi bi-box-arrow-right"></i>
                         <span>Đăng xuất</span>
                     </a>
@@ -210,14 +76,14 @@ require_once 'header.php';
 
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
-                        <div class="profile-card profile-stat p-4" style="background: linear-gradient(135deg, #e50914, #b20710);">
+                        <div class="profile-card profile-stat profile-stat-ticket p-4">
                             <i class="bi bi-ticket-perforated-fill"></i>
                             <h3><?= $totalTickets ?></h3>
                             <p class="mb-0">Vé đã đặt</p>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="profile-card profile-stat p-4" style="background: linear-gradient(135deg, #16a34a, #15803d);">
+                        <div class="profile-card profile-stat profile-stat-spent p-4">
                             <i class="bi bi-cash-coin"></i>
                             <h3><?= number_format($totalSpent, 0, ',', '.') ?>đ</h3>
                             <p class="mb-0">Tổng chi tiêu</p>
@@ -268,7 +134,7 @@ require_once 'header.php';
 
                 <section class="profile-card p-4 p-md-5 mt-4">
                     <h3 class="profile-section-title">
-                        <i class="bi bi-key-fill text-warning"></i>
+                        <i class="bi bi-key-fill"></i>
                         <span>Đổi Mật Khẩu</span>
                     </h3>
 
