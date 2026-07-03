@@ -10,14 +10,66 @@ class BookingModel {
         $this->conn = Database::getConnection();
     }
 
-    // TODO: Viết hàm truy vấn lấy danh sách vé của User
-    public function getBookingsByUser($userId) {
-        // SELECT * FROM bookings WHERE user_id = ?
+    public function getById($id) {
+        $stmt = mysqli_prepare($this->conn, "SELECT * FROM bookings WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        return $result ? mysqli_fetch_assoc($result) : null;
     }
 
-    // TODO: Viết hàm insert vé mới
+    public function getBookingsByUser($userId) {
+        $query = "
+            SELECT b.*, 
+                   GROUP_CONCAT(CONCAT(s.seat_row, s.seat_number) ORDER BY s.seat_row, s.seat_number SEPARATOR ', ') AS seats,
+                   m.title AS movie_title,
+                   st.show_date, st.start_time,
+                   r.name AS room_name,
+                   th.name AS theatre_name
+            FROM bookings b
+            LEFT JOIN tickets t ON t.booking_id = b.id
+            LEFT JOIN showtimes st ON st.id = t.showtime_id
+            LEFT JOIN movies m ON m.id = st.movie_id
+            LEFT JOIN rooms r ON r.id = st.room_id
+            LEFT JOIN theatres th ON th.id = r.theatre_id
+            LEFT JOIN seats s ON s.id = t.seat_id
+            WHERE b.user_id = ?
+            GROUP BY b.id, b.user_id, b.booking_code, b.total_price, b.payment_method,
+                     b.status, b.created_at, b.updated_at,
+                     m.title, st.show_date, st.start_time, r.name, th.name
+            ORDER BY b.created_at DESC
+        ";
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $bookings = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $bookings[] = $row;
+            }
+        }
+        return $bookings;
+    }
+
     public function createBooking($data) {
-        // INSERT INTO bookings ...
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "INSERT INTO bookings (user_id, total_price, payment_method, status) VALUES (?, ?, ?, ?)"
+        );
+        mysqli_stmt_bind_param(
+            $stmt,
+            "idss",
+            $data['user_id'],
+            $data['total_price'],
+            $data['payment_method'],
+            $data['status']
+        );
+        if (mysqli_stmt_execute($stmt)) {
+            return mysqli_insert_id($this->conn);
+        }
+        return false;
     }
 
     public function getTotalBookings() {

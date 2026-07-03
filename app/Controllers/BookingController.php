@@ -13,10 +13,24 @@ class BookingController {
     public function handleRequest() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $action = $_POST['action'];
-            
+
             if ($action === 'book_ticket') {
-                // TODO: Lấy dữ liệu từ $_POST và gọi BookingService->processBooking()
+                $userId = (int)($_SESSION['user']['id'] ?? 0);
+                $showtimeId = (int)($_POST['showtime_id'] ?? 0);
+                $seatIds = $_POST['seat_ids'] ?? [];
+                $paymentMethod = $_POST['payment_method'] ?? 'cash';
+
+                return $this->bookingService->processBooking($userId, $showtimeId, $seatIds, $paymentMethod);
             }
         }
+        return null;
+    }
+
+    public function processBooking($userId, $showtimeId, $seatIds, $paymentMethod) {
+        return $this->bookingService->processBooking($userId, $showtimeId, $seatIds, $paymentMethod);
+    }
+
+    public function getUserBookings($userId) {
+        return $this->bookingService->getUserBookings($userId);
     }
 }
