@@ -255,21 +255,56 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     });
 
     confirmButton.addEventListener('click', () => {
-        const selected = getSelectedSeatButtons();
-        if (!selected.length) {
-            return;
-        }
+            const selected = getSelectedSeatButtons();
+            if (!selected.length) {
+                alert("Vui lòng chọn ghế");
+                return;
+            }
 
-        const payment = document.querySelector('input[name="payment_method"]:checked');
-        const seatNames = selected.map((seat) => seat.dataset.seatName).join(', ');
-        const total = selected.reduce((sum, seat) => sum + Number(seat.dataset.price || 0), 0);
+            const payment = document.querySelector(
+                'input[name="payment_method"]:checked'
+            );
 
-        alert(
-            'Ghế đã chọn: ' + seatNames +
-            '\nPhương thức thanh toán: ' + (payment ? payment.parentElement.textContent.trim() : 'Chưa chọn') +
-            '\nTổng tiền: ' + formatter.format(total) + 'đ'
-        );
-    });
+            const form = document.createElement('form');
+            form.method = "POST";
+            form.action = "booking.php";
+            // action
+            let action = document.createElement('input');
+
+            action.type = "hidden";
+            action.name = "action";
+            action.value = "book_ticket";
+
+            form.appendChild(action);
+
+            // showtime id
+            let showtime = document.createElement('input');
+
+            showtime.type = "hidden";
+            showtime.name = "showtime_id";
+            showtime.value = "<?= $showtimeId ?>";
+
+            form.appendChild(showtime);
+
+            // payment
+            let paymentInput = document.createElement('input');
+
+            paymentInput.type = "hidden";
+            paymentInput.name = "payment_method";
+            paymentInput.value = payment.value;
+
+            form.appendChild(paymentInput);
+            // selected seats
+            selected.forEach(seat => {
+                let input = document.createElement('input');
+                input.type = "hidden";
+                input.name = "seats[]";
+                input.value = seat.dataset.seatId;
+                form.appendChild(input);
+            });
+            document.body.appendChild(form);
+            form.submit();
+        });
 </script>
 
 <?php require_once 'footer.php'; ?>

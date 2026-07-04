@@ -163,7 +163,7 @@ class ShowtimeModel {
         return mysqli_error($this->conn);
     }
 
-    public function getShowtimesByMovie($movieId) {
+    public function getByMovieId($movieId) {
         $query = "
             SELECT st.id AS showtime_id, st.movie_id, st.room_id, st.show_date,
                    st.start_time, st.end_time, st.base_price, st.status,
@@ -192,7 +192,7 @@ class ShowtimeModel {
         return $showtimes;
     }
 
-    public function getShowtimeDetails($showtimeId) {
+    public function getDetailById($showtimeId) {
         $query = "
             SELECT
                 st.id AS showtime_id,

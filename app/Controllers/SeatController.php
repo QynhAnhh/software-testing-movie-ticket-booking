@@ -64,7 +64,4 @@ class SeatController {
         return $this->service->getAllSeatTypes();
     }
 
-    public function getSeatsByRoomId($roomId) {
-        return $this->service->getSeatsByRoomId($roomId);
-    }
 }

@@ -131,13 +131,6 @@ class SeatService {
         return $this->model->getAllWithDetails($roomId);
     }
 
-    public function getSeatsByRoomId($roomId) {
-        $roomId = (int)$roomId;
-        if ($roomId <= 0) {
-            return [];
-        }
-        return $this->model->getByRoomIdWithType($roomId);
-    }
 
     public function getAllRooms() {
         return $this->roomModel->getAllWithTheatre();
@@ -177,13 +170,6 @@ class SeatService {
         $this->roomModel->updateTotalSeats($roomId, $total);
     }
 
-    /**
-     * Lấy danh sách ghế theo phòng
-     */
-    public function getSeatsByRoom($room_id) {
-        if ($room_id <= 0) return [];
-        return $this->model->getByRoom($room_id);
-    }
 
     /**
      * Lấy ghế đã đặt theo suất chiếu

@@ -36,14 +36,14 @@ class BookingController {
     }
 
     public function getUserBookings($userId) {
-        return $this->bookingService->getUserBookings($userId);
+        return $this->service->getUserBookings($userId);
     }
 
     public function cancelBooking($userId, $bookingId) {
-        return $this->bookingService->cancelBooking((int)$userId, (int)$bookingId);
+        return $this->service->cancelBooking((int)$userId, (int)$bookingId);
     }
 
     public function getTotalSpentByUser($userId) {
-        return $this->bookingService->getTotalSpentByUser((int)$userId);
+        return $this->service->getTotalSpentByUser((int)$userId);
     }
 }

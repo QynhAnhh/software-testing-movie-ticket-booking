@@ -39,7 +39,7 @@ class BookingService {
             $paymentMethod = 'cash';
         }
 
-        $showtime = $this->showtimeModel->getShowtimeDetails($showtimeId);
+        $showtime = $this->showtimeModel->getDetailById($showtimeId);
 
         if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
             return ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'];

@@ -178,29 +178,6 @@ class SeatModel {
         return $booked;
     }
 
-    public function getByRoomIdWithType($roomId) {
-        $query = "
-            SELECT s.id AS seat_id, s.room_id, s.seat_row, s.seat_number,
-                   s.seat_type_id, s.is_active,
-                   st.name AS seat_type_name, st.price AS seat_type_price
-            FROM seats s
-            INNER JOIN seat_types st ON st.id = s.seat_type_id
-            WHERE s.room_id = ?
-            ORDER BY s.seat_row ASC, s.seat_number ASC
-        ";
-        $stmt = mysqli_prepare($this->conn, $query);
-        mysqli_stmt_bind_param($stmt, "i", $roomId);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-
-        $seats = [];
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $seats[] = $row;
-            }
-        }
-        return $seats;
-    }
 
 
 
