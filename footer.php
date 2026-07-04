@@ -28,6 +28,7 @@
                         <li><a href="profile.php">Hồ sơ cá nhân</a></li>
                         <li><a href="booking_history.php">Lịch sử đặt vé</a></li>
                         <li><a href="login.php">Đăng nhập</a></li>
+                        <li><a href="login.php?mode=register">Đăng ký</a></li>
                     </ul>
                 </div>
 

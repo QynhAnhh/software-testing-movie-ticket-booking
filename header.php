@@ -78,7 +78,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                             </a>
                         <?php else: ?>
                             <a class="btn btn-outline-light" href="login.php">Đăng nhập</a>
-                            <a class="btn btn-site-primary" href="registration.php">Đăng ký</a>
+                            <a class="btn btn-site-primary" href="login.php?mode=register">Đăng ký</a>
                         <?php endif; ?>
                     </div>
                 </div>
