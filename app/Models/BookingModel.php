@@ -143,7 +143,6 @@ class BookingModel {
     }
     //
 
-    //
     public function getTotalRevenue() {
         $result = mysqli_query($this->conn, "SELECT SUM(total_price) as total FROM bookings WHERE status='paid'");
         if ($result) {

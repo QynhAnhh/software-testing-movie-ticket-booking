@@ -4,6 +4,7 @@ require_once 'config.php';
 use App\Controllers\ShowtimeController;
 use App\Controllers\SeatController;
 use App\Controllers\TicketController;
+use App\Controllers\BookingController;
 
 $showtimeController = new ShowtimeController();
 $seatController = new SeatController();

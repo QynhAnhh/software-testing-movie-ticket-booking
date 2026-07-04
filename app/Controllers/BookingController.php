@@ -4,10 +4,10 @@ namespace App\Controllers;
 use App\Services\BookingService;
 
 class BookingController {
-    private $bookingService;
+    private $service;
 
     public function __construct() {
-        $this->bookingService = new BookingService();
+        $this->service = new BookingService();
     }
 
     // handle request
@@ -33,10 +33,6 @@ class BookingController {
         }
 
         return null;
-    }
-
-    public function processBooking($userId, $showtimeId, $seatIds, $paymentMethod) {
-        return $this->bookingService->processBooking($userId, $showtimeId, $seatIds, $paymentMethod);
     }
 
     public function getUserBookings($userId) {

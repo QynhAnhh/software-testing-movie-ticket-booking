@@ -102,7 +102,7 @@ class UserModel {
 
     public function getAll() {
         $query = "
-            SELECT u.*, 
+            SELECT u.*,
                    COUNT(b.id) as total_bookings,
                    COALESCE(SUM(CASE WHEN b.status='paid' THEN b.total_price ELSE 0 END), 0) as total_spent
             FROM users u

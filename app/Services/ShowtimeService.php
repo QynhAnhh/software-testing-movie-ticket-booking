@@ -149,8 +149,30 @@ class ShowtimeService {
         return null;
     }
 
+
+    public function getShowtimesByMovie($movieId) {
+        if ($movieId <= 0) {
+            return [];
+        }
+
+        return $this->model->getShowtimesByMovie($movieId);
+    }
+
+    public function getShowtimeDetails($showtimeId) {
+        if ($showtimeId <= 0) {
+            return null;
+        }
+
+        return $this->model->getShowtimeDetails($showtimeId);
+    }
+
     private function computeEndTime($startTime, $durationMinutes) {
         $start = strtotime($startTime);
         return date('H:i:s', $start + ($durationMinutes * 60));
+    }
+
+    public function getShowtimeById($id) {
+        if ($id <= 0) return null;
+        return $this->model->getById($id);
     }
 }

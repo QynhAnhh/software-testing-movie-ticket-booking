@@ -1,14 +1,20 @@
 <?php
+
 namespace App\Models;
 
 use App\Config\Database;
 
+
 class ReviewModel {
+
     private $conn;
+
 
     public function __construct() {
         $this->conn = Database::getConnection();
     }
+
+
 
     public function getByMovieId($movieId) {
         $query = "

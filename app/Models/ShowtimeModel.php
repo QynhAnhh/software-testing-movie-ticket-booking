@@ -18,30 +18,8 @@ class ShowtimeModel {
         return mysqli_fetch_assoc($result);
     }
 
-    public function getDetailById($id) {
-        $query = "
-            SELECT st.id AS showtime_id, st.movie_id, st.room_id, st.show_date,
-                   st.start_time, st.end_time, st.base_price, st.status,
-                   m.title AS movie_title, m.poster AS movie_poster,
-                   m.duration AS movie_duration, m.age_restriction AS movie_age_restriction,
-                   r.name AS room_name,
-                   t.id AS theatre_id, t.name AS theatre_name,
-                   t.address AS theatre_address, t.city AS theatre_city
-            FROM showtimes st
-            INNER JOIN movies m ON m.id = st.movie_id
-            INNER JOIN rooms r ON r.id = st.room_id
-            INNER JOIN theatres t ON t.id = r.theatre_id
-            WHERE st.id = ?
-            LIMIT 1
-        ";
-        $stmt = mysqli_prepare($this->conn, $query);
-        mysqli_stmt_bind_param($stmt, "i", $id);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        return $result ? mysqli_fetch_assoc($result) : null;
-    }
-
-    public function findConflict($roomId, $showDate, $startTime, $excludeId = null) {
+    public function findConflict($roomId, $showDate, $startTime, $excludeId = null)
+    {
         if ($excludeId) {
             $stmt = mysqli_prepare(
                 $this->conn,
@@ -60,7 +38,8 @@ class ShowtimeModel {
         return mysqli_fetch_assoc($result);
     }
 
-    public function getMovieDuration($movieId) {
+    public function getMovieDuration($movieId)
+    {
         $stmt = mysqli_prepare($this->conn, "SELECT duration FROM movies WHERE id = ?");
         mysqli_stmt_bind_param($stmt, "i", $movieId);
         mysqli_stmt_execute($stmt);
@@ -150,35 +129,6 @@ class ShowtimeModel {
         return $showtimes;
     }
 
-    public function getByMovieId($movieId) {
-        $query = "
-            SELECT st.id AS showtime_id, st.movie_id, st.room_id, st.show_date,
-                   st.start_time, st.end_time, st.base_price, st.status,
-                   r.name AS room_name,
-                   t.id AS theatre_id, t.name AS theatre_name,
-                   t.address AS theatre_address, t.city AS theatre_city
-            FROM showtimes st
-            INNER JOIN rooms r ON r.id = st.room_id
-            INNER JOIN theatres t ON t.id = r.theatre_id
-            WHERE st.movie_id = ?
-              AND st.status = 'active'
-              AND st.show_date >= CURDATE()
-            ORDER BY st.show_date ASC, st.start_time ASC
-        ";
-        $stmt = mysqli_prepare($this->conn, $query);
-        mysqli_stmt_bind_param($stmt, "i", $movieId);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-
-        $showtimes = [];
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $showtimes[] = $row;
-            }
-        }
-        return $showtimes;
-    }
-
     public function getAllMovies() {
         $query = "SELECT id, title, duration, status FROM movies ORDER BY title ASC";
         $result = mysqli_query($this->conn, $query);
@@ -212,4 +162,77 @@ class ShowtimeModel {
     public function getError() {
         return mysqli_error($this->conn);
     }
+
+    public function getShowtimesByMovie($movieId) {
+        $query = "
+            SELECT st.id AS showtime_id, st.movie_id, st.room_id, st.show_date,
+                   st.start_time, st.end_time, st.base_price, st.status,
+                   r.name AS room_name,
+                   t.id AS theatre_id, t.name AS theatre_name,
+                   t.address AS theatre_address, t.city AS theatre_city
+            FROM showtimes st
+            INNER JOIN rooms r ON r.id = st.room_id
+            INNER JOIN theatres t ON t.id = r.theatre_id
+            WHERE st.movie_id = ?
+              AND st.status = 'active'
+              AND st.show_date >= CURDATE()
+            ORDER BY st.show_date ASC, st.start_time ASC
+        ";
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $movieId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $showtimes = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $showtimes[] = $row;
+            }
+        }
+        return $showtimes;
+    }
+
+    public function getShowtimeDetails($showtimeId) {
+        $query = "
+            SELECT
+                st.id AS showtime_id,
+                st.id,
+                st.movie_id,
+                st.room_id,
+                st.show_date,
+                st.start_time,
+                st.end_time,
+                st.base_price,
+                st.status,
+
+                r.name AS room_name,
+
+                t.name AS theatre_name,
+                t.address AS theatre_address,
+                t.city AS theatre_city,
+
+                m.title AS movie_title,
+                m.poster AS movie_poster,
+                m.poster,
+                m.duration,
+                m.country,
+                m.age_restriction
+            FROM showtimes st
+            INNER JOIN rooms r ON r.id = st.room_id
+            INNER JOIN theatres t ON t.id = r.theatre_id
+            INNER JOIN movies m ON m.id = st.movie_id
+            WHERE st.id = ?
+            LIMIT 1
+        ";
+
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $showtimeId);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+
+        return mysqli_fetch_assoc($result);
+    }
+
+
 }
