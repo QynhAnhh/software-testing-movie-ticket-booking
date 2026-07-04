@@ -10,26 +10,28 @@ class BookingController {
         $this->bookingService = new BookingService();
     }
 
+    // handle request
     public function handleRequest() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-            $action = $_POST['action'];
-
-            if ($action === 'book_ticket') {
-                $userId = (int)($_SESSION['user']['id'] ?? 0);
-                $showtimeId = (int)($_POST['showtime_id'] ?? 0);
-                $seatIds = $_POST['seat_ids'] ?? [];
-                $paymentMethod = $_POST['payment_method'] ?? 'cash';
-
-                return $this->bookingService->processBooking($userId, $showtimeId, $seatIds, $paymentMethod);
-            }
-
-            if ($action === 'cancel_booking') {
-                $userId = (int)($_SESSION['user']['id'] ?? 0);
-                $bookingId = (int)($_POST['booking_id'] ?? 0);
-
-                return $this->bookingService->cancelBooking($userId, $bookingId);
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return null;
         }
+
+        $action = $_POST['action'] ?? '';
+
+        if ($action === 'book_ticket') {
+            $userId = (int)($_SESSION['user']['id'] ?? 0);
+            $showtimeId = (int)($_POST['showtime_id'] ?? 0);
+            $seatIds = $_POST['seats'] ?? [];
+            $paymentMethod = $_POST['payment_method'] ?? 'cash';
+
+            return $this->service->processBooking(
+                $userId,
+                $showtimeId,
+                $seatIds,
+                $paymentMethod
+            );
+        }
+
         return null;
     }
 

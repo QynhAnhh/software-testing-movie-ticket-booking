@@ -5,15 +5,46 @@ use App\Controllers\ShowtimeController;
 use App\Controllers\SeatController;
 use App\Controllers\TicketController;
 
-$showtimeId = (int)($_GET['showtime_id'] ?? 0);
+$showtimeController = new ShowtimeController();
+$seatController = new SeatController();
+$ticketController = new TicketController();
+$bookingController = new BookingController();
+
+$result = $bookingController->handleRequest();
+if ($result) {
+    if ($result['status'] === 'success') {
+        header(
+            "Location: booking_history.php"
+        );
+        exit;
+    }
+    echo "
+        <script>
+            alert('{$result['message']}');
+        </script>
+    ";
+}
+
+$showtimeId = (int)(
+    $_GET['showtime_id']
+    ??
+    $_POST['showtime_id']
+    ??
+    0
+);
+
 if ($showtimeId <= 0) {
     header('Location: index.php');
     exit;
 }
 
-$showtimeController = new ShowtimeController();
-$seatController = new SeatController();
-$ticketController = new TicketController();
+if ($result) {
+    if ($result['status'] === 'success') {
+        header("Location: booking_history.php");
+        exit;
+    }
+    echo "<script>alert('{$result['message']}')</script>";
+}
 
 $showtime = $showtimeController->getShowtimeDetail($showtimeId);
 if (!$showtime) {
