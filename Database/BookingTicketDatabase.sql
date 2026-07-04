@@ -179,6 +179,7 @@ CREATE TABLE tickets (
     FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
     FOREIGN KEY (showtime_id) REFERENCES showtimes(id) ON DELETE CASCADE,
     FOREIGN KEY (seat_id) REFERENCES seats(id) ON DELETE CASCADE
+    INDEX idx_ticket_showtime_seat_status (showtime_id, seat_id, status)
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
