@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'config.php';
 
 use App\Controllers\MovieController;
