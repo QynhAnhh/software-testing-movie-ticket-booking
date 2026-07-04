@@ -29,6 +29,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/home.css">
+    <?php if (in_array($currentPage, ['login.php', 'registration.php'], true)): ?>
+        <link rel="stylesheet" href="css/auth.css">
+    <?php endif; ?>
 </head>
 <body>
     <header class="site-header sticky-top">
@@ -39,7 +42,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     <span>Cinema Star</span>
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Mở menu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
