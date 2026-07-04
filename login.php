@@ -4,6 +4,7 @@ require_once 'config.php';
 use App\Controllers\AuthController;
 
 $authController = new AuthController();
+$authController->handleRegister();
 $authController->handleLogin();
 
 if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
@@ -15,64 +16,113 @@ if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
     exit;
 }
 
+$showRegister = ($_GET['mode'] ?? '') === 'register';
+
 require_once 'header.php';
 ?>
 
-<div class="container main-content" style="min-height: 500px; display: flex; justify-content: center; align-items: center;">
-    <div class="login-box" style="width: 100%; max-width: 400px; padding: 30px; background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+<div class="auth-page-wrapper">
+    <div class="auth-container <?= $showRegister ? 'active' : '' ?>" id="container">
+        <div class="form-container sign-up">
+            <form action="login.php?mode=register" method="POST">
+                <input type="hidden" name="auth_action" value="register">
+                <h1>Tạo tài khoản</h1>
 
-        <h2 style="text-align: center; margin-bottom: 20px;">Đăng Nhập</h2>
+                <?php if ($showRegister && isset($_SESSION['error_msg'])): ?>
+                    <div class="auth-alert auth-alert-error">
+                        <?= htmlspecialchars($_SESSION['error_msg']) ?>
+                        <?php unset($_SESSION['error_msg']); ?>
+                    </div>
+                <?php endif; ?>
 
-        <?php if (isset($_SESSION['error_msg'])): ?>
-            <div style="background:#f8d7da;color:#721c24;padding:10px;border-radius:5px;margin-bottom:15px;text-align:center;">
-                <?= $_SESSION['error_msg']; ?>
-                <?php unset($_SESSION['error_msg']); ?>
+                <div class="input-row">
+                    <input type="text" name="first_name" placeholder="Họ" required />
+                    <input type="text" name="last_name" placeholder="Tên" required />
+                </div>
+
+                <input type="email" name="email" placeholder="Email" required />
+                <input type="text" name="phone" placeholder="Số điện thoại" required />
+
+                <div class="auth-date-field">
+                    <label for="birth_date">Ngày sinh</label>
+                    <input type="date" id="birth_date" name="birth_date" />
+                </div>
+
+                <div class="input-row">
+                    <input type="password" name="password" placeholder="Mật khẩu" required />
+                    <input type="password" name="confirm_password" placeholder="Xác nhận mật khẩu" required />
+                </div>
+
+                <button type="submit" class="auth-action">Đăng ký</button>
+
+                <p class="auth-mobile-switch">
+                    Đã có tài khoản?
+                    <button type="button" class="auth-inline-switch" data-auth-switch="login">Đăng nhập</button>
+                </p>
+            </form>
+        </div>
+
+        <div class="form-container sign-in">
+            <form action="login.php" method="POST">
+                <input type="hidden" name="auth_action" value="login">
+                <h1>Đăng nhập</h1>
+
+                <?php if (!$showRegister && isset($_SESSION['error_msg'])): ?>
+                    <div class="auth-alert auth-alert-error">
+                        <?= htmlspecialchars($_SESSION['error_msg']) ?>
+                        <?php unset($_SESSION['error_msg']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['success_msg'])): ?>
+                    <div class="auth-alert auth-alert-success">
+                        <?= htmlspecialchars($_SESSION['success_msg']) ?>
+                        <?php unset($_SESSION['success_msg']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <input type="email" name="email" required placeholder="Email" />
+                <input type="password" name="password" required placeholder="Mật khẩu" />
+
+                <button type="submit" class="auth-action">Đăng nhập</button>
+
+                <p class="auth-mobile-switch">
+                    Chưa có tài khoản?
+                    <button type="button" class="auth-inline-switch" data-auth-switch="register">Đăng ký ngay</button>
+                </p>
+            </form>
+        </div>
+
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Xin chào!</h1>
+                    <p>Đăng ký với thông tin cá nhân của bạn để sử dụng tất cả tính năng của trang web</p>
+                    <button type="button" class="hidden" id="register" data-auth-switch="register">Đăng ký</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Chào mừng trở lại!</h1>
+                    <p>Nhập thông tin cá nhân của bạn để sử dụng tất cả tính năng của trang web</p>
+                    <button type="button" class="hidden" id="login" data-auth-switch="login">Đăng nhập</button>
+                </div>
             </div>
-        <?php endif; ?>
-
-        <?php if (isset($_SESSION['success_msg'])): ?>
-            <div style="background:#d4edda;color:#155724;padding:10px;border-radius:5px;margin-bottom:15px;text-align:center;">
-                <?= $_SESSION['success_msg']; ?>
-                <?php unset($_SESSION['success_msg']); ?>
-            </div>
-        <?php endif; ?>
-
-        <form action="" method="POST">
-
-            <div style="margin-bottom:15px;">
-                <label>Email</label>
-                <input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="Nhập email"
-                    style="width:100%;padding:10px;">
-            </div>
-
-            <div style="margin-bottom:20px;">
-                <label>Mật khẩu</label>
-                <input
-                    type="password"
-                    name="password"
-                    required
-                    placeholder="Nhập mật khẩu"
-                    style="width:100%;padding:10px;">
-            </div>
-
-            <button
-                type="submit"
-                style="width:100%;padding:12px;background:#e50914;color:#fff;border:none;border-radius:4px;">
-                Đăng nhập
-            </button>
-
-        </form>
-
-        <p style="text-align:center;margin-top:15px;">
-            Chưa có tài khoản?
-            <a href="registration.php">Đăng ký ngay</a>
-        </p>
-
+        </div>
     </div>
 </div>
+
+<script>
+    const container = document.getElementById('container');
+    const switchButtons = document.querySelectorAll('[data-auth-switch]');
+
+    switchButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const mode = button.dataset.authSwitch;
+            const nextUrl = mode === 'register' ? 'login.php?mode=register' : 'login.php';
+
+            container.classList.toggle('active', mode === 'register');
+            window.history.replaceState(null, '', nextUrl);
+        });
+    });
+</script>
 
 <?php require_once 'footer.php'; ?>

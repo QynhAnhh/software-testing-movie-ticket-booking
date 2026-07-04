@@ -113,7 +113,92 @@ class SeatModel {
         return $seats;
     }
 
+    public function getByRoomIdWithType($roomId) {
+        $query = "
+            SELECT s.id AS seat_id, s.room_id, s.seat_row, s.seat_number,
+                   s.seat_type_id, s.is_active,
+                   st.name AS seat_type_name, st.price AS seat_type_price
+            FROM seats s
+            INNER JOIN seat_types st ON st.id = s.seat_type_id
+            WHERE s.room_id = ?
+            ORDER BY s.seat_row ASC, s.seat_number ASC
+        ";
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $roomId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $seats = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $seats[] = $row;
+            }
+        }
+        return $seats;
+    }
+
     public function getError() {
         return mysqli_error($this->conn);
+    }
+
+
+    /**
+     * Lấy ghế theo phòng
+     */
+    public function getByRoom($room_id) {
+        $sql = "SELECT s.*, st.name as seat_type_name, st.price as seat_type_price
+                FROM seats s
+                LEFT JOIN seat_types st ON s.seat_type_id = st.id
+                WHERE s.room_id = ?
+                ORDER BY s.seat_row, s.seat_number";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $room_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $seats = [];
+        while ($row = $result->fetch_assoc()) {
+            $seats[] = $row;
+        }
+        return $seats;
+    }
+
+    /**
+     * Lấy ghế đã đặt theo suất chiếu
+     */
+    public function getBookedSeats($showtime_id) {
+        $sql = "SELECT seat_id FROM tickets WHERE showtime_id = ? AND status != 'canceled'";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $showtime_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $booked = [];
+        while ($row = $result->fetch_assoc()) {
+            $booked[] = $row['seat_id'];
+        }
+        return $booked;
+    }
+
+
+
+
+    public function getByIds($seatIds) {
+        if (empty($seatIds)) return [];
+
+        $placeholders = implode(',', array_fill(0, count($seatIds), '?'));
+        $sql = "SELECT s.*, st.name as seat_type_name, st.price as seat_type_price
+                FROM seats s
+                LEFT JOIN seat_types st ON s.seat_type_id = st.id
+                WHERE s.id IN ($placeholders)";
+        $stmt = $this->conn->prepare($sql);
+
+        $types = str_repeat('i', count($seatIds));
+        $stmt->bind_param($types, ...$seatIds);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $seats = [];
+        while ($row = $result->fetch_assoc()) {
+            $seats[] = $row;
+        }
+        return $seats;
     }
 }

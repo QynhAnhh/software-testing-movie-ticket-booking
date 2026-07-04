@@ -59,7 +59,11 @@ class MovieService {
         return $this->model->getMovieByIdWithGenres($id);
     }
 
-    public function getNowShowingMovies() {
-        return $this->model->getNowShowingMovies();
+    public function getNowShowingMovies($limit = null) {
+        return $this->model->getNowShowingMovies($limit);
+    }
+
+    public function getComingMovies($limit = null) {
+        return $this->model->getComingMovies($limit);
     }
 }

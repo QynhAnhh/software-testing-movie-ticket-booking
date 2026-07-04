@@ -10,16 +10,154 @@ class BookingModel {
         $this->conn = Database::getConnection();
     }
 
-    // TODO: Viết hàm truy vấn lấy danh sách vé của User
+    public function beginTransaction() {
+        mysqli_begin_transaction($this->conn);
+    }
+
+    public function commit() {
+        mysqli_commit($this->conn);
+    }
+
+    public function rollback() {
+        mysqli_rollback($this->conn);
+    }
+
+    //
+
+    public function getById($id) {
+        $stmt = mysqli_prepare($this->conn, "SELECT * FROM bookings WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        return $result ? mysqli_fetch_assoc($result) : null;
+    }
+
+    public function getByIdAndUser($id, $userId) {
+        $stmt = mysqli_prepare($this->conn, "SELECT * FROM bookings WHERE id = ? AND user_id = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt, "ii", $id, $userId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        return $result ? mysqli_fetch_assoc($result) : null;
+    }
+
+    //
     public function getBookingsByUser($userId) {
-        // SELECT * FROM bookings WHERE user_id = ?
+        $query = "
+            SELECT
+                b.*,
+                GROUP_CONCAT(CONCAT(s.seat_row, s.seat_number) ORDER BY s.seat_row, s.seat_number SEPARATOR ', ') AS seat_names,
+                GROUP_CONCAT(CONCAT(s.seat_row, s.seat_number) ORDER BY s.seat_row, s.seat_number SEPARATOR ', ') AS seats,
+                st.show_date,
+                st.start_time,
+                st.end_time,
+                m.title AS movie_title,
+                m.poster AS movie_poster,
+                r.name AS room_name,
+                th.name AS theatre_name,
+                th.address AS theatre_address,
+                th.city AS theatre_city
+            FROM bookings b
+            INNER JOIN tickets t ON t.booking_id = b.id
+            INNER JOIN seats s ON s.id = t.seat_id
+            INNER JOIN showtimes st ON st.id = t.showtime_id
+            INNER JOIN movies m ON m.id = st.movie_id
+            INNER JOIN rooms r ON r.id = st.room_id
+            INNER JOIN theatres th ON th.id = r.theatre_id
+            WHERE b.user_id = ?
+            GROUP BY b.id
+            ORDER BY b.created_at DESC
+        ";
+
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+
+        $bookings = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $bookings[] = $row;
+        }
+
+        return $bookings;
+    }
+    //
+
+    //
+    public function createBooking($userId, $totalPrice, $paymentMethod) {
+        $status = 'paid';
+
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "INSERT INTO bookings (user_id, total_price, payment_method, status)
+             VALUES (?, ?, ?, ?)"
+        );
+
+        mysqli_stmt_bind_param($stmt, "idss", $userId, $totalPrice, $paymentMethod, $status);
+
+        if (mysqli_stmt_execute($stmt)) {
+            return mysqli_insert_id($this->conn);
+        }
+
+        return false;
     }
 
-    // TODO: Viết hàm insert vé mới
-    public function createBooking($data) {
-        // INSERT INTO bookings ...
+    public function cancelBooking($bookingId, $userId) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "
+            UPDATE bookings
+            SET status = 'canceled'
+            WHERE id = ?
+              AND user_id = ?
+              AND status != 'canceled'
+            "
+        );
+
+        mysqli_stmt_bind_param($stmt, "ii", $bookingId, $userId);
+        if (!mysqli_stmt_execute($stmt) || mysqli_stmt_affected_rows($stmt) < 1) {
+            return false;
+        }
+
+        $stmtTicket = mysqli_prepare(
+            $this->conn,
+            "
+            UPDATE tickets
+            SET status = 'canceled'
+            WHERE booking_id = ?
+              AND status != 'canceled'
+            "
+        );
+
+        mysqli_stmt_bind_param($stmtTicket, "i", $bookingId);
+
+        if (!mysqli_stmt_execute($stmtTicket)) {
+            return false;
+        }
+
+        return true;
+    }
+    //
+
+    public function getPrimaryShowtimeByBookingId($bookingId) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT st.show_date, st.start_time
+             FROM tickets t
+             INNER JOIN showtimes st ON st.id = t.showtime_id
+             WHERE t.booking_id = ?
+             ORDER BY t.id ASC
+             LIMIT 1"
+        );
+        mysqli_stmt_bind_param($stmt, "i", $bookingId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        return $result ? mysqli_fetch_assoc($result) : null;
     }
 
+    //
     public function getTotalBookings() {
         $result = mysqli_query($this->conn, "SELECT COUNT(*) as count FROM bookings");
         if ($result) {
@@ -27,6 +165,7 @@ class BookingModel {
         }
         return 0;
     }
+    //
 
     public function getTotalRevenue() {
         $result = mysqli_query($this->conn, "SELECT SUM(total_price) as total FROM bookings WHERE status='paid'");
@@ -35,7 +174,27 @@ class BookingModel {
         }
         return 0;
     }
+    //
 
+    public function getTotalSpentByUser($userId) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT SUM(t.price) AS total_spent
+             FROM tickets t
+             INNER JOIN bookings b ON b.id = t.booking_id
+             WHERE b.user_id = ?
+               AND b.status = 'paid'
+               AND t.status != 'canceled'"
+        );
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = $result ? mysqli_fetch_assoc($result) : null;
+
+        return ($row && $row['total_spent'] !== null) ? (int)$row['total_spent'] : 0;
+    }
+
+    //
     public function getTodayBookingsCount() {
         $result = mysqli_query($this->conn, "SELECT COUNT(*) as count FROM bookings WHERE DATE(created_at) = CURDATE()");
         if ($result) {
@@ -43,8 +202,11 @@ class BookingModel {
         }
         return 0;
     }
+    //
 
+    //
     public function getError() {
         return mysqli_error($this->conn);
     }
+    //
 }

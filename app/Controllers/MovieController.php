@@ -56,8 +56,12 @@ class MovieController {
         return $this->movieService->getMovieById($id);
     }
 
-    public function getNowShowingMovies() {
-        return $this->movieService->getNowShowingMovies();
+    public function getNowShowingMovies($limit = null) {
+        return $this->movieService->getNowShowingMovies($limit);
+    }
+
+    public function getComingMovies($limit = null) {
+        return $this->movieService->getComingMovies($limit);
     }
 
     public function getAllGenres() {

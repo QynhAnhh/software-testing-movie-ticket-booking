@@ -175,10 +175,10 @@ CREATE TABLE tickets (
     status ENUM('booked', 'used', 'canceled') DEFAULT 'booked',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE (showtime_id, seat_id),
     FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
     FOREIGN KEY (showtime_id) REFERENCES showtimes(id) ON DELETE CASCADE,
-    FOREIGN KEY (seat_id) REFERENCES seats(id) ON DELETE CASCADE
+    FOREIGN KEY (seat_id) REFERENCES seats(id) ON DELETE CASCADE,
+    INDEX idx_ticket_showtime_seat_status (showtime_id, seat_id, status)
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -339,36 +339,35 @@ INSERT INTO theatres (name, address, city, phone, total_screens) VALUES
 
 -- Rooms
 INSERT INTO rooms (theatre_id, name, total_seats) VALUES
-(1, 'Phòng 1', 40),
-(1, 'Phòng 2', 40),
-(2, 'Phòng 3', 40),
-(2, 'Phòng 4', 40);
+(1, 'Phòng 1', 96),
+(1, 'Phòng 2', 96),
+(2, 'Phòng 3', 96),
+(2, 'Phòng 4', 96);
 
 -- seat_types
 INSERT INTO seat_types (name, price) VALUES
 ('REGULAR', 0),
-('VIP', 20000),
-('COUPLE', 50000);
+('VIP', 20000);
 
--- Seats
-INSERT INTO seats (room_id, seat_row, seat_number, seat_type_id) VALUES
-(1, 'A', 1, 1),(1, 'A', 2, 1),(1, 'A', 3, 1),(1, 'A', 4, 1),(1, 'A', 5, 1),
-(1, 'B', 1, 1),(1, 'B', 2, 1),(1, 'B', 3, 1),(1, 'B', 4, 1),(1, 'B', 5, 1),
-(1, 'C', 1, 1),(1, 'C', 2, 1),(1, 'C', 3, 1),(1, 'C', 4, 1),(1, 'C', 5, 1),
-(1, 'D', 1, 2),(1, 'D', 2, 2),(1, 'D', 3, 2),(1, 'D', 4, 2),(1, 'D', 5, 2),
-(1, 'E', 1, 2),(1, 'E', 2, 2),(1, 'E', 3, 2),(1, 'E', 4, 2),(1, 'E', 5, 2),
-(1, 'F', 1, 2),(1, 'F', 2, 2),(1, 'F', 3, 2),(1, 'F', 4, 2),(1, 'F', 5, 2),
-(1, 'G', 1, 2),(1, 'G', 2, 2),(1, 'G', 3, 2),(1, 'G', 4, 2),(1, 'G', 5, 2),
-(1, 'H', 1, 3),(1, 'H', 2, 3),(1, 'H', 3, 3),(1, 'H', 4, 3),(1, 'H', 5, 3),
-(2, 'A', 1, 1),(2, 'A', 2, 1),(2, 'A', 3, 1),(2, 'A', 4, 1),(2, 'A', 5, 1),
-(2, 'B', 1, 1),(2, 'B', 2, 1),(2, 'B', 3, 1),(2, 'B', 4, 1),(2, 'B', 5, 1),
-(2, 'C', 1, 1),(2, 'C', 2, 1),(2, 'C', 3, 1),(2, 'C', 4, 1),(2, 'C', 5, 1),
-(2, 'D', 1, 2),(2, 'D', 2, 2),(2, 'D', 3, 2),(2, 'D', 4, 2),(2, 'D', 5, 2),
-(2, 'E', 1, 2),(2, 'E', 2, 2),(2, 'E', 3, 2),(2, 'E', 4, 2),(2, 'E', 5, 2),
-(2, 'F', 1, 2),(2, 'F', 2, 2),(2, 'F', 3, 2),(2, 'F', 4, 2),(2, 'F', 5, 2),
-(2, 'G', 1, 2),(2, 'G', 2, 2),(2, 'G', 3, 2),(2, 'G', 4, 2),(2, 'G', 5, 2),
-(2, 'H', 1, 3),(2, 'H', 2, 3),(2, 'H', 3, 3),(2, 'H', 4, 3),(2, 'H', 5, 3);
-
+-- Seats: mỗi phòng có 8 hàng (A-H), mỗi hàng 12 ghế.
+-- A-C: REGULAR, D-H: VIP.
+INSERT INTO seats (room_id, seat_row, seat_number, seat_type_id)
+SELECT r.id, seat_rows.seat_row, seat_numbers.seat_number,
+       CASE
+           WHEN seat_rows.seat_row IN ('A', 'B', 'C') THEN 1
+           ELSE 2
+       END AS seat_type_id
+FROM rooms r
+CROSS JOIN (
+    SELECT 'A' AS seat_row UNION ALL SELECT 'B' UNION ALL SELECT 'C' UNION ALL SELECT 'D'
+    UNION ALL SELECT 'E' UNION ALL SELECT 'F' UNION ALL SELECT 'G' UNION ALL SELECT 'H'
+) AS seat_rows
+CROSS JOIN (
+    SELECT 1 AS seat_number UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+    UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8
+    UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12
+) AS seat_numbers
+ORDER BY r.id, seat_rows.seat_row, seat_numbers.seat_number;
 -- showtimes
 INSERT INTO showtimes (movie_id, room_id, show_date, start_time, end_time, base_price) VALUES
 (1, 1, '2026-07-01', '09:00:00', '12:01:00', 90000),

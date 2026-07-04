@@ -40,8 +40,16 @@ class UserController {
         return null;
     }
 
+    public function getAllUsers() {
+        return $this->service->getAllUsers();
+    }
+
+    public function getUsersByFilter($keyword) {
+        return $this->service->getUsersByFilter($keyword);
+    }
+
     public function searchUsers($keyword = '') {
-        return $this->service->searchUsers($keyword);
+        return trim($keyword) === '' ? $this->getAllUsers() : $this->getUsersByFilter($keyword);
     }
 
     public function getUserById($id) {

@@ -1,69 +1,55 @@
-    </main> 
-    
-    <footer class="main-footer">
+    </main>
+
+    <footer class="site-footer">
         <div class="container">
-            <div class="footer-top">
-                <div class="footer-col">
-                    <h3>GIỚI THIỆU</h3>
+            <div class="row g-4 align-items-start">
+                <div class="col-lg-4">
+                    <a class="footer-brand" href="index.php">
+                        <i class="bi bi-film"></i>
+                        <span>Cinema Star</span>
+                    </a>
+                    <p class="footer-text mt-3 mb-0">
+                        Hệ thống đặt vé xem phim online, cập nhật phim mới và lịch chiếu nhanh chóng.
+                    </p>
+                </div>
+
+                <div class="col-6 col-lg-2">
+                    <h3>Điều hướng</h3>
                     <ul>
-                        <li><a href="#">Về Chúng Tôi</a></li>
-                        <li><a href="#">Thoả Thuận Sử Dụng</a></li>
-                        <li><a href="#">Quy Chế Hoạt Động</a></li>
-                        <li><a href="#">Chính Sách Bảo Mật</a></li>
+                        <li><a href="index.php">Trang chủ</a></li>
+                        <li><a href="index.php#movies-list">Phim</a></li>
+                        <li><a href="schedule.php">Lịch chiếu</a></li>
                     </ul>
                 </div>
 
-                <div class="footer-col">
-                    <h3>HỖ TRỢ</h3>
+                <div class="col-6 col-lg-3">
+                    <h3>Hỗ trợ</h3>
                     <ul>
-                        <li><a href="#">Góp Ý</a></li>
-                        <li><a href="#">Câu Hỏi Thường Gặp</a></li>
+                        <li><a href="profile.php">Hồ sơ cá nhân</a></li>
+                        <li><a href="booking_history.php">Lịch sử đặt vé</a></li>
+                        <li><a href="login.php">Đăng nhập</a></li>
+                        <li><a href="login.php?mode=register">Đăng ký</a></li>
                     </ul>
                 </div>
 
-                <div class="footer-col">
-                    <h3>HỆ THỐNG RẠP</h3>
-                    <ul>
-                        <li><a href="schedule.php">Tất Cả Hệ Thống Rạp</a></li>
-                        <li><a href="schedule.php?theater_id=1">Cinema Quốc Thanh (TP.HCM)</a></li>
-                        <li><a href="schedule.php?theater_id=2">Cinema Sinh Viên (TP.HCM)</a></li>
-                        <li><a href="schedule.php?theater_id=3">Cinema Đà Lạt (Lâm Đồng)</a></li>
-                        <li><a href="schedule.php?theater_id=4">Cinema Lâm Đồng (Đức Trọng)</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-col footer-col-right">
-                    <!-- Cập nhật đường dẫn ảnh -->
-                    <img src="images/logo.png" alt="Logo" class="footer-logo-main">
-                    <div class="social-icons">
-                        <a href="#"><img src="images/svg/footer-facebook.svg" alt="Facebook"></a>
-                        <a href="#"><img src="images/svg/footer-zalo.svg" alt="Zalo"></a>
+                <div class="col-lg-3">
+                    <h3>Liên hệ</h3>
+                    <p class="footer-text mb-2">Hotline: 1900 3333</p>
+                    <p class="footer-text mb-3">Email: hotro@moviebooking.vn</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Facebook"><img src="images/svg/footer-facebook.svg" alt="Facebook"></a>
+                        <a href="#" aria-label="Zalo"><img src="images/svg/footer-zalo.svg" alt="Zalo"></a>
                     </div>
-                    <img src="images/bct.png" alt="Đã thông báo Bộ Công Thương" class="cert-img">
                 </div>
             </div>
 
-            <div class="footer-divider"></div>
-
             <div class="footer-bottom">
-                <div class="company-logo">
-                    <img src="images/logo.png" alt="Company Logo">
-                </div>
-                <div class="company-info">
-                    <h4>CÔNG TY CỔ PHẦN MOVIE TICKET BOOKING</h4>
-                    <p>MST: 0133333333</p>
-                    <p>2 Võ Oanh, Phường Thạnh Mỹ Tây, Thành phố Hồ Chí Minh, Việt Nam</p>
-                    <p class="contact-info">
-                        <span>📞 028.33.333.333</span> - 
-                        <span>📞 19003333 (9:00 - 22:00)</span> - 
-                        <span>✉️ hotro@moviebooking.vn</span>
-                    </p>
-                </div>
+                <span>Movie Ticket Booking &copy; 2026</span>
+                <span>2 Võ Oanh, TP. Hồ Chí Minh</span>
             </div>
         </div>
     </footer>
-    
-    <!-- Bạn có thể tạo file js/main.js sau này để viết JavaScript tuỳ chỉnh -->
-    <!-- <script src="js/main.js"></script> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

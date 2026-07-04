@@ -82,8 +82,16 @@ class UserService {
         return ['status' => 'error', 'message' => 'Lỗi khi xóa: ' . $this->model->getError()];
     }
 
+    public function getAllUsers() {
+        return $this->model->getAll();
+    }
+
+    public function getUsersByFilter($keyword) {
+        return $this->model->getByFilter($keyword);
+    }
+
     public function searchUsers($keyword = '') {
-        return $this->model->searchUsers($keyword);
+        return trim($keyword) === '' ? $this->getAllUsers() : $this->getUsersByFilter($keyword);
     }
 
     public function getUserById($id) {

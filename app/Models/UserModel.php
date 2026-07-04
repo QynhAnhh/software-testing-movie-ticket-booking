@@ -46,8 +46,8 @@ class UserModel {
 
     public function insert($data) {
         $stmt = mysqli_prepare($this->conn, "INSERT INTO users (first_name, last_name, email, password, phone, birth_date, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "sssssss",
-            $data['first_name'], $data['last_name'], $data['email'],
+        mysqli_stmt_bind_param($stmt, "sssssss", 
+            $data['first_name'], $data['last_name'], $data['email'], 
             $data['password'], $data['phone'], $data['birth_date'], $data['role']
         );
         return mysqli_stmt_execute($stmt);
@@ -56,17 +56,41 @@ class UserModel {
     public function update($id, $data) {
         if (!empty($data['password'])) {
             $stmt = mysqli_prepare($this->conn, "UPDATE users SET first_name=?, last_name=?, email=?, password=?, phone=?, birth_date=?, role=? WHERE id=?");
-            mysqli_stmt_bind_param($stmt, "sssssssi",
-                $data['first_name'], $data['last_name'], $data['email'],
+            mysqli_stmt_bind_param($stmt, "sssssssi", 
+                $data['first_name'], $data['last_name'], $data['email'], 
                 $data['password'], $data['phone'], $data['birth_date'], $data['role'], $id
             );
         } else {
             $stmt = mysqli_prepare($this->conn, "UPDATE users SET first_name=?, last_name=?, email=?, phone=?, birth_date=?, role=? WHERE id=?");
-            mysqli_stmt_bind_param($stmt, "ssssssi",
-                $data['first_name'], $data['last_name'], $data['email'],
+            mysqli_stmt_bind_param($stmt, "ssssssi", 
+                $data['first_name'], $data['last_name'], $data['email'], 
                 $data['phone'], $data['birth_date'], $data['role'], $id
             );
         }
+        return mysqli_stmt_execute($stmt);
+    }
+
+    public function updateProfile($id, $data) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "UPDATE users SET first_name = ?, last_name = ?, email = ?, phone = ?, birth_date = ? WHERE id = ?"
+        );
+        mysqli_stmt_bind_param(
+            $stmt,
+            "sssssi",
+            $data['first_name'],
+            $data['last_name'],
+            $data['email'],
+            $data['phone'],
+            $data['birth_date'],
+            $id
+        );
+        return mysqli_stmt_execute($stmt);
+    }
+
+    public function updatePassword($id, $password) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE users SET password = ? WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "si", $password, $id);
         return mysqli_stmt_execute($stmt);
     }
 
@@ -76,36 +100,56 @@ class UserModel {
         return mysqli_stmt_execute($stmt);
     }
 
-    public function searchUsers($keyword = '') {
-        $where = "WHERE 1=1";
-        $params = [];
-        $types = "";
-
-        if (!empty($keyword)) {
-            $where .= " AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)";
-            $search = "%" . $keyword . "%";
-            array_push($params, $search, $search, $search, $search);
-            $types .= "ssss";
-        }
-
+    public function getAll() {
         $query = "
             SELECT u.*,
                    COUNT(b.id) as total_bookings,
                    COALESCE(SUM(CASE WHEN b.status='paid' THEN b.total_price ELSE 0 END), 0) as total_spent
             FROM users u
             LEFT JOIN bookings b ON u.id = b.user_id
-            $where
+            GROUP BY u.id
+            ORDER BY u.id DESC
+        ";
+
+        $result = mysqli_query($this->conn, $query);
+        return $this->fetchUsers($result);
+    }
+
+    public function getByFilter($keyword) {
+        $keyword = trim($keyword);
+        if ($keyword === '') {
+            return $this->getAll();
+        }
+
+        $search = "%" . $keyword . "%";
+        $query = "
+            SELECT u.*, 
+                   COUNT(b.id) as total_bookings,
+                   COALESCE(SUM(CASE WHEN b.status='paid' THEN b.total_price ELSE 0 END), 0) as total_spent
+            FROM users u
+            LEFT JOIN bookings b ON u.id = b.user_id
+            WHERE u.first_name LIKE ?
+               OR u.last_name LIKE ?
+               OR CONCAT(u.first_name, ' ', u.last_name) LIKE ?
+               OR u.email LIKE ?
+               OR u.phone LIKE ?
             GROUP BY u.id
             ORDER BY u.id DESC
         ";
 
         $stmt = mysqli_prepare($this->conn, $query);
-        if (!empty($params)) {
-            mysqli_stmt_bind_param($stmt, $types, ...$params);
-        }
+        mysqli_stmt_bind_param($stmt, "sssss", $search, $search, $search, $search, $search);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
+        return $this->fetchUsers($result);
+    }
+
+    public function searchUsers($keyword = '') {
+        return trim($keyword) === '' ? $this->getAll() : $this->getByFilter($keyword);
+    }
+
+    private function fetchUsers($result) {
         $users = [];
         if ($result) {
             while ($row = mysqli_fetch_assoc($result)) {

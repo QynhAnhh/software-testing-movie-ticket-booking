@@ -28,7 +28,9 @@ if (isset($_GET['edit_id'])) {
 
 // Tìm kiếm
 $search = $_GET['search'] ?? '';
-$users_list = $controller->searchUsers($search);
+$users_list = trim($search) !== ''
+    ? $controller->getUsersByFilter($search)
+    : $controller->getAllUsers();
 
 // Thống kê
 $stats = $controller->getStats();

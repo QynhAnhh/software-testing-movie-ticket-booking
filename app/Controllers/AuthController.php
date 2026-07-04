@@ -19,6 +19,10 @@ class AuthController
             return;
         }
 
+        if (($_POST['auth_action'] ?? 'login') !== 'login') {
+            return;
+        }
+
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
@@ -44,6 +48,10 @@ class AuthController
             return;
         }
 
+        if (($_POST['auth_action'] ?? 'register') !== 'register') {
+            return;
+        }
+
         $data = [
             'first_name' => trim($_POST['first_name'] ?? ''),
             'last_name' => trim($_POST['last_name'] ?? ''),
@@ -63,7 +71,7 @@ class AuthController
         }
 
         $_SESSION['error_msg'] = $result['message'];
-        header("Location: registration.php");
+        header("Location: login.php?mode=register");
         exit;
     }
 

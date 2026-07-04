@@ -131,6 +131,7 @@ class SeatService {
         return $this->model->getAllWithDetails($roomId);
     }
 
+
     public function getAllRooms() {
         return $this->roomModel->getAllWithTheatre();
     }
@@ -167,5 +168,34 @@ class SeatService {
     private function syncRoomTotalSeats($roomId) {
         $total = $this->model->countByRoomId($roomId);
         $this->roomModel->updateTotalSeats($roomId, $total);
+    }
+
+
+    /**
+     * Lấy ghế đã đặt theo suất chiếu
+     */
+    public function getBookedSeats($showtime_id) {
+        if ($showtime_id <= 0) return [];
+        return $this->model->getBookedSeats($showtime_id);
+    }
+
+    /**
+     * Lấy sơ đồ ghế (có trạng thái booked/available)
+     */
+     public function getSeatsByRoomId($roomId) {
+        $roomId = (int)$roomId;
+        if ($roomId <= 0) {
+            return [];
+        }
+        return $this->model->getByRoomIdWithType($roomId);
+    }
+
+
+    /**
+     * Lấy thông tin ghế theo danh sách ID
+     */
+    public function getSeatsByIds($seatIds) {
+        if (empty($seatIds)) return [];
+        return $this->seatModel->getByIds($seatIds);
     }
 }

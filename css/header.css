@@ -1,158 +1,154 @@
-.main-header {
-    background-color: var(--bg-header);
-    border-bottom: none;
+.site-header {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.85));
+    border-bottom: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
 }
 
-/* --- PHẦN TRÊN --- */
-.header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid var(--border-color);
+.site-header .navbar {
+    min-height: 70px;
 }
 
-.logo img {
-    height: 40px; /* Tùy chỉnh */
-}
-
-.header-top-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.search-box {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.search-box input {
-    padding: 10px 40px 10px 20px; 
-    border-radius: 20px;
-    border: none;
-    outline: none;
-    width: 250px;
-}
-
-.search-btn {
-    position: absolute;
-    right: 15px; 
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-.search-icon{
-    width: 18px; 
-    height: 18px;
-    opacity: 0.7;
-    transition: opacity 0.3s;
-}
-
-.search-btn:hover .search-icon {
-    opacity: 1;
-}
-
-
-.setting-icon {
-    width: 22px; 
-    height: 22px;
-    cursor: pointer;
-    transition: transform 0.3s;
-    vertical-align: middle;
-}
-
-.setting-icon:hover {
-    transform: rotate(90deg);
-}
-
-.auth-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-weight: bold;
-}
-
-.login-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-}
-
-.user-profile {
-    display: flex;
+.site-brand {
+    display: inline-flex;
     align-items: center;
     gap: 10px;
+    color: #e50914;
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
-.gear-icon {
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: transform 0.3s;
+.site-brand:hover {
+    color: #ff1f2a;
+    text-shadow: 0 0 20px rgba(229, 9, 20, 0.8);
 }
 
-.gear-icon:hover {
-    transform: rotate(90deg);
+.site-brand i {
+    font-size: 28px;
 }
 
-/* --- PHẦN DƯỚI --- */
-.header-bottom {
-    display: flex;
-    justify-content: flex-start;
-    gap: 40px;
-    padding: 15px 0;
-    font-weight: 500;
-}
-
-.header-bottom > .nav-item:last-child {
-    margin-left: auto; 
-}
-
-.nav-item {
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: color 0.3s;
-}
-
-.nav-item:hover {
-    color: var(--primary-yellow);
-}
-
-/* Dropdown Chọn Rạp */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: var(--bg-header);
-    min-width: 600px;
-    padding: 20px;
-    border: 1px solid var(--border-color);
+.site-header .nav-link {
+    color: #ccc;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 15px 18px;
     border-radius: 8px;
-    z-index: 1000;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-.nav-item.dropdown:hover .dropdown-content {
-    display: grid;
+.site-header .nav-link:hover {
+    color: #fff;
+    background-color: rgba(229, 9, 20, 0.2);
 }
 
-.dropdown-content a {
-    color: var(--text-light);
-    transition: color 0.2s;
+.site-header .nav-link.active {
+    color: #fff;
+    background-color: rgba(229, 9, 20, 0.3);
 }
 
-.dropdown-content a:hover {
-    color: var(--primary-yellow);
+.site-search {
+    position: relative;
+    min-width: 250px;
+}
+
+.site-search .form-control {
+    height: 42px;
+    padding-right: 44px;
+    background: #121212;
+    border: 1px solid #292929;
+    border-radius: 999px;
+    color: #fff;
+}
+
+.site-search .form-control:focus {
+    background: #121212;
+    border-color: #e50914;
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(229, 9, 20, 0.18);
+}
+
+.site-search .form-control::placeholder {
+    color: #777;
+}
+
+.site-search .btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 44px;
+    height: 42px;
+    border: 0;
+    color: #ccc;
+}
+
+.site-search .btn:hover {
+    color: #fff;
+}
+
+.btn-site-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding-inline: 18px;
+    background: linear-gradient(135deg, #e50914, #b20710);
+    border: 0;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(229, 9, 20, 0.25);
+}
+
+.btn-site-primary:hover {
+    background: linear-gradient(135deg, #ff1f2a, #e50914);
+    color: #fff;
+    box-shadow: 0 10px 26px rgba(229, 9, 20, 0.38);
+}
+
+.site-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    max-width: 220px;
+    border-color: #333;
+    color: #e0e0e0;
+}
+
+.site-profile-btn:hover {
+    background: rgba(229, 9, 20, 0.2);
+    border-color: rgba(229, 9, 20, 0.4);
+    color: #fff;
+}
+
+.site-profile-btn span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 991.98px) {
+    .site-header .navbar {
+        min-height: 66px;
+    }
+
+    .site-header .nav-link {
+        padding: 12px 14px;
+    }
+
+    .site-search {
+        min-width: 100%;
+    }
+
+    .site-auth .btn {
+        width: 100%;
+    }
+
+    .site-profile-btn {
+        max-width: none;
+    }
 }
