@@ -17,7 +17,7 @@
 }
 
 body {
-    font-family: "Poppins", "Josefin Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Roboto", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-main);
     color: #e0e0e0;
     line-height: 1.6;
