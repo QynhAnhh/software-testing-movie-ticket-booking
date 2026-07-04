@@ -130,7 +130,7 @@ require_once 'header.php';
                                             <p>
                                                 <i class="bi bi-upc-scan"></i>
                                                 <strong>Mã đặt vé:</strong>
-                                                <span><?= htmlspecialchars($booking['booking_code'] ?? ('#' . $booking['id'])) ?></span>
+                                                <span>#<?= (int)$booking['id'] ?></span>
                                             </p>
                                             <p>
                                                 <i class="bi bi-geo-alt-fill"></i>

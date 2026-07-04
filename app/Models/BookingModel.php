@@ -46,12 +46,16 @@ class BookingModel {
             SELECT
                 b.*,
                 GROUP_CONCAT(CONCAT(s.seat_row, s.seat_number) ORDER BY s.seat_row, s.seat_number SEPARATOR ', ') AS seat_names,
+                GROUP_CONCAT(CONCAT(s.seat_row, s.seat_number) ORDER BY s.seat_row, s.seat_number SEPARATOR ', ') AS seats,
                 st.show_date,
                 st.start_time,
                 st.end_time,
                 m.title AS movie_title,
+                m.poster AS movie_poster,
                 r.name AS room_name,
-                th.name AS theatre_name
+                th.name AS theatre_name,
+                th.address AS theatre_address,
+                th.city AS theatre_city
             FROM bookings b
             INNER JOIN tickets t ON t.booking_id = b.id
             INNER JOIN seats s ON s.id = t.seat_id
@@ -112,26 +116,46 @@ class BookingModel {
         );
 
         mysqli_stmt_bind_param($stmt, "ii", $bookingId, $userId);
-        mysqli_stmt_execute($stmt);
-
-        if (mysqli_stmt_affected_rows($stmt) > 0) {
-            $stmtTicket = mysqli_prepare(
-                $this->conn,
-                "
-                UPDATE tickets
-                SET status = 'canceled'
-                WHERE booking_id = ?
-                "
-            );
-
-            mysqli_stmt_bind_param($stmtTicket, "i", $bookingId);
-
-            return mysqli_stmt_execute($stmtTicket);
+        if (!mysqli_stmt_execute($stmt) || mysqli_stmt_affected_rows($stmt) < 1) {
+            return false;
         }
 
-        return false;
+        $stmtTicket = mysqli_prepare(
+            $this->conn,
+            "
+            UPDATE tickets
+            SET status = 'canceled'
+            WHERE booking_id = ?
+              AND status != 'canceled'
+            "
+        );
+
+        mysqli_stmt_bind_param($stmtTicket, "i", $bookingId);
+
+        if (!mysqli_stmt_execute($stmtTicket)) {
+            return false;
+        }
+
+        return true;
     }
     //
+
+    public function getPrimaryShowtimeByBookingId($bookingId) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT st.show_date, st.start_time
+             FROM tickets t
+             INNER JOIN showtimes st ON st.id = t.showtime_id
+             WHERE t.booking_id = ?
+             ORDER BY t.id ASC
+             LIMIT 1"
+        );
+        mysqli_stmt_bind_param($stmt, "i", $bookingId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        return $result ? mysqli_fetch_assoc($result) : null;
+    }
 
     //
     public function getTotalBookings() {

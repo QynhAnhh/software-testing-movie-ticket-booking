@@ -175,7 +175,7 @@ class ShowtimeModel {
             INNER JOIN theatres t ON t.id = r.theatre_id
             WHERE st.movie_id = ?
               AND st.status = 'active'
-              AND st.show_date >= CURDATE()
+              AND (st.show_date > CURDATE() OR (st.show_date = CURDATE() AND st.start_time > CURTIME()))
             ORDER BY st.show_date ASC, st.start_time ASC
         ";
         $stmt = mysqli_prepare($this->conn, $query);

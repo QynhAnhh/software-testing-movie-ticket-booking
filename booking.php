@@ -39,14 +39,6 @@ if ($showtimeId <= 0) {
     exit;
 }
 
-if ($result) {
-    if ($result['status'] === 'success') {
-        header("Location: booking_history.php");
-        exit;
-    }
-    echo "<script>alert('{$result['message']}')</script>";
-}
-
 $showtime = $showtimeController->getShowtimeDetail($showtimeId);
 if (!$showtime) {
     echo "<script>alert('Suất chiếu không tồn tại!'); window.location='index.php';</script>";

@@ -32,11 +32,18 @@ class BookingController {
             );
         }
 
+        if ($action === 'cancel_booking') {
+            $userId = (int)($_SESSION['user']['id'] ?? 0);
+            $bookingId = (int)($_POST['booking_id'] ?? 0);
+
+            return $this->service->cancelBooking($userId, $bookingId);
+        }
+
         return null;
     }
 
     public function getUserBookings($userId) {
-        return $this->service->getUserBookings($userId);
+        return $this->service->getUserBookings((int)$userId);
     }
 
     public function cancelBooking($userId, $bookingId) {

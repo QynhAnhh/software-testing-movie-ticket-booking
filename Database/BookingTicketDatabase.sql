@@ -175,10 +175,9 @@ CREATE TABLE tickets (
     status ENUM('booked', 'used', 'canceled') DEFAULT 'booked',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    UNIQUE (showtime_id, seat_id),
     FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
     FOREIGN KEY (showtime_id) REFERENCES showtimes(id) ON DELETE CASCADE,
-    FOREIGN KEY (seat_id) REFERENCES seats(id) ON DELETE CASCADE
+    FOREIGN KEY (seat_id) REFERENCES seats(id) ON DELETE CASCADE,
     INDEX idx_ticket_showtime_seat_status (showtime_id, seat_id, status)
 );
 

@@ -45,6 +45,11 @@ class BookingService {
             return ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'];
         }
 
+        $showDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $showtime['show_date'] . ' ' . $showtime['start_time']);
+        if ($showDateTime && $showDateTime <= new \DateTime()) {
+            return ['status' => 'error', 'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'];
+        }
+
         $seatIds = array_values(array_unique(array_map('intval', $seatIds)));
 
         $selectedSeats = $this->seatModel->getByIds($seatIds);
@@ -132,7 +137,49 @@ class BookingService {
         return $this->bookingModel->getBookingsByUser($userId);
     }
 
-    // cancel booking
+    public function cancelBooking($userId, $bookingId) {
+        $userId = (int)$userId;
+        $bookingId = (int)$bookingId;
+
+        if ($userId <= 0) {
+            return ['status' => 'error', 'message' => 'Vui long dang nhap de huy ve.'];
+        }
+
+        if ($bookingId <= 0) {
+            return ['status' => 'error', 'message' => 'Booking khong hop le.'];
+        }
+
+        $booking = $this->bookingModel->getByIdAndUser($bookingId, $userId);
+        if (!$booking) {
+            return ['status' => 'error', 'message' => 'Khong tim thay booking can huy.'];
+        }
+
+        if (($booking['status'] ?? '') === 'canceled') {
+            return ['status' => 'error', 'message' => 'Booking nay da duoc huy truoc do.'];
+        }
+
+        $showtime = $this->bookingModel->getPrimaryShowtimeByBookingId($bookingId);
+        if ($showtime && !empty($showtime['show_date']) && !empty($showtime['start_time'])) {
+            $showDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $showtime['show_date'] . ' ' . $showtime['start_time']);
+            if ($showDateTime && $showDateTime <= new \DateTime()) {
+                return ['status' => 'error', 'message' => 'Khong the huy ve khi suat chieu da bat dau.'];
+            }
+        }
+
+        $this->bookingModel->beginTransaction();
+
+        try {
+            if (!$this->bookingModel->cancelBooking($bookingId, $userId)) {
+                throw new \Exception('Loi khi huy booking: ' . $this->bookingModel->getError());
+            }
+
+            $this->bookingModel->commit();
+            return ['status' => 'success', 'message' => 'Huy ve thanh cong.'];
+        } catch (\Exception $e) {
+            $this->bookingModel->rollback();
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
 
     public function getTotalSpentByUser($userId) {
         $userId = (int)$userId;
