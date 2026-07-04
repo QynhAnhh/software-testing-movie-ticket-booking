@@ -29,14 +29,20 @@ $filters = [
 
 $stats = $controller->getAdminBookingStats();
 $bookings = $controller->getAdminBookings($filters);
+$detailId = isset($_GET['detail_id']) ? (int)$_GET['detail_id'] : 0;
+$bookingDetail = $detailId > 0 ? $controller->getAdminBookingDetail($detailId) : null;
 
 $queryParams = array_filter($filters, function ($value) {
     return trim((string)$value) !== '';
 });
 $formAction = 'manage_booking.php' . (!empty($queryParams) ? '?' . http_build_query($queryParams) : '');
+
+if ($detailId > 0 && !$bookingDetail && !$error_msg) {
+    $error_msg = 'Không tìm thấy booking cần xem chi tiết.';
+}
 ?>
 
-<div class="container-fluid">
+<div class="container-fluid admin-booking-page">
     <div class="admin-page-header d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h1 class="mb-0 text-white fw-bold">Quản lý đặt vé</h1>
@@ -136,7 +142,7 @@ $formAction = 'manage_booking.php' . (!empty($queryParams) ? '?' . http_build_qu
         </div>
 
         <div class="table-responsive">
-            <table class="table table-hover admin-table align-middle mb-0">
+            <table class="table table-hover table-sm admin-table admin-booking-table align-middle mb-0">
                 <thead>
                     <tr>
                         <th>Mã vé</th>
@@ -196,7 +202,7 @@ $formAction = 'manage_booking.php' . (!empty($queryParams) ? '?' . http_build_qu
                                     <form action="<?= htmlspecialchars($formAction) ?>" method="POST" class="m-0">
                                         <input type="hidden" name="action" value="update_status">
                                         <input type="hidden" name="booking_id" value="<?= (int)$booking['id'] ?>">
-                                        <select name="status" class="form-select form-select-sm <?= bookingAdminStatusSelectClass($booking['status']) ?>" onchange="this.form.submit()" aria-label="Cập nhật trạng thái booking #<?= (int)$booking['id'] ?>">
+                                        <select name="status" class="form-select form-select-sm admin-booking-status-select <?= bookingAdminStatusSelectClass($booking['status']) ?>" onchange="this.form.submit()" aria-label="Cập nhật trạng thái booking #<?= (int)$booking['id'] ?>">
                                             <option value="pending" <?= ($booking['status'] === 'pending') ? 'selected' : '' ?>>Chờ xử lý</option>
                                             <option value="paid" <?= ($booking['status'] === 'paid') ? 'selected' : '' ?>>Đã xác nhận</option>
                                             <option value="canceled" <?= ($booking['status'] === 'canceled') ? 'selected' : '' ?>>Đã hủy</option>
@@ -204,6 +210,14 @@ $formAction = 'manage_booking.php' . (!empty($queryParams) ? '?' . http_build_qu
                                     </form>
                                 </td>
                                 <td class="text-center">
+                                    <?php
+                                    $detailParams = $queryParams;
+                                    $detailParams['detail_id'] = (int)$booking['id'];
+                                    $detailUrl = 'manage_booking.php?' . http_build_query($detailParams);
+                                    ?>
+                                    <a href="<?= htmlspecialchars($detailUrl) ?>" class="btn btn-sm btn-outline-info admin-icon-btn me-1" title="Xem chi tiết booking">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                     <form action="<?= htmlspecialchars($formAction) ?>" method="POST" class="d-inline" onsubmit="return confirm('Xóa vĩnh viễn booking #<?= (int)$booking['id'] ?>? Vé liên quan cũng sẽ bị xóa.');">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="booking_id" value="<?= (int)$booking['id'] ?>">
@@ -220,6 +234,137 @@ $formAction = 'manage_booking.php' . (!empty($queryParams) ? '?' . http_build_qu
         </div>
     </div>
 </div>
+
+<?php if ($bookingDetail): ?>
+    <?php
+    $detailBooking = $bookingDetail['booking'];
+    $detailTickets = $bookingDetail['tickets'];
+    ?>
+    <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-labelledby="bookingDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <div>
+                        <h5 class="modal-title" id="bookingDetailModalLabel">
+                            <i class="bi bi-ticket-perforated me-2"></i>Chi tiết booking #<?= (int)$detailBooking['id'] ?>
+                        </h5>
+                        <p class="mb-0 text-muted small">Ngày đặt: <?= bookingAdminFormatDateTime($detailBooking['created_at']) ?></p>
+                    </div>
+                    <a href="<?= htmlspecialchars($formAction) ?>" class="btn-close btn-close-white" aria-label="Đóng"></a>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-4">
+                            <div class="admin-card h-100">
+                                <h6 class="text-white mb-3"><i class="bi bi-person-circle me-2"></i>Khách hàng</h6>
+                                <div class="fw-bold text-white mb-2">
+                                    <?= htmlspecialchars(trim($detailBooking['first_name'] . ' ' . $detailBooking['last_name'])) ?>
+                                </div>
+                                <div class="text-muted mb-1"><i class="bi bi-envelope me-2"></i><?= htmlspecialchars($detailBooking['email']) ?></div>
+                                <div class="text-muted mb-1"><i class="bi bi-telephone me-2"></i><?= htmlspecialchars($detailBooking['phone']) ?></div>
+                                <div class="text-muted"><i class="bi bi-calendar-heart me-2"></i><?= bookingAdminFormatDate($detailBooking['birth_date']) ?></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="admin-card h-100">
+                                <h6 class="text-white mb-3"><i class="bi bi-receipt me-2"></i>Thanh toán</h6>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Trạng thái</span>
+                                    <?= bookingAdminStatusBadge($detailBooking['status']) ?>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Phương thức</span>
+                                    <strong><?= htmlspecialchars(bookingAdminPaymentLabel($detailBooking['payment_method'])) ?></strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Số vé</span>
+                                    <strong><?= (int)$detailBooking['ticket_count'] ?></strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">Tổng tiền</span>
+                                    <strong class="text-success"><?= number_format((float)$detailBooking['total_price'], 0, ',', '.') ?> đ</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="admin-card h-100">
+                                <h6 class="text-white mb-3"><i class="bi bi-camera-reels me-2"></i>Suất chiếu</h6>
+                                <div class="fw-bold text-white mb-2"><?= htmlspecialchars($detailBooking['movie_title'] ?: 'Chưa có dữ liệu') ?></div>
+                                <div class="text-muted mb-1"><i class="bi bi-building me-2"></i><?= htmlspecialchars($detailBooking['theatre_name'] ?: 'Chưa có dữ liệu') ?></div>
+                                <div class="text-muted mb-1"><i class="bi bi-door-open me-2"></i><?= htmlspecialchars($detailBooking['room_name'] ?: 'Chưa có dữ liệu') ?></div>
+                                <div class="text-muted">
+                                    <i class="bi bi-clock me-2"></i><?= bookingAdminFormatDate($detailBooking['show_date']) ?>,
+                                    <?= bookingAdminFormatTime($detailBooking['start_time']) ?> - <?= bookingAdminFormatTime($detailBooking['end_time']) ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h6 class="mb-0 text-white"><i class="bi bi-grid me-2"></i>Danh sách vé</h6>
+                            <span class="badge bg-info text-dark"><?= htmlspecialchars($detailBooking['seats'] ?: 'N/A') ?></span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm admin-table admin-booking-table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Mã vé</th>
+                                        <th>Phim</th>
+                                        <th>Rạp / Phòng</th>
+                                        <th>Suất chiếu</th>
+                                        <th>Ghế</th>
+                                        <th>Loại ghế</th>
+                                        <th>Giá</th>
+                                        <th>Trạng thái vé</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($detailTickets)): ?>
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">Booking này chưa có vé.</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($detailTickets as $ticket): ?>
+                                            <tr>
+                                                <td><strong>#<?= (int)$ticket['ticket_id'] ?></strong></td>
+                                                <td><?= htmlspecialchars($ticket['movie_title']) ?></td>
+                                                <td>
+                                                    <strong><?= htmlspecialchars($ticket['theatre_name']) ?></strong>
+                                                    <br><span class="text-muted"><?= htmlspecialchars($ticket['room_name']) ?></span>
+                                                </td>
+                                                <td>
+                                                    <?= bookingAdminFormatDate($ticket['show_date']) ?>
+                                                    <br><span class="text-muted">
+                                                        <?= bookingAdminFormatTime($ticket['start_time']) ?> - <?= bookingAdminFormatTime($ticket['end_time']) ?>
+                                                    </span>
+                                                </td>
+                                                <td><span class="badge bg-info text-dark"><?= htmlspecialchars($ticket['seat_row'] . $ticket['seat_number']) ?></span></td>
+                                                <td><?= htmlspecialchars($ticket['seat_type_name'] ?: 'N/A') ?></td>
+                                                <td><strong class="text-success"><?= number_format((float)$ticket['price'], 0, ',', '.') ?> đ</strong></td>
+                                                <td><?= bookingAdminTicketStatusBadge($ticket['ticket_status']) ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <a href="<?= htmlspecialchars($formAction) ?>" class="btn btn-admin-secondary">Đóng</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var detailModal = new bootstrap.Modal(document.getElementById('bookingDetailModal'));
+            detailModal.show();
+        });
+    </script>
+<?php endif; ?>
 
 <?php
 function bookingAdminPaymentLabel($paymentMethod) {
@@ -243,6 +388,30 @@ function bookingAdminStatusSelectClass($status) {
     }
 
     return 'border-warning';
+}
+
+function bookingAdminStatusBadge($status) {
+    if ($status === 'paid') {
+        return '<span class="badge bg-success">Đã xác nhận</span>';
+    }
+
+    if ($status === 'canceled') {
+        return '<span class="badge bg-danger">Đã hủy</span>';
+    }
+
+    return '<span class="badge bg-warning text-dark">Chờ xử lý</span>';
+}
+
+function bookingAdminTicketStatusBadge($status) {
+    if ($status === 'booked') {
+        return '<span class="badge bg-success">Đã đặt</span>';
+    }
+
+    if ($status === 'used') {
+        return '<span class="badge bg-primary">Đã sử dụng</span>';
+    }
+
+    return '<span class="badge bg-danger">Đã hủy</span>';
 }
 
 function bookingAdminFormatDateTime($value) {

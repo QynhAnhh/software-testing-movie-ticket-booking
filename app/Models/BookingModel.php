@@ -177,6 +177,97 @@ class BookingModel {
         return $bookings;
     }
 
+    public function getAdminBookingDetail($bookingId) {
+        $query = "
+            SELECT
+                b.id,
+                b.user_id,
+                b.total_price,
+                b.payment_method,
+                b.status,
+                b.created_at,
+                b.updated_at,
+                u.first_name,
+                u.last_name,
+                u.email,
+                u.phone,
+                u.birth_date,
+                COUNT(t.id) AS ticket_count,
+                GROUP_CONCAT(DISTINCT m.title ORDER BY m.title SEPARATOR ', ') AS movie_title,
+                GROUP_CONCAT(DISTINCT th.name ORDER BY th.name SEPARATOR ', ') AS theatre_name,
+                GROUP_CONCAT(DISTINCT r.name ORDER BY r.name SEPARATOR ', ') AS room_name,
+                MIN(st.show_date) AS show_date,
+                MIN(st.start_time) AS start_time,
+                MIN(st.end_time) AS end_time,
+                GROUP_CONCAT(DISTINCT CONCAT(s.seat_row, s.seat_number) ORDER BY s.seat_row, s.seat_number SEPARATOR ', ') AS seats
+            FROM bookings b
+            INNER JOIN users u ON u.id = b.user_id
+            LEFT JOIN tickets t ON t.booking_id = b.id
+            LEFT JOIN showtimes st ON st.id = t.showtime_id
+            LEFT JOIN movies m ON m.id = st.movie_id
+            LEFT JOIN rooms r ON r.id = st.room_id
+            LEFT JOIN theatres th ON th.id = r.theatre_id
+            LEFT JOIN seats s ON s.id = t.seat_id
+            WHERE b.id = ?
+            GROUP BY
+                b.id, b.user_id, b.total_price, b.payment_method, b.status,
+                b.created_at, b.updated_at, u.first_name, u.last_name, u.email,
+                u.phone, u.birth_date
+            LIMIT 1
+        ";
+
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $bookingId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        return $result ? mysqli_fetch_assoc($result) : null;
+    }
+
+    public function getAdminBookingTickets($bookingId) {
+        $query = "
+            SELECT
+                t.id AS ticket_id,
+                t.price,
+                t.status AS ticket_status,
+                t.created_at,
+                st.show_date,
+                st.start_time,
+                st.end_time,
+                m.title AS movie_title,
+                r.name AS room_name,
+                th.name AS theatre_name,
+                th.address AS theatre_address,
+                th.city AS theatre_city,
+                s.seat_row,
+                s.seat_number,
+                seat_types.name AS seat_type_name
+            FROM tickets t
+            INNER JOIN showtimes st ON st.id = t.showtime_id
+            INNER JOIN movies m ON m.id = st.movie_id
+            INNER JOIN rooms r ON r.id = st.room_id
+            INNER JOIN theatres th ON th.id = r.theatre_id
+            INNER JOIN seats s ON s.id = t.seat_id
+            LEFT JOIN seat_types ON seat_types.id = s.seat_type_id
+            WHERE t.booking_id = ?
+            ORDER BY st.show_date ASC, st.start_time ASC, s.seat_row ASC, s.seat_number ASC
+        ";
+
+        $stmt = mysqli_prepare($this->conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $bookingId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $tickets = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $tickets[] = $row;
+            }
+        }
+
+        return $tickets;
+    }
+
     public function updateBookingStatus($bookingId, $status) {
         $stmt = mysqli_prepare(
             $this->conn,

@@ -84,4 +84,8 @@ class BookingController {
     public function getAdminBookings($filters) {
         return $this->service->getAdminBookings($filters);
     }
+
+    public function getAdminBookingDetail($bookingId) {
+        return $this->service->getAdminBookingDetail((int)$bookingId);
+    }
 }

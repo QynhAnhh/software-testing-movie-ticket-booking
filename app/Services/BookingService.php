@@ -189,6 +189,23 @@ class BookingService {
         return $this->bookingModel->getAdminBookings($this->normalizeAdminFilters($input));
     }
 
+    public function getAdminBookingDetail($bookingId) {
+        $bookingId = (int)$bookingId;
+        if ($bookingId <= 0) {
+            return null;
+        }
+
+        $booking = $this->bookingModel->getAdminBookingDetail($bookingId);
+        if (!$booking) {
+            return null;
+        }
+
+        return [
+            'booking' => $booking,
+            'tickets' => $this->bookingModel->getAdminBookingTickets($bookingId)
+        ];
+    }
+
     public function updateAdminBookingStatus($bookingId, $status) {
         $bookingId = (int)$bookingId;
         $status = trim((string)$status);
