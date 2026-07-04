@@ -181,11 +181,132 @@ class BookingService {
         }
     }
 
+    public function getAdminBookingStats() {
+        return $this->bookingModel->getAdminBookingStats();
+    }
+
+    public function getAdminBookings($input) {
+        return $this->bookingModel->getAdminBookings($this->normalizeAdminFilters($input));
+    }
+
+    public function updateAdminBookingStatus($bookingId, $status) {
+        $bookingId = (int)$bookingId;
+        $status = trim((string)$status);
+        $allowedStatuses = ['pending', 'paid', 'canceled'];
+
+        if ($bookingId <= 0) {
+            return ['status' => 'error', 'message' => 'Booking không hợp lệ.'];
+        }
+
+        if (!in_array($status, $allowedStatuses, true)) {
+            return ['status' => 'error', 'message' => 'Trạng thái booking không hợp lệ.'];
+        }
+
+        $booking = $this->bookingModel->getAdminBookingById($bookingId);
+        if (!$booking) {
+            return ['status' => 'error', 'message' => 'Không tìm thấy booking cần cập nhật.'];
+        }
+
+        if (($booking['status'] ?? '') === 'canceled' && $status !== 'canceled') {
+            if ($this->bookingModel->hasSeatConflictWhenRestoring($bookingId)) {
+                return [
+                    'status' => 'error',
+                    'message' => 'Không thể khôi phục booking vì có ghế đã được đặt bởi booking khác.'
+                ];
+            }
+        }
+
+        $ticketStatus = $status === 'canceled' ? 'canceled' : 'booked';
+
+        $this->bookingModel->beginTransaction();
+
+        try {
+            if (!$this->bookingModel->updateBookingStatus($bookingId, $status)) {
+                throw new \Exception('Lỗi khi cập nhật trạng thái booking: ' . $this->bookingModel->getError());
+            }
+
+            if (!$this->bookingModel->updateTicketsStatusByBooking($bookingId, $ticketStatus)) {
+                throw new \Exception('Lỗi khi cập nhật trạng thái vé: ' . $this->bookingModel->getError());
+            }
+
+            $this->bookingModel->commit();
+            return ['status' => 'success', 'message' => 'Cập nhật trạng thái booking thành công.'];
+        } catch (\Exception $e) {
+            $this->bookingModel->rollback();
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function deleteAdminBooking($bookingId) {
+        $bookingId = (int)$bookingId;
+
+        if ($bookingId <= 0) {
+            return ['status' => 'error', 'message' => 'Booking không hợp lệ.'];
+        }
+
+        $booking = $this->bookingModel->getAdminBookingById($bookingId);
+        if (!$booking) {
+            return ['status' => 'error', 'message' => 'Không tìm thấy booking cần xóa.'];
+        }
+
+        $this->bookingModel->beginTransaction();
+
+        try {
+            if (!$this->bookingModel->deleteBooking($bookingId)) {
+                throw new \Exception('Lỗi khi xóa booking: ' . $this->bookingModel->getError());
+            }
+
+            $this->bookingModel->commit();
+            return ['status' => 'success', 'message' => 'Xóa booking thành công.'];
+        } catch (\Exception $e) {
+            $this->bookingModel->rollback();
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function normalizeAdminFilters($input) {
+        $allowedStatuses = ['pending', 'paid', 'canceled'];
+        $filters = [
+            'status' => '',
+            'from_date' => '',
+            'to_date' => '',
+            'search' => ''
+        ];
+
+        $status = trim((string)($input['status'] ?? ''));
+        if (in_array($status, $allowedStatuses, true)) {
+            $filters['status'] = $status;
+        }
+
+        $fromDate = trim((string)($input['from_date'] ?? ''));
+        if ($this->isValidDate($fromDate)) {
+            $filters['from_date'] = $fromDate;
+        }
+
+        $toDate = trim((string)($input['to_date'] ?? ''));
+        if ($this->isValidDate($toDate)) {
+            $filters['to_date'] = $toDate;
+        }
+
+        $filters['search'] = trim((string)($input['search'] ?? ''));
+
+        return $filters;
+    }
+
     public function getTotalSpentByUser($userId) {
         $userId = (int)$userId;
         if ($userId <= 0) {
             return 0;
         }
         return $this->bookingModel->getTotalSpentByUser($userId);
+    }
+
+    private function isValidDate($date) {
+        if ($date === '') {
+            return false;
+        }
+
+        $dateTime = \DateTime::createFromFormat('Y-m-d', $date);
+        return $dateTime && $dateTime->format('Y-m-d') === $date;
     }
 }
