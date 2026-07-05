@@ -35,6 +35,19 @@ class RoomModel {
         return mysqli_fetch_assoc($result);
     }
 
+     public function findByNameAndTheatre($name, $theatreId, $excludeId = null) {
+            if ($excludeId) {
+                $stmt = mysqli_prepare($this->conn, "SELECT id FROM rooms WHERE name = ? AND theatre_id = ? AND id != ?");
+                mysqli_stmt_bind_param($stmt, "sii", $name, $theatreId, $excludeId);
+            } else {
+                $stmt = mysqli_prepare($this->conn, "SELECT id FROM rooms WHERE name = ? AND theatre_id = ?");
+                mysqli_stmt_bind_param($stmt, "si", $name, $theatreId);
+            }
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            return mysqli_fetch_assoc($result);
+     }
+
     public function findByName($name, $excludeId = null) {
         if ($excludeId) {
             $stmt = mysqli_prepare($this->conn, "SELECT id FROM rooms WHERE name = ? AND id != ?");
