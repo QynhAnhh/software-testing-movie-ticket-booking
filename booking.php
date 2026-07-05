@@ -21,12 +21,21 @@ if ($result) {
         );
         exit;
     }
-    echo "
-        <script>
-            alert('{$result['message']}');
-        </script>
-    ";
-    // direct ve trang dang nhap
+    if (isset($result['page'])) {
+        echo "
+            <script>
+                alert('{$result['message']}');
+                window.location='{$result['page']}';
+            </script>
+        ";    
+    } else {
+        echo "
+            <script>
+                alert('{$result['message']}');
+            </script>
+        "; 
+    }
+    exit;
 }
 
 $showtimeId = (int)(

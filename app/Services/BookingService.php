@@ -22,7 +22,7 @@ class BookingService {
     // process
     public function processBooking($userId, $showtimeId, $seatIds, $paymentMethod) {
         if ($userId <= 0) {
-            return ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.'];
+            return ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.', 'page' => 'login.php'];
         }
 
         if ($showtimeId <= 0) {
