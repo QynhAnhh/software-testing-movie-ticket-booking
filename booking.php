@@ -12,6 +12,10 @@ $ticketController = new TicketController();
 $bookingController = new BookingController();
 
 // check session
+if(!isset($_SESSION['user'])) {
+    echo "<script>alert('Vui lòng đăng nhập để đặt vé!'); window.location='login.php';</script>";
+    exit;
+}
 
 $result = $bookingController->handleRequest();
 if ($result) {
