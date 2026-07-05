@@ -92,7 +92,7 @@ $data = $controller->index();
                             <?php if (!empty($data['today_bookings_list'])): ?>
                                 <?php foreach ($data['today_bookings_list'] as $row): ?>
                                     <tr>
-                                        <td><strong><?= htmlspecialchars($row['booking_code']) ?></strong></td>
+                                        <td><strong><?= htmlspecialchars($row['id']) ?></strong></td>
                                         <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
                                         <td><?= htmlspecialchars($row['movie_name'] ?? '---') ?></td>
                                         <td><?= htmlspecialchars($row['room_name'] ?? '---') ?></td>

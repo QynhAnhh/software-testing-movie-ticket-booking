@@ -10,6 +10,18 @@ class MovieModel {
         $this->conn = Database::getConnection();
     }
 
+    public function getAllMovies() {
+        $query = "SELECT id, title, duration, status FROM movies ORDER BY title ASC";
+        $result = mysqli_query($this->conn, $query);
+        $movies = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $movies[] = $row;
+            }
+        }
+        return $movies;
+    }
+
     public function insertMovie($data) {
         $stmt = mysqli_prepare($this->conn, "INSERT INTO movies (title, description, director, cast, age_restriction, country, duration, screening_date, poster, trailer_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         mysqli_stmt_bind_param($stmt, "ssssissssss", 

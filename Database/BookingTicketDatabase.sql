@@ -153,14 +153,12 @@ DROP TABLE IF EXISTS bookings;
 CREATE TABLE bookings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    booking_code VARCHAR(20) NOT NULL DEFAULT 'TEMP',
     total_price DECIMAL(10,2) NOT NULL,
     payment_method ENUM('cash', 'momo', 'vnpay', 'bank_transfer') DEFAULT 'cash',
     status ENUM('pending', 'paid', 'canceled') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_booking_code (booking_code),
     INDEX idx_status (status)
 );
 
@@ -182,21 +180,6 @@ CREATE TABLE tickets (
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
-
--- ==============================================
--- TRIGGER
--- ==============================================
-DROP TRIGGER IF EXISTS trg_booking_code;
-DELIMITER $$
-CREATE TRIGGER trg_booking_code
-BEFORE INSERT ON bookings
-FOR EACH ROW
-BEGIN
-    IF NEW.booking_code IS NULL OR NEW.booking_code = '' THEN
-        SET NEW.booking_code = CONCAT('BK-', UPPER(LEFT(REPLACE(UUID(), '-', ''), 8)));
-    END IF;
-END$$
-DELIMITER ;
 
 -- ==============================================
 -- DỮ LIỆU MẪU
@@ -226,7 +209,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Sau sự kiện hủy diệt tàn khốc, vũ trụ chìm trong cảnh hoang tàn. Với sự trợ giúp của những đồng minh còn sống sót, biệt đội siêu anh hùng Avengers tập hợp một lần nữa để đảo ngược hành động của Thanos và khôi phục lại trật tự của vũ trụ.',
  'Anthony Russo, Joe Russo', 
  'Robert Downey Jr., Chris Evans, Scarlett Johansson', 
- 13, 'Mỹ', 181, '2023-05-01', 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg', 
+ 13, 'Mỹ', 181, '2023-05-01', 'images/movies/Avengers_Endgame.jpg',
  'https://www.youtube.com/watch?v=TcMBFSGVi1c', 
  'now_showing'),
 
@@ -234,7 +217,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'TÁC PHẨM KỶ NIỆM 90 NĂM FUJIKO F FUJIO Chuẩn bị cho buổi hòa nhạc ở trường, Nobita đang tập thổi sáo - nhạc cụ mà cậu dở tệ. Thích thú trước nốt "No" lạc quẻ của Nobita, Micca - cô bé bí ẩn đã mời Doraemon, Nobita cùng nhóm bạn đến "Farre" - Cung điện âm nhạc tọa lạc trên một hành tinh nơi âm nhạc sẽ hóa thành năng lượng. Nhằm cứu cung điện này, Micca đang tìm kiếm "virtuoso" - bậc thầy âm nhạc sẽ cùng mình biểu diễn! Với bảo bối thần kì "chứng chỉ chuyên viên âm nhạc", Doraemon và các bạn đã chọn nhạc cụ, cùng Micca hòa tấu, từng bước khôi phục cung điện. Tuy nhiên, một vật thể sống đáng sợ sẽ xóa số âm nhạc khỏi thế giới đang đến gần, Trái Đất đang rơi vào nguy hiểm... ! Liệu những người bạn nhỏ có thể cứu được "tương lai âm nhạc" và cả địa cầu này?',
  'Ryūichi Yagi', 
  'Nobita, Doraemon, Shizuka', 
- 0, 'Nhật Bản', 105, '2023-06-01', 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', 
+ 0, 'Nhật Bản', 105, '2023-06-01', 'images/movies/DoraemonBangGiaoHuongDiaCau.jpg',
  'https://www.youtube.com/watch?v=3Y4nFZpY9Jw', 
  'coming'),
 
@@ -242,7 +225,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Minions & Quái Vật là câu chuyện vừa náo loạn vừa ngớ ngẩn nhưng “hoàn toàn có thật” về cách Minions chinh phục Hollywood, trở thành ngôi sao điện ảnh, rồi mất tất cả, vô tình thả quái vật ra khắp thế giới và sau đó phải cùng nhau hợp sức để cứu lấy hành tinh khỏi chính mớ hỗn loạn mà mình tạo ra.',
  'Kyle Balda', 
  'Minions, Gru', 
- 0, 'Hoa Kỳ', 90, '2026-07-01', 'https://image.tmdb.org/t/p/w500/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg', 
+ 0, 'Hoa Kỳ', 90, '2026-07-01', 'images/movies/MinionsVaQuaiVat.jpg',
  'https://www.youtube.com/watch?v=6qDB8Nl0hMk', 
  'coming'),
 
@@ -250,7 +233,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Các món đồ chơi đã trở lại trong Toy Story 5 của Disney và Pixar, và lần này sẽ là cuộc đối đầu giữa đồ chơi và công nghệ. Buzz, Woody, Jessie cùng cả nhóm sẽ phải đối mặt với thử thách khó khăn hơn gấp bội khi chạm trán một mối đe dọa hoàn toàn mới đối với niềm vui vui chơi.',
  'Josh Cooley', 
  'Tom Hanks, Tim Allen', 
- 0, 'Hoa Kỳ', 102, '2026-06-19', 'https://image.tmdb.org/t/p/w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg', 
+ 0, 'Hoa Kỳ', 102, '2026-06-19', 'images/movies/CauChuyenDoChoi5.jpg',
  'https://www.youtube.com/watch?v=wmiIUN-7qhE', 
  'now_showing'),
 
@@ -258,7 +241,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Bộ phim kể về Mitsuha – nữ sinh trung học sống ở một thị trấn nhỏ của vùng Itomori. Luôn chán chường với cuộc sống tẻ nhạt ở vùng thôn quê, Mitsuha ao ước kiếp sau được làm một anh chàng đẹp trai sống ở thủ đô Tokyo sôi động. Trong khi đó ở Tokyo, anh chàng Taki rất hài lòng với cuộc sống và công việc làm thêm ở một nhà hàng Italy sau giờ học. Tuy vậy, hằng đêm cậu vẫn mơ thấy mình trong cơ thể một cô gái thôn quê. Đến một hôm khi sự kiện nghìn năm có một là Sao Chổi tiến gần tới Trái đất, Taki và Mitsuha bỗng bị hoán đổi cơ thể. Cứ cách một ngày, Taki lại trở thành Mitsuha khám phá cuộc sống vùng quê và ngược lại, Mitsuha làm anh chàng nam sinh Tokyo háo hức với cuộc sống nơi đô thị ồn ào. Cứ thế, câu chuyện của Mitsuha và Taki diễn ra dẫn dắt khán giả đến những tình huống đặc biệt, dù cả hai chưa bao giờ gặp mặt hay thậm chí là biết tên của nhau.',
  'Makoto Shinkai', 
  'Ryunosuke Kamiki, Mone Kamishiraishi', 
- 13, 'Nhật Bản', 110, '2026-06-05', 'https://image.tmdb.org/t/p/w500/uxzzxijgPIY7slzFvMotPv8wjKA.jpg', 
+ 13, 'Nhật Bản', 110, '2026-06-05', 'images/movies/TenCauLaGi.png',
  'https://www.youtube.com/watch?v=xU47nhruN-Q', 
  'now_showing'),
 
@@ -266,7 +249,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Nội dung xoay quanh một hội nghị công nghệ sinh học trong tòa nhà lớn thì bất ngờ xảy ra sự cố rò rỉ virus đột biến. Chính quyền lập tức phong tỏa toàn bộ khu vực, khiến những người còn sống bị mắc kẹt bên trong cùng các sinh vật nhiễm bệnh đang tiến hóa liên tục.',
  'Yeon Sang-ho', 
  'Gong Yoo, Jung Yu-mi', 
- 18, 'Hàn Quốc', 122, '2026-06-12', 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg', 
+ 18, 'Hàn Quốc', 122, '2026-06-12', 'images/movies/BayXacSong.jpg',
  'https://www.youtube.com/watch?v=1ovgxN2VWNc', 
  'now_showing'),
 
@@ -274,7 +257,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Suốt mười năm đằng đẵng, chú chó hoang lông trắng với chiếc mũi đỏ mang tên GOHAN cứ thế phiêu dạt giữa cuộc đời, ôm trọn những ký ức chẳng thể phai nhòa. Đó là sự ấm áp bình lặng bên người chủ đầu tiên – một kỹ sư ô tô người Nhật sắp sửa nghỉ hưu. Là những ngày tháng rộn ràng bên người chủ thứ hai – cô giúp việc trẻ người Miến Điện làm việc tại trạm cứu hộ thú cưng. Và cuối cùng, là những bài học thầm lặng chú dạy cho người chủ hiện tại – một sinh viên mỹ thuật, người lần đầu tiên trong đời học cách định nghĩa thế nào là tình yêu. Một câu chuyện về thời gian, về những cuộc hội ngộ và chia ly, và về một chú chó ghi nhớ tất cả.',
  'Lee Chang-dong', 
  'Yoo Ah-in, Kim Hyun-soo', 
- 8, 'Hàn Quốc', 140, '2026-06-25', 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', 
+ 8, 'Hàn Quốc', 140, '2026-06-25', 'images/movies/TamBietGohan.jpg',
  'https://www.youtube.com/watch?v=0zBq3sLqZ1g',   -- trailer giả định, bạn có thể thay bằng URL thật nếu có
  'now_showing'),
 
@@ -282,7 +265,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Phim điện ảnh phiên bản hoàn toàn mới của “Lớp Học Ám Sát” nhân dịp kỷ niệm 10 năm ra mắt! Một sinh vật mang vận tốc Mach 20 đe dọa hủy diệt Trái Đất nhưng lại trở thành một thầy giáo? Một lớp học bị coi là "phế thải" bỗng chốc trở thành hy vọng cuối cùng của nhân loại? Những câu chuyện mới toanh chưa từng được kể trên màn ảnh sẽ mang đến cho fan hâm mộ những thước phim bùng nổ cùng ký ức rực rỡ nhất về thầy Koro và tập thể lớp 3-E',
  'Yoshihiro Izumi', 
  'Yoshihiro Izumi, Kaito Amano', 
- 13, 'Nhật Bản', 86, '2026-06-05', 'https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg', 
+ 13, 'Nhật Bản', 86, '2026-06-05', 'images/movies/LopHocAmSat.jpg',
  'https://www.youtube.com/watch?v=1nG7pP2lV5Y', 
  'ended'),
 
@@ -290,7 +273,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Để câu view, một nhóm streamer livestream khám phá Lầu Chú Hỏa, dinh thự bỏ hoang gắn với truyền thuyết về con ma nhà họ Hứa. Nhưng ngay từ những phút đầu, mọi thứ đã vượt khỏi tầm kiểm soát. Hiện tượng siêu nhiên liên tiếp xảy ra, kéo cả nhóm vào vòng xoáy ám ảnh không lối thoát. Buổi livestream nhanh chóng biến thành nơi “tạo nghiệp – trả nghiệp”, khi từng người phải trả giá cho lòng tham và sự báng bổ trước linh hồn oan khuất của cô tiểu thư họ Hứa.',
  'Lê Bảo Trung', 
  'Trấn Thành, Ngọc Trinh', 
- 18, 'Việt Nam', 94, '2026-06-12', 'https://image.tmdb.org/t/p/w500/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg', 
+ 18, 'Việt Nam', 94, '2026-06-12', 'images/movies/LauChuHoa.jpg',
  'https://www.youtube.com/watch?v=8sjQb9k5X6Y', 
  'ended'),
 
@@ -298,7 +281,7 @@ INSERT INTO movies (title, description, director, cast, age_restriction, country
  'Supergirl – bom tấn mới nhất từ DC Studios – sẽ chính thức đổ bộ các rạp chiếu toàn cầu vào mùa hè này, với Milly Alcock đảm nhận vai kép Supergirl/Kara Zor-El. Khi một kẻ thù bất ngờ và tàn nhẫn giáng đòn ngay tại nơi cô gọi là nhà, Kara Zor-El – hay còn được biết đến với cái tên Supergirl – buộc phải bắt tay với một đồng minh không ai ngờ tới, bắt đầu chuyến hành trình xuyên dải ngân hà đầy sử thi, nơi vừa là cuộc trả thù, vừa là hành trình đi tìm công lý.',
  'James Gunn', 
  'Milly Alcock, Helen Slater', 
- 16, 'Hoa Kỳ', 108, '2026-06-26', 'https://image.tmdb.org/t/p/w500/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg', 
+ 16, 'Hoa Kỳ', 108, '2026-06-26', 'images/movies/SuperGirl.jpg',
  'https://www.youtube.com/watch?v=Q7GpXfsN0oE', 
  'now_showing');
 

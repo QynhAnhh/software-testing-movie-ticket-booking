@@ -20,7 +20,7 @@ class SeatController {
                     'seat_row' => trim($_POST['seat_row'] ?? ''),
                     'seat_number' => (int)($_POST['seat_number'] ?? 0),
                     'seat_type_id' => (int)($_POST['seat_type_id'] ?? 0),
-                    'is_active' => isset($_POST['is_active']),
+                    'is_active' => (int) ($_POST['is_active'] ?? 0) === 1,
                 ];
 
                 if ($action === 'add') {
@@ -44,8 +44,31 @@ class SeatController {
                 $seatTypeId = (int)($_POST['seat_type_id'] ?? 0);
                 return $this->service->generateSeats($roomId, $startRow, $endRow, $seatsPerRow, $seatTypeId);
             }
+
+            if ($action === 'bulk_delete') {
+                $roomId = (int)($_POST['room_id'] ?? 0);
+                $startRow = trim($_POST['delete_start_row'] ?? 'A');
+                $endRow = trim($_POST['delete_end_row'] ?? 'H');
+                $startNumber = (int)($_POST['delete_start_number'] ?? 1);
+                $endNumber = (int)($_POST['delete_end_number'] ?? 12);
+                return $this->service->bulkDeleteSeats($roomId, $startRow, $endRow, $startNumber, $endNumber);
+            }
+
+            if ($action === 'quick_add') {
+                $roomId = (int) ($_POST['room_id'] ?? 0);
+                $seatRow = trim($_POST['seat_row'] ?? '');
+                return $this->service->quickAddSeat($roomId, $seatRow);
+            }
         }
         return null;
+    }
+
+    public function getDisplayRows($roomId, $showRow = null) {
+        return $this->service->getDisplayRows($roomId, $showRow);
+    }
+
+    public function getNextRowLetter(array $displayRows) {
+        return $this->service->getNextRowLetter($displayRows);
     }
 
     public function getAllSeats($roomId = null) {
