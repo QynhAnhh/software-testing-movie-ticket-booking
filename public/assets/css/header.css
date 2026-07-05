@@ -1,0 +1,158 @@
+.main-header {
+    background-color: var(--bg-header);
+    border-bottom: none;
+}
+
+/* --- PHẦN TRÊN --- */
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo img {
+    height: 40px; /* Tùy chỉnh */
+}
+
+.header-top-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box input {
+    padding: 10px 40px 10px 20px; 
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    width: 250px;
+}
+
+.search-btn {
+    position: absolute;
+    right: 15px; 
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon{
+    width: 18px; 
+    height: 18px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.search-btn:hover .search-icon {
+    opacity: 1;
+}
+
+
+.setting-icon {
+    width: 22px; 
+    height: 22px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    vertical-align: middle;
+}
+
+.setting-icon:hover {
+    transform: rotate(90deg);
+}
+
+.auth-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: bold;
+}
+
+.login-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gear-icon {
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.gear-icon:hover {
+    transform: rotate(90deg);
+}
+
+/* --- PHẦN DƯỚI --- */
+.header-bottom {
+    display: flex;
+    justify-content: flex-start;
+    gap: 40px;
+    padding: 15px 0;
+    font-weight: 500;
+}
+
+.header-bottom > .nav-item:last-child {
+    margin-left: auto; 
+}
+
+.nav-item {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.3s;
+}
+
+.nav-item:hover {
+    color: var(--primary-yellow);
+}
+
+/* Dropdown Chọn Rạp */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--bg-header);
+    min-width: 600px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    z-index: 1000;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.nav-item.dropdown:hover .dropdown-content {
+    display: grid;
+}
+
+.dropdown-content a {
+    color: var(--text-light);
+    transition: color 0.2s;
+}
+
+.dropdown-content a:hover {
+    color: var(--primary-yellow);
+}

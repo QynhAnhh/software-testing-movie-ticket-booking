@@ -1,0 +1,45 @@
+/* --- BANNER QUẢNG CÁO (SWIPER) --- */
+.banner-section {
+    width: 100%;
+    height: 480px; 
+    position: relative;
+}
+
+.banner-section .swiper {
+    width: 100%;
+    height: 100%;
+}
+
+.banner-section .swiper-slide {
+    text-align: center;
+    background: #0b1120;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.banner-section .swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* Object-fit: cover giúp ảnh không bị méo khi co dãn màn hình */
+    object-fit: cover; 
+    object-position: center;
+}
+
+/* Tùy chỉnh màu sắc cho nút Next/Prev và dấu chấm trang (Pagination) */
+.banner-section .swiper-button-next,
+.banner-section .swiper-button-prev {
+    color: rgba(255, 255, 255, 0.7); 
+    transition: color 0.3s;
+}
+
+.banner-section .swiper-button-next:hover,
+.banner-section .swiper-button-prev:hover {
+    color: var(--text-light);
+}
+
+.banner-section .swiper-pagination-bullet-active {
+    background: var(--text-light);
+    opacity: 1;
+}

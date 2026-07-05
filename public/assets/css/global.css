@@ -1,0 +1,45 @@
+/* Thiết lập biến màu sắc dựa trên ảnh mẫu */
+:root {
+    --bg-main: #0b1120;       /* Màu nền xanh đen đậm */
+    --bg-header: #111827;     /* Màu nền header sáng hơn chút */
+    --text-light: #ffffff;    /* Chữ màu trắng */
+    --text-dim: #9ca3af;      /* Chữ màu xám */
+    --primary-yellow: #facc15; /* Màu vàng của nút/icon */
+    --border-color: #1f2937;  /* Đường viền phân cách */
+    --bg-ft1: #663399;        /* Màu nền tím đậm */
+    --bg-ft2: #3461C4;        /* Màu nền xanh dương */
+}
+
+/* Reset CSS cơ bản */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+body {
+    font-family: "Josefin Sans","DM Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+main {
+    padding: 0; 
+    min-height: 50vh;  
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
