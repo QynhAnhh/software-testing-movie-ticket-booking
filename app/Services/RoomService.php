@@ -78,9 +78,6 @@ class RoomService {
         if ($data['total_seats'] < 1) {
             return ['status' => 'error', 'message' => 'Số ghế phải lớn hơn 0!'];
         }
-        if ($this->model->findByName($data['name'], $excludeId)) {
-            return ['status' => 'error', 'message' => "Tên phòng '{$data['name']}' đã tồn tại trong hệ thống!"];
-        }
         return null;
     }
 }
