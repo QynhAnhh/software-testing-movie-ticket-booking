@@ -72,7 +72,7 @@ class ShowtimeService {
         if ($showtimeId <= 0) {
             return null;
         }
-        return $this->model->getDetailById($showtimeId);
+        return $this->showtimeModel->getDetailById($showtimeId);
     }
 
     public function getShowtimesByMovieId($movieId) {
@@ -80,7 +80,7 @@ class ShowtimeService {
         if ($movieId <= 0) {
             return [];
         }
-        return $this->model->getByMovieId($movieId);
+        return $this->showtimeModel->getByMovieId($movieId);
     }
 
     public function getAllMovies() {

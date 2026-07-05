@@ -11,6 +11,8 @@ $seatController = new SeatController();
 $ticketController = new TicketController();
 $bookingController = new BookingController();
 
+// check session
+
 $result = $bookingController->handleRequest();
 if ($result) {
     if ($result['status'] === 'success') {
