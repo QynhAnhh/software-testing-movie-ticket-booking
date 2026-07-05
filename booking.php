@@ -26,6 +26,7 @@ if ($result) {
             alert('{$result['message']}');
         </script>
     ";
+    // direct ve trang dang nhap
 }
 
 $showtimeId = (int)(

@@ -27,17 +27,17 @@ class MovieController {
                     'country' => trim($_POST['country'] ?? ''),
                     'duration' => (int)($_POST['duration'] ?? 0),
                     'screening_date' => trim($_POST['screening_date'] ?? ''),
-                    'poster' => 'https://image.tmdb.org/t/p/w500/'. ltrim(trim($_POST['poster'] ?? ''), '/'),
                     'trailer_url' => trim($_POST['trailer_url'] ?? ''),
                     'status' => $_POST['status'] ?? 'coming'
                 ];
                 $genres = $_POST['genres'] ?? [];
+                $posterFile = $_FILES['poster'] ?? null;
 
                 if ($action === 'add') {
-                    return $this->movieService->addMovie($data, $genres);
+                    return $this->movieService->addMovie($data, $genres, $posterFile);
                 } else {
                     $id = (int)($_POST['id'] ?? 0);
-                    return $this->movieService->updateMovie($id, $data, $genres);
+                    return $this->movieService->updateMovie($id, $data, $genres, $posterFile);
                 }
             } 
             elseif ($action === 'delete') {
