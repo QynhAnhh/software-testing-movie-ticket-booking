@@ -92,8 +92,12 @@ require_once 'header.php';
             </div>
 
             <div class="col-lg-9">
-                <div class="booking-history-heading">
+                <div class="booking-history-heading d-flex justify-content-between align-items-center gap-3 flex-wrap">
                     <h2><i class="bi bi-ticket-perforated-fill"></i> Lịch Sử Đặt Vé</h2>
+                    <a href="index.php#movies-list" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Tiếp tục đặt vé</span>
+                    </a>
                 </div>
 
                 <?php if ($actionResult): ?>

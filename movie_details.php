@@ -54,6 +54,10 @@ require_once 'header.php';
 
 <div class="movie-detail-page">
     <div class="container">
+        <a href="index.php#movies-list" class="btn btn-outline-light btn-sm mb-4">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách phim
+        </a>
+
         <div class="row g-4 movie-hero-row">
             <div class="col-md-4">
                 <div class="movie-detail-poster">

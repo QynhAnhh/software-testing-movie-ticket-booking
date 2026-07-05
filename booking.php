@@ -87,6 +87,10 @@ require_once 'header.php';
 
 <div class="booking-page">
     <div class="container">
+        <a href="movie_details.php?id=<?= (int)$showtime['movie_id'] ?>" class="btn btn-outline-light btn-sm mb-4">
+            <i class="bi bi-arrow-left"></i> Quay lại chi tiết phim
+        </a>
+
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="booking-card booking-sidebar">
