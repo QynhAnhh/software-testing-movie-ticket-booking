@@ -103,7 +103,7 @@ CREATE TABLE rooms
 (
     id          INT PRIMARY KEY AUTO_INCREMENT,
     theatre_id  INT         NOT NULL,
-    name        VARCHAR(50) NOT NULL UNIQUE,
+    name        VARCHAR(50) NOT NULL,
     total_seats INT         NOT NULL,
     is_active   BOOLEAN   DEFAULT TRUE,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
