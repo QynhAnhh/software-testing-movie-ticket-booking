@@ -166,7 +166,7 @@ $movies_result = $controller->getAllMovies();
                             <tr>
                                 <td><?= $movie['id'] ?></td>
                                 <td>
-                                    <img src="../<?=($movie['poster']) ?>"
+                                    <img src="../<?= htmlspecialchars($movie['poster']) ?>"
                                          alt="<?= htmlspecialchars($movie['title']) ?>" style="width: 48px; height: 68px; object-fit: cover; border-radius: 6px;">
                                 </td>
                                 <td>
