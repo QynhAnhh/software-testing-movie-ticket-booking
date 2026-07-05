@@ -22,7 +22,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <title>Movie Ticket Booking</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css">
@@ -54,9 +54,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         <li class="nav-item">
                             <a class="nav-link" href="index.php#movies-list">Phim</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?= $currentPage === 'schedule.php' ? 'active' : '' ?>" href="schedule.php">Lịch chiếu</a>
-                        </li>
                     </ul>
 
                     <form class="site-search d-flex me-lg-3 mb-3 mb-lg-0" action="index.php#movies-list" method="GET">
@@ -66,8 +63,18 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         </button>
                     </form>
 
-                    <div class="site-auth d-flex align-items-lg-center gap-2 flex-column flex-lg-row">
+                    <div class="site-auth <?= $isLoggedIn ? 'is-logged-in' : 'is-logged-out' ?> d-flex align-items-lg-center gap-2 flex-column flex-lg-row">
                         <?php if ($isLoggedIn): ?>
+                            <div class="dropdown site-user-dropdown">
+                                <button class="btn site-user-toggle dropdown-toggle" type="button" id="siteUserMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle"></i>
+                                    <span><?= htmlspecialchars($displayName) ?></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end site-user-menu" aria-labelledby="siteUserMenu">
+                                    <li><a class="dropdown-item" href="profile.php">Hồ sơ cá nhân</a></li>
+                                    <li><a class="dropdown-item" href="logout.php">Đăng xuất</a></li>
+                                </ul>
+                            </div>
                             <a class="btn btn-outline-light site-profile-btn" href="profile.php">
                                 <i class="bi bi-person-circle"></i>
                                 <span><?= htmlspecialchars($displayName) ?></span>

@@ -40,7 +40,7 @@ if (isset($_GET['edit_id'])) {
     <div class="admin-page-header d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
         <div>
             <h1 class="mb-0 text-white fw-bold">Quản lý lịch chiếu</h1>
-            <p class="mb-0 mt-2 text-muted">Gán suất chiếu cho phim và phòng. Giờ kết thúc có thể tự tính từ thời lượng phim nếu để trống.</p>
+            <p class="mb-0 mt-2 text-muted">Gán suất chiếu cho phim và phòng. Giờ kết thúc được tự tính từ giờ bắt đầu và thời lượng phim.</p>
         </div>
     </div>
 
@@ -184,9 +184,9 @@ function renderShowtimeFormFields($prefix, $movies_list, $rooms_list, $showtime 
             <input type="time" class="form-control" name="start_time" id="<?= $prefix ?>_start_time" required value="<?= htmlspecialchars(isset($showtime['start_time']) ? substr($showtime['start_time'], 0, 5) : '') ?>">
         </div>
         <div class="col-md-4">
-            <label class="form-label">Giờ kết thúc</label>
-            <input type="time" class="form-control" name="end_time" id="<?= $prefix ?>_end_time" value="<?= htmlspecialchars(isset($showtime['end_time']) ? substr($showtime['end_time'], 0, 5) : '') ?>">
-            <div class="form-text">Để trống để tự tính từ thời lượng phim.</div>
+            <label class="form-label">Giờ kết thúc tự tính</label>
+            <input type="text" class="form-control" id="<?= $prefix ?>_end_time_preview" value="<?= htmlspecialchars(isset($showtime['end_time']) ? substr($showtime['end_time'], 0, 5) : '') ?>" readonly>
+            <div class="form-text">Hệ thống tự cộng thời lượng phim vào giờ bắt đầu.</div>
         </div>
         <div class="col-md-6">
             <label class="form-label">Giá vé cơ bản (VNĐ) <span class="text-danger">*</span></label>
@@ -200,6 +200,34 @@ function renderShowtimeFormFields($prefix, $movies_list, $rooms_list, $showtime 
             </select>
         </div>
     </div>
+    <script>
+    (function () {
+        const movieSelect = document.getElementById('<?= $prefix ?>_movie_id');
+        const startInput = document.getElementById('<?= $prefix ?>_start_time');
+        const endPreview = document.getElementById('<?= $prefix ?>_end_time_preview');
+
+        function updateEndTimePreview() {
+            const selectedMovie = movieSelect.options[movieSelect.selectedIndex];
+            const duration = selectedMovie ? parseInt(selectedMovie.getAttribute('data-duration') || '0', 10) : 0;
+            const startTime = startInput.value;
+
+            if (!duration || !startTime) {
+                endPreview.value = '';
+                return;
+            }
+
+            const parts = startTime.split(':').map(Number);
+            const totalMinutes = ((parts[0] * 60) + parts[1] + duration + 5) % (24 * 60);
+            const hours = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
+            const minutes = String(totalMinutes % 60).padStart(2, '0');
+            endPreview.value = hours + ':' + minutes;
+        }
+
+        movieSelect.addEventListener('change', updateEndTimePreview);
+        startInput.addEventListener('input', updateEndTimePreview);
+        updateEndTimePreview();
+    })();
+    </script>
 <?php } ?>
 
 <?php require_once 'admin_footer.php'; ?>

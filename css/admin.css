@@ -20,7 +20,7 @@ body {
     margin: 0;
     background: linear-gradient(180deg, #0e0e0e 0%, var(--admin-bg) 45%, #050505 100%);
     color: var(--admin-text);
-    font-family: "Josefin Sans", "Segoe UI", Arial, sans-serif;
+    font-family: "Roboto", "Segoe UI", Arial, sans-serif;
 }
 
 a,
@@ -164,7 +164,7 @@ a:hover {
 
 .admin-table td,
 .admin-table th {
-    padding: 14px 16px;
+    padding: 5px;
     vertical-align: middle;
 }
 

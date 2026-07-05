@@ -28,6 +28,17 @@ if (isset($_GET['edit_id'])) {
 
 $genres_list = $controller->getAllGenres();
 $movies_result = $controller->getAllMovies();
+
+function getAdminPosterSrc($poster) {
+    $poster = trim($poster ?? '');
+    if ($poster === '') {
+        return 'https://via.placeholder.com/300x450?text=No+Image';
+    }
+    if (preg_match('/^https?:\/\//i', $poster)) {
+        return $poster;
+    }
+    return '../' . ltrim($poster, '/');
+}
 ?>
 
 <div class="container-fluid">
@@ -47,7 +58,7 @@ $movies_result = $controller->getAllMovies();
 
     <div class="admin-card mb-4">
         <h5 class="mb-3 text-white"><i class="bi bi-camera-reels me-2"></i><?= $edit_movie ? 'Cập nhật phim' : 'Thêm phim mới' ?></h5>
-        <form action="manage_movies.php" method="POST">
+        <form action="manage_movies.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="action" value="<?= $edit_movie ? 'edit' : 'add' ?>">
             <?php if ($edit_movie): ?>
                 <input type="hidden" name="id" value="<?= $edit_movie['id'] ?>">
@@ -95,8 +106,12 @@ $movies_result = $controller->getAllMovies();
 
                 <div class="col-md-5">
                     <div class="mb-3">
-                        <label class="form-label">Hình ảnh / Poster (URL)</label>
-                        <input type="text" class="form-control" name="poster" placeholder="https://..." value="<?= htmlspecialchars($edit_movie['poster'] ?? '') ?>">
+                        <label class="form-label">Poster (JPG, PNG)</label>
+                        <input type="file" class="form-control" name="poster" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+                        <?php if ($edit_movie && !empty($edit_movie['poster'])): ?>
+                            <small class="text-muted d-block mt-1">Đang dùng poster hiện tại. Chọn file mới nếu muốn thay đổi.</small>
+                        <?php endif; ?>
+                        <small class="text-muted">Chỉ nhận file JPG hoặc PNG. Khi cập nhật phim, bỏ trống nếu muốn giữ poster hiện tại.</small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Trailer (URL)</label>
@@ -166,8 +181,9 @@ $movies_result = $controller->getAllMovies();
                             <tr>
                                 <td><?= $movie['id'] ?></td>
                                 <td>
-                                    <img src="<?= htmlspecialchars($movie['poster']) ?>"
-                                         alt="<?= htmlspecialchars($movie['title']) ?>" style="width: 48px; height: 68px; object-fit: cover; border-radius: 6px;">
+                                    <img src="<?= htmlspecialchars(getAdminPosterSrc($movie['poster'])) ?>"
+                                         alt="<?= htmlspecialchars($movie['title']) ?>" style="width: 48px; height: 68px; object-fit: cover; border-radius: 6px;"
+                                         onerror="this.src='https://via.placeholder.com/300x450?text=No+Image';">
                                 </td>
                                 <td>
                                     <div class="fw-bold text-white"><?= htmlspecialchars($movie['title']) ?></div>

@@ -11,19 +11,40 @@ $seatController = new SeatController();
 $ticketController = new TicketController();
 $bookingController = new BookingController();
 
+// check session
+if(!isset($_SESSION['user'])) {
+    echo "<script>alert('Vui lòng đăng nhập để đặt vé!'); window.location='login.php';</script>";
+    exit;
+}
+
 $result = $bookingController->handleRequest();
 if ($result) {
     if ($result['status'] === 'success') {
-        header(
-            "Location: booking_history.php"
-        );
+        $bookingId = $result['booking_id'] ?? '';
+        $successMessage = json_encode($result['message'] . "\nMã đặt vé: #" . $bookingId);
+        echo "
+            <script>
+                alert($successMessage);
+                window.location.href = 'booking_history.php';
+            </script>
+        ";
         exit;
     }
-    echo "
-        <script>
-            alert('{$result['message']}');
-        </script>
-    ";
+    if (isset($result['page'])) {
+        echo "
+            <script>
+                alert('{$result['message']}');
+                window.location='{$result['page']}';
+            </script>
+        ";    
+    } else {
+        echo "
+            <script>
+                alert('{$result['message']}');
+            </script>
+        "; 
+    }
+    exit;
 }
 
 $showtimeId = (int)(
@@ -56,6 +77,8 @@ foreach ($seats as $seat) {
 $poster = !empty($showtime['movie_poster']) ? $showtime['movie_poster'] : 'https://via.placeholder.com/400x600?text=No+Image';
 $address = trim(($showtime['theatre_address'] ?? '') . ', ' . ($showtime['theatre_city'] ?? ''), ', ');
 $basePrice = (float)$showtime['base_price'];
+$vipPrice = (float)$showtime['base_price'] + 20000;
+
 
 require_once 'header.php';
 ?>
@@ -64,6 +87,10 @@ require_once 'header.php';
 
 <div class="booking-page">
     <div class="container">
+        <a href="movie_details.php?id=<?= (int)$showtime['movie_id'] ?>" class="btn btn-outline-light btn-sm mb-4">
+            <i class="bi bi-arrow-left"></i> Quay lại chi tiết phim
+        </a>
+
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="booking-card booking-sidebar">
@@ -93,6 +120,10 @@ require_once 'header.php';
                         <p class="booking-meta">
                             Giá vé cơ bản:
                             <span class="summary-value"><?= number_format($basePrice, 0, ',', '.') ?>đ</span>
+                        </p>
+                        <p class="booking-meta">
+                            Giá vé VIP:
+                            <span class="summary-value"><?= number_format($vipPrice, 0, ',', '.') ?>đ</span>
                         </p>
                         <p class="booking-meta">
                             Ghế đã chọn:
@@ -250,6 +281,10 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
             const selected = getSelectedSeatButtons();
             if (!selected.length) {
                 alert("Vui lòng chọn ghế");
+                return;
+            }
+
+            if (!confirm("Bạn có chắc chắn muốn đặt vé không?")) {
                 return;
             }
 

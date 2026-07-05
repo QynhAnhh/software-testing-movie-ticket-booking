@@ -80,6 +80,63 @@ class SeatModel {
         return mysqli_stmt_execute($stmt);
     }
 
+    public function countByRange($roomId, $startRow, $endRow, $startNumber, $endNumber) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT COUNT(*) AS total FROM seats
+             WHERE room_id = ?
+             AND seat_row BETWEEN ? AND ?
+             AND seat_number BETWEEN ? AND ?"
+        );
+        mysqli_stmt_bind_param($stmt, "issii", $roomId, $startRow, $endRow, $startNumber, $endNumber);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
+        return (int)($row['total'] ?? 0);
+    }
+
+    public function deleteByRange($roomId, $startRow, $endRow, $startNumber, $endNumber) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "DELETE FROM seats
+             WHERE room_id = ?
+             AND seat_row BETWEEN ? AND ?
+             AND seat_number BETWEEN ? AND ?"
+        );
+        mysqli_stmt_bind_param($stmt, "issii", $roomId, $startRow, $endRow, $startNumber, $endNumber);
+        if (!mysqli_stmt_execute($stmt)) {
+            return false;
+        }
+        return mysqli_stmt_affected_rows($stmt);
+    }
+
+    public function getNextSeatNumber($roomId, $seatRow) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT MAX(seat_number) AS max_num FROM seats WHERE room_id = ? AND seat_row = ?"
+        );
+        mysqli_stmt_bind_param($stmt, "is", $roomId, $seatRow);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
+        return (int) ($row['max_num'] ?? 0) + 1;
+    }
+
+    public function getRowLettersByRoom($roomId) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT DISTINCT seat_row FROM seats WHERE room_id = ? ORDER BY seat_row ASC"
+        );
+        mysqli_stmt_bind_param($stmt, "i", $roomId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row['seat_row'];
+        }
+        return $rows;
+    }
+
     public function countByRoomId($roomId) {
         $stmt = mysqli_prepare($this->conn, "SELECT COUNT(*) AS total FROM seats WHERE room_id = ?");
         mysqli_stmt_bind_param($stmt, "i", $roomId);
