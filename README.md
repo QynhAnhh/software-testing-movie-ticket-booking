@@ -91,6 +91,7 @@ Dự án tuân theo kiến trúc **Phân tầng (Hybrid MVC)** với 3 tầng: M
 ```text
 software-testing-movie-ticket-booking/
 ├── app/                            # BỘ NÃO CỦA DỰ ÁN (Chứa toàn bộ PHP Logic)
+│   ├── .htaccess                   # Chặn truy cập trái phép
 │   ├── Config/
 │   │   └── Database.php            # Lớp kết nối CSDL duy nhất (Singleton)
 │   │
@@ -168,8 +169,19 @@ software-testing-movie-ticket-booking/
 │   ├── admin.css                   # CSS giao diện admin
 │   └── admin-seat.css              # CSS quản lý ghế admin
 │
+├── js/                             # JAVASCRIPT FILES (Nếu có)
 ├── images/                         # Hình ảnh (poster phim, assets)
+├── docs/                           # TÀI LIỆU DỰ ÁN
+│   ├── abg.md                      # ...
+│   ├── booking.md                  # ...
+│   ├── movie_detail.md             # ...
+│   └── ADMIN_DESIGN_GUIDE.md       # Thiết kế admin
+│
+├── tests/                          # TEST FILES
+│   └── test_booking.php            # Logic test đặt vé
+│
 ├── Database/
+│   ├── .htaccess                   # Chặn truy cập trái phép
 │   └── BookingTicketDatabase.sql   # File khởi tạo CSDL + dữ liệu mẫu
 │
 ├── config.php                      # Cấu hình chung (session, autoloader, kết nối DB)
