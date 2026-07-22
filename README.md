@@ -16,87 +16,172 @@ Hệ thống được phát triển theo kiến trúc PHP MVC kết hợp MySQL,
 ## Backend
 
 * PHP 8.x
-* MVC Architecture
+* Hybrid MVC Architecture (Model → Service → Controller)
 * Session-based Authentication
 
 ## Database
 
 * MySQL 8.x
+* Character Set: `utf8mb4` / Collation: `utf8mb4_unicode_ci`
 
 ## Frontend
 
 * HTML5
 * CSS3
 * JavaScript
+* Bootstrap 5.3
+* Google Fonts (Roboto)
 
 ## Development Tools
 
-* Laragon
+* XAMPP / Laragon
 * VS Code
-* Git
-* GitHub
-* HeidiSQL
+* Git & GitHub
+* HeidiSQL / phpMyAdmin
 
 ---
 
 # Environment Setup
 
 ## 1. Tải Code (Clone)
-1. Mở Terminal (hoặc Git Bash, CMD) tại thư mục `htdocs` của XAMPP (thường là `C:\xampp\htdocs`):
+1. Mở Terminal (hoặc Git Bash, CMD) tại thư mục `htdocs` của XAMPP (ví dụ: `C:\xampp\htdocs` hoặc `D:\xampp\htdocs`):
 2. Chạy lệnh tải dự án:
    ```bash
-   git clone https://github.com/huutienSE/movie-ticket-booking.git
+   git clone https://github.com/QynhAnhh/software-testing-movie-ticket-booking.git
    ```
 3. Di chuyển vào thư mục dự án:
    ```bash
-   cd movie-ticket-booking
+   cd software-testing-movie-ticket-booking
    ```
 
 ## 2. Khởi tạo Cơ Sở Dữ Liệu (Database)
 
 Dự án sử dụng cơ sở dữ liệu chung tên là: **`movie_ticket_booking`**. (User mặc định là `root`, pass rỗng `""`).
 
+> **⚠️ Lưu ý về Port:** File `app/Config/Database.php` mặc định dùng port `3306`. Nếu XAMPP của bạn chạy MySQL trên port khác (ví dụ `3308`), hãy sửa lại giá trị `$port` cho phù hợp.
+
+### Cách 1: Import qua phpMyAdmin
 1. Mở bảng điều khiển **XAMPP Control Panel** và bấm **Start** 2 dịch vụ: `Apache` và `MySQL`.
 2. Truy cập phpMyAdmin: 👉 [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
-3. Tạo Database tên là `movie_ticket_booking` (Collation: `utf8mb4_general_ci`).
-4. Chọn tab **Import (Nhập)**, chọn file `Database/BookingTicketDatabase.sql` có trong thư mục dự án.
-5. Bấm **Go (Thực hiện)**.
+3. Chọn tab **Import (Nhập)**, chọn file `Database/BookingTicketDatabase.sql` có trong thư mục dự án.
+4. Bấm **Go (Thực hiện)**.
+
+> **📌 Lưu ý:** File SQL đã tự động tạo database `movie_ticket_booking` với charset `utf8mb4`, không cần tạo trước.
+
+### Cách 2: Import qua Command Line
+```bash
+mysql -u root --default-character-set=utf8mb4 < Database/BookingTicketDatabase.sql
+```
 
 ## 3. Chạy Dự Án
-- 🏠 **Trang khách hàng:** [http://localhost/movie-ticket-booking/](http://localhost/movie-ticket-booking/)
-- 🔑 **Trang Đăng nhập:** [http://localhost/movie-ticket-booking/login.php](http://localhost/movie-ticket-booking/login.php)
-> **Tài khoản test (Admin):** `admin@example.com` / `password`
+- 🏠 **Trang khách hàng:** [http://localhost/software-testing-movie-ticket-booking/](http://localhost/software-testing-movie-ticket-booking/)
+- 🔑 **Trang Đăng nhập:** [http://localhost/software-testing-movie-ticket-booking/login.php](http://localhost/software-testing-movie-ticket-booking/login.php)
+- 🔧 **Trang Admin:** [http://localhost/software-testing-movie-ticket-booking/admin/](http://localhost/software-testing-movie-ticket-booking/admin/)
+
+> **Tài khoản test:**
+> * **Admin:** `admin@example.com` / `password`
+> * **User:** `user@example.com` / `password`
 
 ---
 
 # Project Structure (Hybrid MVC)
 
-Từ Phase 2, tất cả tuân theo kiến trúc **Phân tầng (Hybrid MVC)**.
+Dự án tuân theo kiến trúc **Phân tầng (Hybrid MVC)** với 3 tầng: Model → Service → Controller.
 
 ```text
-movie-ticket-booking/
-├── app/                        # BỘ NÃO CỦA DỰ ÁN (Chứa toàn bộ PHP Logic)
-│   ├── Config/                 # Cấu hình chung
-│   │   └── Database.php        # Lớp kết nối CSDL duy nhất
+software-testing-movie-ticket-booking/
+├── app/                            # BỘ NÃO CỦA DỰ ÁN (Chứa toàn bộ PHP Logic)
+│   ├── Config/
+│   │   └── Database.php            # Lớp kết nối CSDL duy nhất (Singleton)
 │   │
-│   ├── Models/                 # TẦNG 1: Tương tác Database
-│   │   ├── UserModel.php       # Chứa các câu SELECT, INSERT, UPDATE...
+│   ├── Models/                     # TẦNG 1: Tương tác Database
+│   │   ├── BookingModel.php        # CRUD đặt vé
+│   │   ├── DashboardModel.php      # Thống kê dashboard
+│   │   ├── GenreModel.php          # CRUD thể loại
+│   │   ├── MovieModel.php          # CRUD phim
+│   │   ├── ReviewModel.php         # CRUD đánh giá
+│   │   ├── RoomModel.php           # CRUD phòng chiếu
+│   │   ├── SeatModel.php           # CRUD ghế ngồi
+│   │   ├── SeatTypeModel.php       # Loại ghế
+│   │   ├── ShowtimeModel.php       # CRUD lịch chiếu
+│   │   ├── TheatreModel.php        # CRUD rạp
+│   │   ├── TicketModel.php         # CRUD vé
+│   │   └── UserModel.php           # CRUD người dùng
 │   │
-│   ├── Services/               # TẦNG 2: Xử lý nghiệp vụ (Business Logic)
-│   │   ├── AuthService.php     # Kiểm tra pass, check ghế trống, tính tiền...
+│   ├── Services/                   # TẦNG 2: Xử lý nghiệp vụ (Business Logic)
+│   │   ├── AuthService.php         # Xác thực, đăng ký, đăng nhập
+│   │   ├── BookingService.php      # Nghiệp vụ đặt vé
+│   │   ├── DashboardService.php    # Nghiệp vụ thống kê
+│   │   ├── GenreService.php        # Nghiệp vụ thể loại
+│   │   ├── MovieService.php        # Nghiệp vụ phim
+│   │   ├── ProfileService.php      # Nghiệp vụ hồ sơ cá nhân
+│   │   ├── ReviewService.php       # Nghiệp vụ đánh giá
+│   │   ├── RoomService.php         # Nghiệp vụ phòng chiếu
+│   │   ├── SeatService.php         # Nghiệp vụ ghế ngồi
+│   │   ├── ShowtimeService.php     # Nghiệp vụ lịch chiếu
+│   │   ├── TheatreService.php      # Nghiệp vụ rạp
+│   │   ├── TicketService.php       # Nghiệp vụ vé
+│   │   └── UserService.php         # Nghiệp vụ người dùng
 │   │
-│   ├── Controllers/            # TẦNG 3: Nhận Request & Điều hướng
-│   │   ├── AuthController.php  # Nhận $_POST từ form, gọi Service tương ứng
+│   ├── Controllers/                # TẦNG 3: Nhận Request & Điều hướng
+│   │   ├── AuthController.php      # Xử lý đăng nhập/đăng ký
+│   │   ├── BookingController.php   # Xử lý đặt vé
+│   │   ├── DashboardController.php # Xử lý dashboard
+│   │   ├── GenreController.php     # Xử lý thể loại
+│   │   ├── MovieController.php     # Xử lý phim
+│   │   ├── ProfileController.php   # Xử lý hồ sơ cá nhân
+│   │   ├── ReviewController.php    # Xử lý đánh giá
+│   │   ├── RoomController.php      # Xử lý phòng chiếu
+│   │   ├── SeatController.php      # Xử lý ghế ngồi
+│   │   ├── ShowtimeController.php  # Xử lý lịch chiếu
+│   │   ├── TheatreController.php   # Xử lý rạp
+│   │   ├── TicketController.php    # Xử lý vé
+│   │   └── UserController.php      # Xử lý người dùng
 │   │
-│   └── init.php                # File Autoloader (tự động nạp class)
+│   └── init.php                    # File Autoloader (tự động nạp class)
 │
-├── admin/                      # GIAO DIỆN ADMIN (HTML + PHP lấy data)
-│   ├── manage_movies.php       # Gọi Controller để lấy mảng data và foreach HTML
-│   └── ...
+├── admin/                          # GIAO DIỆN ADMIN
+│   ├── admin_header.php            # Header chung admin
+│   ├── admin_sidebar.php           # Sidebar điều hướng
+│   ├── admin_footer.php            # Footer chung admin
+│   ├── index.php                   # Dashboard thống kê
+│   ├── manage_movies.php           # Quản lý phim
+│   ├── manage_genres.php           # Quản lý thể loại
+│   ├── manage_showtimes.php        # Quản lý lịch chiếu
+│   ├── manage_theatres.php         # Quản lý rạp
+│   ├── manage_rooms.php            # Quản lý phòng chiếu
+│   ├── manage_seats.php            # Quản lý ghế ngồi
+│   ├── manage_booking.php          # Quản lý đặt vé
+│   └── manage_users.php            # Quản lý người dùng
 │
-└── (Thư mục gốc)               # GIAO DIỆN KHÁCH HÀNG (Nằm ngay ngoài cùng)
-    ├── index.php               
-    └── login.php               
+├── css/                            # STYLESHEETS
+│   ├── global.css                  # CSS chung toàn site
+│   ├── header.css / footer.css     # CSS header & footer
+│   ├── home.css                    # CSS trang chủ
+│   ├── auth.css                    # CSS đăng nhập/đăng ký
+│   ├── movie.css                   # CSS chi tiết phim
+│   ├── booking.css                 # CSS đặt vé
+│   ├── booking_history.css         # CSS lịch sử đặt vé
+│   ├── showtime.css                # CSS lịch chiếu
+│   ├── seat.css                    # CSS chọn ghế
+│   ├── profile.css                 # CSS hồ sơ cá nhân
+│   ├── admin.css                   # CSS giao diện admin
+│   └── admin-seat.css              # CSS quản lý ghế admin
+│
+├── images/                         # Hình ảnh (poster phim, assets)
+├── Database/
+│   └── BookingTicketDatabase.sql   # File khởi tạo CSDL + dữ liệu mẫu
+│
+├── config.php                      # Cấu hình chung (session, autoloader, kết nối DB)
+├── header.php                      # Header chung user site
+├── footer.php                      # Footer chung user site
+├── index.php                       # Trang chủ (danh sách phim)
+├── login.php                       # Trang đăng nhập
+├── logout.php                      # Xử lý đăng xuất
+├── movie_details.php               # Trang chi tiết phim
+├── booking.php                     # Trang đặt vé
+├── booking_history.php             # Trang lịch sử đặt vé
+└── profile.php                     # Trang hồ sơ cá nhân
 ```
 
 ---
@@ -287,14 +372,14 @@ chore: configure project structure
 
 # Contributors
 
-| Member              | Responsibility                                                       |
-| ------------------- | -------------------------------------------------------------------- |
+| Member               | Responsibility                                                       |
+| -------------------- | -------------------------------------------------------------------- |
 | Huỳnh Phạm Hữu Tiền | Team Leader, Architecture, Database, Authentication, Booking Backend |
-| Nhân                | Movie Module, Genre Module                                           |
-| Tiến                | Room, Seat, Showtime Module                                          |
-| Quỳnh Anh           | User Frontend                                                        |
-| Thịnh               | Booking Frontend                                                     |
-| TBD                 | Testing, Documentation, Admin UI                                     |
+| Nhân                 | Movie Module, Genre Module                                           |
+| Tiến                 | Room, Seat, Showtime Module                                          |
+| Quỳnh Anh            | User Frontend                                                        |
+| Thịnh                | Booking Frontend                                                     |
+| TBD                  | Testing, Documentation, Admin UI                                     |
 
 ---
 
@@ -304,13 +389,10 @@ chore: configure project structure
 * [x] Git Repository Setup
 * [x] GitHub Branch Protection
 * [x] Development Environment Setup
-* [ ] Database Design
-* [ ] Authentication Module
-* [ ] Movie Module
-* [ ] Showtime Module
-* [ ] Booking Module
-* [ ] Admin Module
+* [x] Database Design
+* [x] Authentication Module
+* [x] Movie Module
+* [x] Showtime Module
+* [x] Booking Module
+* [x] Admin Module
 * [ ] Testing & Deployment
-
-```
-```
