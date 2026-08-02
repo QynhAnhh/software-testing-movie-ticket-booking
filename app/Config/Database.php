@@ -4,6 +4,10 @@ namespace App\Config;
 
 use RuntimeException;
 
+class DatabaseException extends RuntimeException
+{
+}
+
 class Database
 {
     private static $connection = null;
@@ -14,13 +18,13 @@ class Database
             $configFile = __DIR__ . '/database.local.php';
 
             if (!is_file($configFile)) {
-                throw new RuntimeException(
+                throw new DatabaseException(
                     'Thiếu cấu hình database.local.php. '
                     . 'Hãy sao chép từ database.local.example.php.'
                 );
             }
 
-            $config = require $configFile;
+            $config = require_once $configFile;
 
             $requiredKeys = [
                 'host',
@@ -32,7 +36,7 @@ class Database
 
             foreach ($requiredKeys as $key) {
                 if (!array_key_exists($key, $config)) {
-                    throw new RuntimeException(
+                    throw new DatabaseException(
                         "Thiếu cấu hình database: {$key}"
                     );
                 }
@@ -42,7 +46,7 @@ class Database
                 !is_string($config['password'])
                 || trim($config['password']) === ''
             ) {
-                throw new RuntimeException(
+                throw new DatabaseException(
                     'Mật khẩu database không được để trống.'
                 );
             }
@@ -56,7 +60,7 @@ class Database
             );
 
             if (!$conn) {
-                throw new RuntimeException(
+                throw new DatabaseException(
                     'Database connection failed: '
                     . mysqli_connect_error()
                 );
