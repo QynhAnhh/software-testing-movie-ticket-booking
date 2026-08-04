@@ -154,7 +154,9 @@ function renderShowtimeFormFields($prefix, $movies_list, $rooms_list, $showtime 
 ?>
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">Phim <span class="text-danger">*</span></label>
+            <label for="<?= $prefix ?>_movie_id" class="form-label">
+                Phim <span class="text-danger">*</span>
+            </label>
             <select class="form-select" name="movie_id" id="<?= $prefix ?>_movie_id" required>
                 <option value="">-- Chọn phim --</option>
                 <?php foreach ($movies_list as $movie): ?>
@@ -165,7 +167,9 @@ function renderShowtimeFormFields($prefix, $movies_list, $rooms_list, $showtime 
             </select>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Phòng chiếu <span class="text-danger">*</span></label>
+            <label for="<?= $prefix ?>_room_id" class="form-label">
+                Phòng chiếu <span class="text-danger">*</span>
+            </label>
             <select class="form-select" name="room_id" id="<?= $prefix ?>_room_id" required>
                 <option value="">-- Chọn phòng --</option>
                 <?php foreach ($rooms_list as $room): ?>
@@ -176,24 +180,34 @@ function renderShowtimeFormFields($prefix, $movies_list, $rooms_list, $showtime 
             </select>
         </div>
         <div class="col-md-4">
-            <label class="form-label">Ngày chiếu <span class="text-danger">*</span></label>
+            <label for="<?= $prefix ?>_show_date" class="form-label">
+                Ngày chiếu <span class="text-danger">*</span>
+            </label>
             <input type="date" class="form-control" name="show_date" id="<?= $prefix ?>_show_date" required value="<?= htmlspecialchars($showtime['show_date'] ?? '') ?>">
         </div>
         <div class="col-md-4">
-            <label class="form-label">Giờ bắt đầu <span class="text-danger">*</span></label>
+            <label for="<?= $prefix ?>_start_time" class="form-label">
+                Giờ bắt đầu <span class="text-danger">*</span>
+            </label>
             <input type="time" class="form-control" name="start_time" id="<?= $prefix ?>_start_time" required value="<?= htmlspecialchars(isset($showtime['start_time']) ? substr($showtime['start_time'], 0, 5) : '') ?>">
         </div>
         <div class="col-md-4">
-            <label class="form-label">Giờ kết thúc tự tính</label>
+            <label for="<?= $prefix ?>_end_time_preview" class="form-label">
+                Giờ kết thúc tự tính
+            </label>
             <input type="text" class="form-control" id="<?= $prefix ?>_end_time_preview" value="<?= htmlspecialchars(isset($showtime['end_time']) ? substr($showtime['end_time'], 0, 5) : '') ?>" readonly>
             <div class="form-text">Hệ thống tự cộng thời lượng phim vào giờ bắt đầu.</div>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Giá vé cơ bản (VNĐ) <span class="text-danger">*</span></label>
+            <label for="<?= $prefix ?>_base_price" class="form-label">
+                Giá vé cơ bản (VNĐ) <span class="text-danger">*</span>
+            </label>
             <input type="number" class="form-control" name="base_price" id="<?= $prefix ?>_base_price" min="1000" step="1000" value="<?= htmlspecialchars((string)($showtime['base_price'] ?? 80000)) ?>" required>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Trạng thái</label>
+            <label for="<?= $prefix ?>_status" class="form-label">
+                Trạng thái
+            </label>
             <select class="form-select" name="status" id="<?= $prefix ?>_status">
                 <option value="active" <?= ($showtime['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>Đang mở</option>
                 <option value="canceled" <?= ($showtime['status'] ?? '') === 'canceled' ? 'selected' : '' ?>>Đã hủy</option>
