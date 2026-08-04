@@ -1,24 +1,75 @@
 <?php
+
 namespace App\Config;
 
-class Database {
+use RuntimeException;
+
+class DatabaseException extends RuntimeException
+{
+}
+
+class Database
+{
     private static $connection = null;
 
-    public static function getConnection() {
+    public static function getConnection()
+    {
         if (self::$connection === null) {
-            $host = 'localhost';
-            $username = 'root';
-            $password = '';
-            $database = 'movie_ticket_booking';
-            $port = 3308;
+            $configFile = __DIR__ . '/database.local.php';
 
-            $conn = mysqli_connect($host, $username, $password, $database, $port);
-            if (!$conn) {
-                die("Connection failed: " . mysqli_connect_error());
+            if (!is_file($configFile)) {
+                throw new DatabaseException(
+                    'Thiếu cấu hình database.local.php. '
+                    . 'Hãy sao chép từ database.local.example.php.'
+                );
             }
-            mysqli_set_charset($conn, "utf8mb4");
+
+            $config = require_once $configFile;
+
+            $requiredKeys = [
+                'host',
+                'username',
+                'password',
+                'database',
+                'port',
+            ];
+
+            foreach ($requiredKeys as $key) {
+                if (!array_key_exists($key, $config)) {
+                    throw new DatabaseException(
+                        "Thiếu cấu hình database: {$key}"
+                    );
+                }
+            }
+
+            if (
+                !is_string($config['password'])
+                || trim($config['password']) === ''
+            ) {
+                throw new DatabaseException(
+                    'Mật khẩu database không được để trống.'
+                );
+            }
+
+            $conn = mysqli_connect(
+                $config['host'],
+                $config['username'],
+                $config['password'],
+                $config['database'],
+                (int) $config['port']
+            );
+
+            if (!$conn) {
+                throw new DatabaseException(
+                    'Database connection failed: '
+                    . mysqli_connect_error()
+                );
+            }
+
+            mysqli_set_charset($conn, 'utf8mb4');
             self::$connection = $conn;
         }
+
         return self::$connection;
     }
 }
