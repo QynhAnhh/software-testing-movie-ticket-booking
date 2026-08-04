@@ -94,40 +94,113 @@ $stats = $controller->getStats();
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Họ <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="first_name" required placeholder="VD: Nguyễn" value="<?= htmlspecialchars($edit_user['first_name'] ?? '') ?>">
+                    <label for="user_first_name" class="form-label"> Họ <span class="text-danger">*</span></label>
+                    <input
+                        type="text"
+                        id="user_first_name"
+                        class="form-control"
+                        name="first_name"
+                        required
+                        placeholder="VD: Nguyễn"
+                        value="<?= htmlspecialchars($edit_user['first_name'] ?? '') ?>"
+                >
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Tên <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="last_name" required placeholder="VD: Văn An" value="<?= htmlspecialchars($edit_user['last_name'] ?? '') ?>">
+                    <label for="user_last_name" class="form-label">Tên <span class="text-danger">*</span></label>
+                    <input
+                        type="text"
+                        id="user_last_name"
+                        class="form-control"
+                        name="last_name"
+                        required
+                        placeholder="VD: Văn A"
+                        value="<?= htmlspecialchars($edit_user['last_name'] ?? '') ?>"
+                    >
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Email <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control" name="email" required placeholder="VD: email@example.com" value="<?= htmlspecialchars($edit_user['email'] ?? '') ?>">
+                    <label for="user_email" class="form-label"> Email <span class="text-danger">*</span></label>
+                    <input
+                        type="email"
+                        id="user_email"
+                        class="form-control"
+                        name="email"
+                        required
+                        placeholder="VD: email@example.com"
+                        value="<?= htmlspecialchars($edit_user['email'] ?? '') ?>"
+                    >
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="phone" required placeholder="VD: 0912345678" value="<?= htmlspecialchars($edit_user['phone'] ?? '') ?>">
+                    <label for="user_phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                    <input
+                        type="text"
+                        id="user_phone"
+                        class="form-control"
+                        name="phone"
+                        required
+                        placeholder="VD: 0912345678"
+                        value="<?= htmlspecialchars($edit_user['phone'] ?? '') ?>"
+                    >
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Ngày sinh</label>
-                    <input type="date" class="form-control" name="birth_date" value="<?= htmlspecialchars($edit_user['birth_date'] ?? '') ?>">
+                    <label for="user_birth_date" class="form-label">
+                        Ngày sinh
+                    </label>
+                    <input
+                        type="date"
+                        id="user_birth_date"
+                        class="form-control"
+                        name="birth_date"
+                        value="<?= htmlspecialchars($edit_user['birth_date'] ?? '') ?>"
+                    >
                 </div>
+
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Mật khẩu <?= $edit_user ? '(Bỏ trống nếu không đổi)' : '<span class="text-danger">*</span>' ?></label>
-                    <input type="password" class="form-control" name="password" <?= $edit_user ? '' : 'required' ?> placeholder="Nhập mật khẩu...">
+                    <label for="user_password" class="form-label"> Mật khẩu <?= $edit_user
+                        ? ' (Bỏ trống nếu không đổi)'
+                        : ' <span class="text-danger">*</span>' ?>
+                    </label>
+                    <input
+                        type="password"
+                        id="user_password"
+                        class="form-control"
+                        name="password"
+                        <?= $edit_user ? '' : 'required' ?>
+                        placeholder="Nhập mật khẩu..."
+                    >
                 </div>
+
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Vai trò</label>
-                    <select class="form-select" name="role">
-                        <option value="user" <?= ($edit_user && $edit_user['role'] == 'user') ? 'selected' : '' ?>>Khách hàng (User)</option>
-                        <option value="admin" <?= ($edit_user && $edit_user['role'] == 'admin') ? 'selected' : '' ?>>Quản trị (Admin)</option>
+                    <label for="user_role" class="form-label">
+                        Vai trò
+                    </label>
+                    <select
+                        id="user_role"
+                        class="form-select"
+                        name="role"
+                    >
+                        <option
+                            value="user"
+                            <?= ($edit_user && $edit_user['role'] == 'user')
+                                ? 'selected'
+                                : '' ?>
+                        >
+                            Khách hàng (User)
+                        </option>
+
+                        <option
+                            value="admin"
+                            <?= ($edit_user && $edit_user['role'] == 'admin')
+                                ? 'selected'
+                                : '' ?>
+                        >
+                            Quản trị (Admin)
+                        </option>
                     </select>
                 </div>
             </div>
@@ -147,7 +220,16 @@ $stats = $controller->getStats();
     <div class="admin-card mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
         <h5 class="mb-0 text-white"><i class="bi bi-list-ul me-2"></i>Danh sách người dùng</h5>
         <form action="manage_users.php" method="GET" class="d-flex gap-2">
-            <input type="text" name="search" class="form-control" placeholder="Tìm theo tên, email, sđt..." value="<?= htmlspecialchars($search) ?>" style="max-width: 250px;">
+            <label for="user_search" class="visually-hidden">Tìm kiếm người dùng</label>
+            <input
+                type="text"
+                id="user_search"
+                name="search"
+                class="form-control"
+                placeholder="Tìm theo tên, email, sđt..."
+                value="<?= htmlspecialchars($search) ?>"
+                style="max-width: 250px;"
+            >
             <button type="submit" class="btn btn-outline-light"><i class="bi bi-search"></i></button>
             <?php if (!empty($search)): ?>
                 <a href="manage_users.php" class="btn btn-outline-secondary">Xóa lọc</a>
