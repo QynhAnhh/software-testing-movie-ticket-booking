@@ -52,12 +52,12 @@ $genres_list = $controller->getAllGenres();
                 <input type="hidden" name="id" value="<?= (int)($edit_genre['id'] ?? 0) ?>">
             <?php endif; ?>
             <div class="mb-3">
-                <label class="form-label">Tên thể loại <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" name="name" required placeholder="VD: Hành động, Hài hước..." value="<?= htmlspecialchars($edit_genre['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                <label for="genre_name" class="form-label">Tên thể loại <span class="text-danger">*</span></label>
+                <input type="text" id="genre_name" class="form-control" name="name" required placeholder="VD: Hành động, Hài hước..." value="<?= htmlspecialchars($edit_genre['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
             </div>
             <div class="mb-3">
-                <label class="form-label">Mô tả (tùy chọn)</label>
-                <textarea class="form-control" name="description" rows="3" placeholder="Mô tả ngắn gọn về thể loại này..."><?= htmlspecialchars($edit_genre['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                <label for="genre_description" class="form-label">Mô tả (tùy chọn)</label>
+                <textarea id="genre_description" class="form-control" name="description" rows="3" placeholder="Mô tả ngắn gọn về thể loại này..."><?= htmlspecialchars($edit_genre['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
             </div>
             <div class="mt-3 text-end">
                 <?php if ($edit_genre): ?>
