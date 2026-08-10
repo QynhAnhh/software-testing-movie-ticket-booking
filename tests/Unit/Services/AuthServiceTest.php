@@ -16,10 +16,8 @@ class AuthServiceTest extends TestCase
         $this->authService = new AuthService();
         $this->conn = Database::getConnection();
 
-        // Dọn dẹp dữ liệu rác trước khi test
         $this->cleanUpDummyData();
 
-        // Tạo 1 tài khoản dummy để test trùng lặp và test đăng nhập
         $passwordHash = password_hash('123456', PASSWORD_DEFAULT);
         $sql = "INSERT INTO users (first_name, last_name, email, phone, password, role) 
                 VALUES ('Dummy', 'User', 'exist@test.com', '0922222222', '$passwordHash', 'user')";
@@ -28,7 +26,6 @@ class AuthServiceTest extends TestCase
 
     protected function tearDown(): void
     {
-        // Dọn dẹp dữ liệu rác sau khi test
         $this->cleanUpDummyData();
         if (isset($_SESSION['user'])) {
             unset($_SESSION['user']);
@@ -54,10 +51,7 @@ class AuthServiceTest extends TestCase
         ];
     }
 
-    // =========================================================================
     // NHÓM 1: KIỂM TRA TÍNH HỢP LỆ CỦA MẬT KHẨU (TC-AH-01 -> 09, 21)
-    // =========================================================================
-
     public function passwordLengthProvider()
     {
         return [
@@ -82,12 +76,11 @@ class AuthServiceTest extends TestCase
         $data = $this->getBaseRegisterData();
         $data['password'] = $password;
         $data['confirm_password'] = $password;
-        $data['email'] = "test{$length}@test.com"; // Đổi email để không bị trùng
+        $data['email'] = "test{$length}@test.com"; 
 
         $result = $this->authService->register($data);
 
         $this->assertEquals($expectedStatus, $result['status'], "Failed at {$tcId}");
-        // Chỉ assert message khi lỗi, vì có thể Bug chưa được fix (Dev chưa làm)
         if ($expectedStatus === 'error') {
             $this->assertStringContainsString($expectedMessage, $result['message'], "Failed at {$tcId}");
         }
@@ -106,10 +99,7 @@ class AuthServiceTest extends TestCase
         $this->assertStringContainsString('không khớp', $result['message']);
     }
 
-    // =========================================================================
     // NHÓM 2: XỬ LÝ ĐỊNH DẠNG ĐẦU VÀO (TC-AH-10 -> 14, 24 -> 27)
-    // =========================================================================
-
     public function formatValidationProvider()
     {
         return [
@@ -135,7 +125,6 @@ class AuthServiceTest extends TestCase
         $data[$field] = $value;
         $data['email'] = "testformat" . rand(1, 1000) . "@test.com";
 
-        // Đặc thù test email thì không random email nữa
         if ($field === 'email') {
             $data['email'] = $value;
         }
@@ -144,21 +133,15 @@ class AuthServiceTest extends TestCase
 
         $this->assertEquals($expectedStatus, $result['status'], "Failed at {$tcId}");
         if ($expectedStatus === 'error') {
-            // Không assert bằng == tuyệt đối vì Dev có thể sửa message khác một xíu
-            // Nên dùng StrContains
             $this->assertStringContainsStringIgnoringCase($expectedMessageKeyword, $result['message'], "Failed at {$tcId}");
         }
     }
 
-
-    // =========================================================================
     // NHÓM 3: KIỂM TRA RÀNG BUỘC TOÀN VẸN DỮ LIỆU (TC-AH-15, 16, 22, 23)
-    // =========================================================================
-
     public function testRegisterDuplicateEmail() // TC-AH-15
     {
         $data = $this->getBaseRegisterData();
-        $data['email'] = 'exist@test.com'; // Đã tạo ở setUp
+        $data['email'] = 'exist@test.com'; 
         $result = $this->authService->register($data);
 
         $this->assertEquals('error', $result['status']);
@@ -168,7 +151,7 @@ class AuthServiceTest extends TestCase
     public function testRegisterDuplicatePhone() // TC-AH-16
     {
         $data = $this->getBaseRegisterData();
-        $data['phone'] = '0922222222'; // Đã tạo ở setUp
+        $data['phone'] = '0922222222';
         $result = $this->authService->register($data);
 
         $this->assertEquals('error', $result['status']);
@@ -190,25 +173,22 @@ class AuthServiceTest extends TestCase
     public function testRegisterEmptyOneField() // TC-AH-23
     {
         $data = $this->getBaseRegisterData();
-        $data['email'] = ''; // Bỏ trống email
+        $data['email'] = '';
         $result = $this->authService->register($data);
 
         $this->assertEquals('error', $result['status']);
         $this->assertStringContainsString('Vui lòng nhập đầy đủ', $result['message']);
     }
 
-    // =========================================================================
     // NHÓM 4: KIỂM TRA NGHIỆP VỤ ĐĂNG NHẬP (TC-AH-17 -> 20)
-    // =========================================================================
-
     public function loginProvider()
     {
         return [
             // $email, $password, $expectedStatus, $expectedMessageKeyword, $tcId
-            ['exist@test.com', '123456', 'success', 'thành công', 'TC-AH-17'], // Đúng tài khoản
-            ['exist@test.com', 'wrongpass', 'error', 'không đúng', 'TC-AH-18'], // Sai mật khẩu
-            ['notfound@test.com', '123456', 'error', 'không đúng', 'TC-AH-19'], // Email chưa tồn tại
-            ['', '', 'error', 'Vui lòng nhập', 'TC-AH-20'], // Bỏ trống
+            ['exist@test.com', '123456', 'success', 'thành công', 'TC-AH-17'], 
+            ['exist@test.com', 'wrongpass', 'error', 'không đúng', 'TC-AH-18'], 
+            ['notfound@test.com', '123456', 'error', 'không đúng', 'TC-AH-19'],
+            ['', '', 'error', 'Vui lòng nhập', 'TC-AH-20'], 
         ];
     }
 
@@ -222,7 +202,6 @@ class AuthServiceTest extends TestCase
         $this->assertEquals($expectedStatus, $result['status'], "Failed at {$tcId}");
         $this->assertStringContainsStringIgnoringCase($expectedMessageKeyword, $result['message'], "Failed at {$tcId}");
         
-        // Kiểm tra session nếu đăng nhập thành công
         if ($expectedStatus === 'success') {
             $this->assertArrayHasKey('user', $_SESSION);
             $this->assertEquals($email, $_SESSION['user']['email']);
