@@ -12,6 +12,8 @@ class Database
 {
     private static $connection = null;
 
+    private static $configCache = null;
+
     public static function getConnection()
     {
         if (self::$connection === null) {
@@ -24,7 +26,10 @@ class Database
                 );
             }
 
-            $config = require $configFile;
+            if (self::$configCache === null) {
+                self::$configCache = require_once $configFile;
+            }
+            $config = self::$configCache;
 
             $requiredKeys = [
                 'host',

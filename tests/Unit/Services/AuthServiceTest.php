@@ -19,7 +19,7 @@ class AuthServiceTest extends TestCase
         $this->cleanUpDummyData();
 
         $passwordHash = password_hash('123456', PASSWORD_DEFAULT);
-        $sql = "INSERT INTO users (first_name, last_name, email, phone, password, role) 
+        $sql = "INSERT INTO users (first_name, last_name, email, phone, password, role)
                 VALUES ('Dummy', 'User', 'exist@test.com', '0922222222', '$passwordHash', 'user')";
         mysqli_query($this->conn, $sql);
     }
@@ -76,7 +76,7 @@ class AuthServiceTest extends TestCase
         $data = $this->getBaseRegisterData();
         $data['password'] = $password;
         $data['confirm_password'] = $password;
-        $data['email'] = "test{$length}@test.com"; 
+        $data['email'] = "test{$length}@test.com";
 
         $result = $this->authService->register($data);
 
@@ -123,7 +123,7 @@ class AuthServiceTest extends TestCase
     {
         $data = $this->getBaseRegisterData();
         $data[$field] = $value;
-        $data['email'] = "testformat" . rand(1, 1000) . "@test.com";
+        $data['email'] = "testformat" . random_int(1, 1000) . "@test.com";
 
         if ($field === 'email') {
             $data['email'] = $value;
@@ -141,7 +141,7 @@ class AuthServiceTest extends TestCase
     public function testRegisterDuplicateEmail() // TC-AH-15
     {
         $data = $this->getBaseRegisterData();
-        $data['email'] = 'exist@test.com'; 
+        $data['email'] = 'exist@test.com';
         $result = $this->authService->register($data);
 
         $this->assertEquals('error', $result['status']);
@@ -161,7 +161,7 @@ class AuthServiceTest extends TestCase
     public function testRegisterEmptyAllFields() // TC-AH-22
     {
         $data = [
-            'first_name' => '', 'last_name' => '', 'email' => '', 
+            'first_name' => '', 'last_name' => '', 'email' => '',
             'phone' => '', 'password' => '', 'confirm_password' => ''
         ];
         $result = $this->authService->register($data);
@@ -185,10 +185,10 @@ class AuthServiceTest extends TestCase
     {
         return [
             // $email, $password, $expectedStatus, $expectedMessageKeyword, $tcId
-            ['exist@test.com', '123456', 'success', 'thành công', 'TC-AH-17'], 
-            ['exist@test.com', 'wrongpass', 'error', 'không đúng', 'TC-AH-18'], 
+            ['exist@test.com', '123456', 'success', 'thành công', 'TC-AH-17'],
+            ['exist@test.com', 'wrongpass', 'error', 'không đúng', 'TC-AH-18'],
             ['notfound@test.com', '123456', 'error', 'không đúng', 'TC-AH-19'],
-            ['', '', 'error', 'Vui lòng nhập', 'TC-AH-20'], 
+            ['', '', 'error', 'Vui lòng nhập', 'TC-AH-20'],
         ];
     }
 
