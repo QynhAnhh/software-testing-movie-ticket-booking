@@ -11,34 +11,26 @@ class MovieServiceTest extends TestCase
     private array $temporaryFiles = [];
 
     protected function setUp(): void
-    {
-        parent::setUp();
+{
+    parent::setUp();
 
-        // Mock MovieModel để Unit Test không tác động Database thật.
-        $this->movieModel = $this->getMockBuilder(MovieModel::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([
-                'insertMovie',
-                'insertMovieGenres',
-                'getMovieByIdWithGenres',
-                'updateMovie',
-                'deleteMovieGenres',
-                'deleteMovie',
-                'getError',
-            ])
-            ->getMock();
+    // Mock MovieModel để Unit Test không tác động Database thật.
+    $this->movieModel = $this->getMockBuilder(MovieModel::class)
+        ->disableOriginalConstructor()
+        ->onlyMethods([
+            'insertMovie',
+            'insertMovieGenres',
+            'getMovieByIdWithGenres',
+            'updateMovie',
+            'deleteMovieGenres',
+            'deleteMovie',
+            'getError',
+        ])
+        ->getMock();
 
-        // MovieService hiện tự new MovieModel trong constructor,
-        // nên tạo object không chạy constructor để tránh kết nối DB thật.
-        $reflection = new ReflectionClass(MovieService::class);
-
-        $this->service = $reflection->newInstanceWithoutConstructor();
-
-        // Inject mock model vào thuộc tính private $model.
-        $modelProperty = $reflection->getProperty('model');
-        $modelProperty->setAccessible(true);
-        $modelProperty->setValue($this->service, $this->movieModel);
-    }
+    // Inject mock trực tiếp qua constructor.
+    $this->service = new MovieService($this->movieModel);
+}
 
     protected function tearDown(): void
     {

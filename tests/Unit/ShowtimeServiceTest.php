@@ -61,20 +61,11 @@ class ShowtimeServiceTest extends TestCase
         ])
         ->getMock();
 
-    // Không gọi constructor thật vì constructor sẽ kết nối Database.
-    $reflection = new ReflectionClass(ShowtimeService::class);
-    $this->service = $reflection->newInstanceWithoutConstructor();
-
-    // Chỉ inject những Model thực sự tồn tại trong ShowtimeService.
-    foreach ([
-        'showtimeModel' => $this->showtimeModel,
-        'movieModel' => $this->movieModel,
-        'roomModel' => $this->roomModel,
-    ] as $propertyName => $mock) {
-        $property = $reflection->getProperty($propertyName);
-        $property->setAccessible(true);
-        $property->setValue($this->service, $mock);
-    }
+    $this->service = new ShowtimeService(
+    $this->showtimeModel,
+    $this->movieModel,
+    $this->roomModel
+);
 }
 
     protected function tearDown(): void

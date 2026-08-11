@@ -10,11 +10,15 @@ class ShowtimeService {
     private $movieModel;
     private $roomModel;
 
-    public function __construct() {
-        $this->showtimeModel = new ShowtimeModel();
-        $this->movieModel = new MovieModel();
-        $this->roomModel = new RoomModel();
-    }
+    public function __construct(
+    ?ShowtimeModel $showtimeModel = null,
+    ?MovieModel $movieModel = null,
+    ?RoomModel $roomModel = null
+) {
+    $this->showtimeModel = $showtimeModel ?? new ShowtimeModel();
+    $this->movieModel = $movieModel ?? new MovieModel();
+    $this->roomModel = $roomModel ?? new RoomModel();
+}
 
     public function addShowtime($data) {
         $validation = $this->validate($data);
