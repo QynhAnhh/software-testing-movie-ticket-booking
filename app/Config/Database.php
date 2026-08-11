@@ -11,12 +11,20 @@ class DatabaseException extends RuntimeException
 class Database
 {
     private static $connection = null;
-    private static $config = null;
 
     public static function getConnection()
     {
         if (self::$connection === null) {
-            $config = self::loadConfig();
+            $configFile = __DIR__ . '/database.local.php';
+
+            if (!is_file($configFile)) {
+                throw new DatabaseException(
+                    'Thiếu cấu hình database.local.php. '
+                    . 'Hãy sao chép từ database.local.example.php.'
+                );
+            }
+
+            $config = require_once $configFile;
 
             $requiredKeys = [
                 'host',
@@ -63,39 +71,5 @@ class Database
         }
 
         return self::$connection;
-    }
-
-    /**
-     * Load database configuration once and cache it.
-     * Ensures the returned value is an array and avoids require_once pitfalls.
-     *
-     * @return array
-     * @throws DatabaseException
-     */
-    private static function loadConfig()
-    {
-        if (self::$config === null) {
-            $file = __DIR__ . '/database.local.php';
-            $alt = __DIR__ . '/database.php';
-
-            if (file_exists($file)) {
-                $cfg = require $file;
-            } elseif (file_exists($alt)) {
-                $cfg = require $alt;
-            } else {
-                throw new DatabaseException(
-                    'Thiếu cấu hình database.local.php. '
-                    . 'Hãy sao chép từ database.local.example.php.'
-                );
-            }
-
-            if (!is_array($cfg)) {
-                throw new DatabaseException('File cấu hình database phải trả về một mảng.');
-            }
-
-            self::$config = $cfg;
-        }
-
-        return self::$config;
     }
 }
