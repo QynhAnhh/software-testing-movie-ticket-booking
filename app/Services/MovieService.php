@@ -7,8 +7,9 @@ class MovieService {
     private $model;
     private const POSTER_UPLOAD_DIR = 'images/movies';
 
-    public function __construct() {
-        $this->model = new MovieModel();
+    public function __construct(?MovieModel $model = null)
+    {
+        $this->model = $model ?? new MovieModel();
     }
 
     public function addMovie($data, $genreIds, $posterFile = null) {
