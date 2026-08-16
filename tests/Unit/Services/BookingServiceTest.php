@@ -42,7 +42,7 @@ class BookingServiceTest extends TestCase
             if ($refClass->hasProperty($name)) {
                 $p = $refClass->getProperty($name);
                 $p->setAccessible(true); // NOSONAR
-                $p->setValue($this->bookingService, $mock);
+                $p->setValue($this->bookingService, $mock); // NOSONAR
             }
         }
     }
