@@ -41,7 +41,7 @@ class BookingServiceTest extends TestCase
         foreach ($props as $name => $mock) {
             if ($refClass->hasProperty($name)) {
                 $p = $refClass->getProperty($name);
-                $p->setAccessible(true);
+                $p->setAccessible(true); // NOSONAR
                 $p->setValue($this->bookingService, $mock);
             }
         }
@@ -178,8 +178,6 @@ class BookingServiceTest extends TestCase
      */
     public function test_TC_OI_06_prevent_repayment_on_already_paid_booking()
     {
-        $bookingId = 101;
-
         // Nếu ghế đã được đặt (ticketModel->isSeatBooked trả true) thì processBooking phải trả về lỗi
         $userId = 1;
         $showtimeId = 10;
@@ -231,7 +229,6 @@ class BookingServiceTest extends TestCase
      */
     public function test_TC_OI_09_backend_recalculates_price_ignoring_client_total_price()
     {
-        $invalidClientPrice = -100000; // Client cố tình gửi giá âm
         $seatIds = [1, 2];
         $showtimeId = 10;
 
