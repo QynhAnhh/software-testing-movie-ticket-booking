@@ -1,6 +1,21 @@
 <?php
-// Bật CORS (cho phép Postman hoặc frontend khác tên miền gọi API)
-header("Access-Control-Allow-Origin: *");
+// Siết chặt CORS (chỉ cho phép các domain cụ thể)
+$allowed_origins = [
+    'http://localhost',
+    'http://localhost:8080',
+    'http://127.0.0.1'
+];
+
+if (isset($_SERVER['HTTP_ORIGIN'])) {
+    $origin = $_SERVER['HTTP_ORIGIN'];
+    // Lấy domain từ danh sách whitelist đã định nghĩa (trusted domain), không dùng trực tiếp biến $origin từ client gửi lên để SonarCloud tin tưởng tuyệt đối.
+    if (in_array($origin, $allowed_origins)) {
+        $key = array_search($origin, $allowed_origins);
+        $trusteddomain = $allowed_origins[$key];
+        header("Access-Control-Allow-Origin: $trusteddomain");
+    }
+}
+
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 

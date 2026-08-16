@@ -38,10 +38,10 @@ $genres_list = $controller->getAllGenres();
     </div>
 
     <?php if ($success_msg): ?>
-        <script>window.alert('<?= addslashes($success_msg) ?>');</script>
+        <script>window.alert('<?= htmlspecialchars($success_msg, ENT_QUOTES, 'UTF-8') ?>');</script>
     <?php endif; ?>
     <?php if ($error_msg): ?>
-        <script>window.alert('Lỗi: <?= addslashes($error_msg) ?>');</script>
+        <script>window.alert('Lỗi: <?= htmlspecialchars($error_msg, ENT_QUOTES, 'UTF-8') ?>');</script>
     <?php endif; ?>
 
     <div class="admin-card mb-4">
@@ -49,15 +49,15 @@ $genres_list = $controller->getAllGenres();
         <form action="manage_genres.php" method="POST">
             <input type="hidden" name="action" value="<?= $edit_genre ? 'edit' : 'add' ?>">
             <?php if ($edit_genre): ?>
-                <input type="hidden" name="id" value="<?= $edit_genre['id'] ?>">
+                <input type="hidden" name="id" value="<?= (int)($edit_genre['id'] ?? 0) ?>">
             <?php endif; ?>
             <div class="mb-3">
-                <label class="form-label">Tên thể loại <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" name="name" required placeholder="VD: Hành động, Hài hước..." value="<?= htmlspecialchars($edit_genre['name'] ?? '') ?>">
+                <label for="genre_name" class="form-label">Tên thể loại <span class="text-danger">*</span></label>
+                <input type="text" id="genre_name" class="form-control" name="name" required placeholder="VD: Hành động, Hài hước..." value="<?= htmlspecialchars($edit_genre['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
             </div>
             <div class="mb-3">
-                <label class="form-label">Mô tả (tùy chọn)</label>
-                <textarea class="form-control" name="description" rows="3" placeholder="Mô tả ngắn gọn về thể loại này..."><?= htmlspecialchars($edit_genre['description'] ?? '') ?></textarea>
+                <label for="genre_description" class="form-label">Mô tả (tùy chọn)</label>
+                <textarea id="genre_description" class="form-control" name="description" rows="3" placeholder="Mô tả ngắn gọn về thể loại này..."><?= htmlspecialchars($edit_genre['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
             </div>
             <div class="mt-3 text-end">
                 <?php if ($edit_genre): ?>
@@ -87,19 +87,19 @@ $genres_list = $controller->getAllGenres();
                     <?php if (!empty($genres_list)): ?>
                         <?php foreach ($genres_list as $genre): ?>
                             <tr>
-                                <td><?= $genre['id'] ?></td>
-                                <td><strong><?= htmlspecialchars($genre['name']) ?></strong></td>
-                                <td><?= htmlspecialchars($genre['description'] ?? 'Không có mô tả') ?></td>
+                                <td><?= (int)($genre['id'] ?? 0) ?></td>
+                                <td><strong><?= htmlspecialchars($genre['name'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong></td>
+                                <td><?= htmlspecialchars($genre['description'] ?? 'Không có mô tả', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= date('d/m/Y H:i', strtotime($genre['created_at'])) ?></td>
                                 <td class="text-center">
                                     <div class="d-flex gap-1 justify-content-center">
-                                        <a href="manage_genres.php?edit_id=<?= $genre['id'] ?>" class="btn btn-sm btn-outline-info admin-icon-btn" title="Sửa thể loại">
+                                        <a href="manage_genres.php?edit_id=<?= (int)($genre['id'] ?? 0) ?>" class="btn btn-sm btn-outline-info admin-icon-btn" title="Sửa thể loại">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
 
                                         <form action="" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa thể loại này? Phim thuộc thể loại này sẽ bị gỡ thẻ.');">
                                             <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="id" value="<?= $genre['id'] ?>">
+                                            <input type="hidden" name="id" value="<?= (int)($genre['id'] ?? 0) ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger admin-icon-btn" title="Xóa thể loại" aria-label="Xóa thể loại">
                                                 <i class="bi bi-trash"></i>
                                             </button>
