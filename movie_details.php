@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once 'config.php';
 
 use App\Controllers\MovieController;
@@ -61,7 +61,7 @@ require_once 'header.php';
         <div class="row g-4 movie-hero-row">
             <div class="col-md-4">
                 <div class="movie-detail-poster">
-                    <img src="<?= htmlspecialchars($poster) ?>" alt="<?= htmlspecialchars($movie['title']) ?>" onerror="this.src='https://via.placeholder.com/400x600?text=No+Image';">
+                    <img src="<?= htmlspecialchars($poster) ?>" alt="<?= htmlspecialchars($movie['title']) ?>">
                 </div>
             </div>
 
@@ -214,7 +214,8 @@ require_once 'header.php';
                             </div>
                         </div>
                         <div class="mb-3">
-                            <textarea class="form-control bg-dark text-white border-secondary" name="comment" rows="4" placeholder="Chia sẻ cảm nhận của bạn về phim..." required></textarea>
+                            <label for="comment" class="form-label text-secondary">Nhận xét</label>
+                            <textarea id="comment" class="form-control bg-dark text-white border-secondary" name="comment" rows="4" placeholder="Chia sẻ cảm nhận của bạn về phim..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-booking-red">
                             <i class="bi bi-send-fill"></i> Gửi đánh giá
