@@ -35,88 +35,23 @@ class BookingService {
     }
 
     public function createBooking($userId, $showtimeId, $seatIds, $paymentMethod) {
-        if ($userId <= 0) {
-            throw new \InvalidArgumentException('Vui lòng đăng nhập để đặt vé.');
-        }
-
-        if ($showtimeId <= 0) {
-            throw new \InvalidArgumentException('Suất chiếu không hợp lệ.');
-        }
-
-        if (!is_array($seatIds)) {
-            throw new \InvalidArgumentException('Vui lòng chọn ít nhất một ghế');
-        }
-
-        $seatIds = array_values(array_unique(array_map('intval', $seatIds)));
+        $this->validateBookingRequest($userId, $showtimeId, $seatIds);
+        $seatIds = $this->normalizeSeatIds($seatIds);
         $this->validateBookingSeats($seatIds);
-
-        $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
-
-        if (!in_array($paymentMethod, $allowedPaymentMethods, true)) {
-            $paymentMethod = 'cash';
-        }
-
-        $showtime = $this->showtimeModel->getDetailById($showtimeId);
-
-        if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
-            throw new \InvalidArgumentException('Suất chiếu không khả dụng.');
-        }
-
-        $showDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $showtime['show_date'] . ' ' . $showtime['start_time']);
-        if ($showDateTime && $showDateTime <= new \DateTime()) {
-            throw new \InvalidArgumentException('Suất chiếu này đã bắt đầu hoặc đã kết thúc.');
-        }
+        $paymentMethod = $this->normalizePaymentMethod($paymentMethod);
+        $showtime = $this->getAvailableShowtime($showtimeId);
 
         $this->bookingModel->beginTransaction();
 
         try {
-            $selectedSeats = $this->seatModel->lockByIds($seatIds);
-
-            if (count($selectedSeats) !== count($seatIds)) {
-                throw new \InvalidArgumentException('Danh sách ghế không hợp lệ.');
-            }
-
-            $seatPrices = [];
-            $totalPrice = 0;
-            foreach ($seatIds as $seatId) {
-                $seat = null;
-                foreach ($selectedSeats as $item) {
-                    if ((int)$item['id'] === $seatId) {
-                        $seat = $item;
-                        break;
-                    }
-                }
-
-                if (!$seat) {
-                    throw new \InvalidArgumentException('Ghế không hợp lệ.');
-                }
-                if ((int)$seat['room_id'] !== (int)$showtime['room_id']) {
-                    throw new \InvalidArgumentException('Ghế không thuộc phòng chiếu này.');
-                }
-                if ((int)$seat['is_active'] !== 1) {
-                    throw new \InvalidArgumentException('Có ghế không khả dụng.');
-                }
-                if ($this->ticketModel->isSeatBooked($showtimeId, $seatId)) {
-                    throw new \InvalidArgumentException('Ghế này vừa được đặt bởi người khác. Vui lòng chọn ghế khác.');
-                }
-
-                $price = (float)$showtime['base_price'] + (float)($seat['seat_type_price'] ?? 0);
-                $seatPrices[] = ['seat_id' => $seatId, 'price' => $price];
-                $totalPrice += $price;
-            }
-
-            $bookingId = $this->bookingModel->createBooking($userId, $totalPrice, $paymentMethod);
-
-            if (!$bookingId) {
-                throw new \Exception('Không thể tạo booking.');
-            }
-
-            $ticketsCreated = $this->ticketModel->createMany($bookingId, $showtimeId, $seatPrices);
-
-            if (!$ticketsCreated) {
-                throw new \Exception('Không thể tạo vé.');
-            }
-
+            [$seatPrices, $totalPrice] = $this->processSeatLocking($seatIds, $showtime, $showtimeId);
+            $bookingId = $this->handleDatabaseInsertion(
+                $userId,
+                $showtimeId,
+                $paymentMethod,
+                $totalPrice,
+                $seatPrices
+            );
             $this->bookingModel->commit();
 
             return [
@@ -130,6 +65,103 @@ class BookingService {
         }
     }
 
+    private function validateBookingRequest($userId, $showtimeId, $seatIds): void {
+        if ($userId <= 0) {
+            throw new \InvalidArgumentException('Vui lòng đăng nhập để đặt vé.');
+        }
+
+        if ($showtimeId <= 0) {
+            throw new \InvalidArgumentException('Suất chiếu không hợp lệ.');
+        }
+
+        if (!is_array($seatIds)) {
+            throw new \InvalidArgumentException('Vui lòng chọn ít nhất một ghế');
+        }
+    }
+
+    private function normalizeSeatIds(array $seatIds): array {
+        return array_values(array_unique(array_map('intval', $seatIds)));
+    }
+
+    private function normalizePaymentMethod($paymentMethod) {
+        $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
+        return in_array($paymentMethod, $allowedPaymentMethods, true)
+            ? $paymentMethod
+            : 'cash';
+    }
+
+    private function getAvailableShowtime($showtimeId): array {
+        $showtime = $this->showtimeModel->getDetailById($showtimeId);
+        if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
+            throw new \InvalidArgumentException('Suất chiếu không khả dụng.');
+        }
+
+        $showDateTime = \DateTime::createFromFormat(
+            'Y-m-d H:i:s',
+            $showtime['show_date'] . ' ' . $showtime['start_time']
+        );
+        if ($showDateTime && $showDateTime <= new \DateTime()) {
+            throw new \InvalidArgumentException('Suất chiếu này đã bắt đầu hoặc đã kết thúc.');
+        }
+
+        return $showtime;
+    }
+
+    private function processSeatLocking(array $seatIds, array $showtime, $showtimeId): array {
+        $selectedSeats = $this->seatModel->lockByIds($seatIds);
+        if (count($selectedSeats) !== count($seatIds)) {
+            throw new \InvalidArgumentException('Danh sách ghế không hợp lệ.');
+        }
+
+        $seatPrices = [];
+        $totalPrice = 0;
+        foreach ($seatIds as $seatId) {
+            $seat = $this->findSeat($selectedSeats, $seatId);
+            $this->validateSeatForShowtime($seat, $showtime, $showtimeId, $seatId);
+
+            $price = (float)$showtime['base_price'] + (float)($seat['seat_type_price'] ?? 0);
+            $seatPrices[] = ['seat_id' => $seatId, 'price' => $price];
+            $totalPrice += $price;
+        }
+
+        return [$seatPrices, $totalPrice];
+    }
+
+    private function findSeat(array $selectedSeats, $seatId): array {
+        foreach ($selectedSeats as $seat) {
+            if ((int)$seat['id'] === (int)$seatId) {
+                return $seat;
+            }
+        }
+
+        throw new \InvalidArgumentException('Ghế không hợp lệ.');
+    }
+
+    private function validateSeatForShowtime(array $seat, array $showtime, $showtimeId, $seatId): void {
+        if ((int)$seat['room_id'] !== (int)$showtime['room_id']) {
+            throw new \InvalidArgumentException('Ghế không thuộc phòng chiếu này.');
+        }
+        if ((int)$seat['is_active'] !== 1) {
+            throw new \InvalidArgumentException('Có ghế không khả dụng.');
+        }
+        if ($this->ticketModel->isSeatBooked($showtimeId, $seatId)) {
+            throw new \InvalidArgumentException('Ghế này vừa được đặt bởi người khác. Vui lòng chọn ghế khác.');
+        }
+    }
+
+    private function handleDatabaseInsertion($userId, $showtimeId, $paymentMethod, $totalPrice, array $seatPrices) {
+        $bookingId = $this->bookingModel->createBooking($userId, $totalPrice, $paymentMethod);
+        if (!$bookingId) {
+            throw new \Exception('Không thể tạo booking.');
+        }
+
+        if (!$this->ticketModel->createMany($bookingId, $showtimeId, $seatPrices)) {
+            throw new \Exception('Không thể tạo vé.');
+        }
+
+        return $bookingId;
+    }
+
     public function getUserBookings($userId) {
         $userId = (int)$userId;
         if ($userId <= 0) {
@@ -139,7 +171,7 @@ class BookingService {
     }
 
     private function validateBookingSeats(array $seatIds): void {
-        if (count($seatIds) === 0) {
+        if (empty($seatIds)) {
             throw new \InvalidArgumentException('Vui lòng chọn ít nhất một ghế');
         }
 
