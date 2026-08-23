@@ -19,3 +19,10 @@ public/uploads/*
 /vendor/
 # Local database configuration
 app/Config/database.local.php
+
+# CodeceptJS / Playwright
+node_modules/
+tests/e2e/output/
+
+# PHPUnit Coverage Report
+coverage_report/
