@@ -43,14 +43,12 @@ class BookingService {
             throw new \InvalidArgumentException('Suất chiếu không hợp lệ.');
         }
 
-        if (empty($seatIds) || !is_array($seatIds)) {
+        if (!is_array($seatIds)) {
             throw new \InvalidArgumentException('Vui lòng chọn ít nhất một ghế');
         }
 
         $seatIds = array_values(array_unique(array_map('intval', $seatIds)));
-        if (count($seatIds) > 10) {
-            throw new \InvalidArgumentException('Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.');
-        }
+        $this->validateBookingSeats($seatIds);
 
         $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
 
@@ -138,6 +136,16 @@ class BookingService {
             return [];
         }
         return $this->bookingModel->getBookingsByUser($userId);
+    }
+
+    private function validateBookingSeats(array $seatIds): void {
+        if (count($seatIds) === 0) {
+            throw new \InvalidArgumentException('Vui lòng chọn ít nhất một ghế');
+        }
+
+        if (count($seatIds) > 10) {
+            throw new \InvalidArgumentException('Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.');
+        }
     }
 
     public function cancelBooking($userId, $bookingId) {

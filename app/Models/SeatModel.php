@@ -239,7 +239,9 @@ class SeatModel {
 
 
     public function getByIds($seatIds) {
-        if (empty($seatIds)) return [];
+        if (empty($seatIds)) {
+            return [];
+        }
 
         $placeholders = implode(',', array_fill(0, count($seatIds), '?'));
         $sql = "SELECT s.*, st.name as seat_type_name, st.price as seat_type_price
@@ -260,7 +262,9 @@ class SeatModel {
     }
 
     public function lockByIds($seatIds) {
-        if (empty($seatIds)) return [];
+        if (empty($seatIds)) {
+            return [];
+        }
 
         $placeholders = implode(',', array_fill(0, count($seatIds), '?'));
         $sql = "SELECT s.*, st.name AS seat_type_name, st.price AS seat_type_price
