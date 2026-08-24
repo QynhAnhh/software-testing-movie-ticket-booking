@@ -141,18 +141,9 @@ require_once 'header.php';
                         <div class="mb-3">
                             <label class="form-label text-white fw-bold">Phương thức thanh toán</label>
                             <div class="d-grid gap-2">
-                                <label class="payment-option">
-                                    <input class="form-check-input me-2" type="radio" name="payment_method" value="momo" checked>
-                                    Momo
-                                </label>
-                                <label class="payment-option">
-                                    <input class="form-check-input me-2" type="radio" name="payment_method" value="vnpay">
-                                    VNPay
-                                </label>
-                                <label class="payment-option">
-                                    <input class="form-check-input me-2" type="radio" name="payment_method" value="bank_transfer">
-                                    Chuyển khoản
-                                </label>
+                                <label class="payment-option" for="payment-momo"><input id="payment-momo" class="form-check-input me-2" type="radio" name="payment_method" value="momo" checked>Momo</label>
+                                <label class="payment-option" for="payment-vnpay"><input id="payment-vnpay" class="form-check-input me-2" type="radio" name="payment_method" value="vnpay">VNPay</label>
+                                <label class="payment-option" for="payment-bank-transfer"><input id="payment-bank-transfer" class="form-check-input me-2" type="radio" name="payment_method" value="bank_transfer">Chuyển khoản</label>
                             </div>
                         </div>
 
@@ -335,3 +326,4 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
 </script>
 
 <?php require_once 'footer.php'; ?>
+
