@@ -102,7 +102,6 @@ class BookingServiceTest extends TestCase
         ] as $property => $mock) {
 
             $propertyRef = $reflection->getProperty($property);
-            $propertyRef->setAccessible(true);
             $propertyRef->setValue($service, $mock);
         }
 
@@ -296,8 +295,4 @@ class BookingServiceTest extends TestCase
      * vào Database thật. Việc reset Mock giúp mỗi test
      * hoạt động độc lập.
      */
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-    }
 }
