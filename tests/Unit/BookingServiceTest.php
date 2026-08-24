@@ -90,7 +90,8 @@ class BookingServiceTest extends TestCase
         $booking->method('rollback');
 
         // Inject Mock vào BookingService
-        $service = new BookingService();
+        $reflection = new \ReflectionClass(BookingService::class);
+        $service = $reflection->newInstanceWithoutConstructor();
 
         $reflection = new \ReflectionClass($service);
 
@@ -102,8 +103,8 @@ class BookingServiceTest extends TestCase
         ] as $property => $mock) {
 
             $propertyRef = $reflection->getProperty($property);
-            $propertyRef->setAccessible(true);
-            $propertyRef->setValue($service, $mock);
+            $propertyRef->setAccessible(true); // NOSONAR
+            $propertyRef->setValue($service, $mock); // NOSONAR
         }
 
         return $service;
@@ -296,8 +297,4 @@ class BookingServiceTest extends TestCase
      * vào Database thật. Việc reset Mock giúp mỗi test
      * hoạt động độc lập.
      */
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-    }
 }
