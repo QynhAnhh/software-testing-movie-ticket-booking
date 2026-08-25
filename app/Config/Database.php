@@ -24,7 +24,7 @@ class Database
                 );
             }
 
-            $config = require $configFile;
+            $config = require_once $configFile;
 
             $requiredKeys = [
                 'host',
