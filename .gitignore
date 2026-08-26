@@ -19,3 +19,10 @@ public/uploads/*
 /vendor/
 # Local database configuration
 app/Config/database.local.php
+
+# PHPUnit Coverage & Cache
+coverage_report/
+.phpunit.result.cache
+
+# Node
+node_modules/
