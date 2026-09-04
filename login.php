@@ -36,12 +36,16 @@ require_once 'header.php';
                 <?php endif; ?>
 
                 <div class="input-row">
-                    <input type="text" name="first_name" placeholder="Họ" required />
-                    <input type="text" name="last_name" placeholder="Tên" required />
+                    <label for="first_name">Họ</label>
+                    <input type="text" id="first_name" name="first_name" placeholder="Họ" required />
+                    <label for="last_name">Tên</label>
+                    <input type="text" id="last_name" name="last_name" placeholder="Tên" required />
                 </div>
 
-                <input type="email" name="email" placeholder="Email" required />
-                <input type="text" name="phone" placeholder="Số điện thoại" required />
+                <label for="register_email">Email</label>
+                <input type="email" id="register_email" name="email" placeholder="Email" required />
+                <label for="phone">Số điện thoại</label>
+                <input type="text" id="phone" name="phone" placeholder="Số điện thoại" required />
 
                 <div class="auth-date-field">
                     <label for="birth_date">Ngày sinh</label>
@@ -49,8 +53,10 @@ require_once 'header.php';
                 </div>
 
                 <div class="input-row">
-                    <input type="password" name="password" placeholder="Mật khẩu" required />
-                    <input type="password" name="confirm_password" placeholder="Xác nhận mật khẩu" required />
+                    <label for="register_password">Mật khẩu</label>
+                    <input type="password" id="register_password" name="password" placeholder="Mật khẩu" required />
+                    <label for="confirm_password">Xác nhận mật khẩu</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Xác nhận mật khẩu" required />
                 </div>
 
                 <button type="submit" class="auth-action">Đăng ký</button>
@@ -81,8 +87,10 @@ require_once 'header.php';
                     </div>
                 <?php endif; ?>
 
-                <input type="email" name="email" required placeholder="Email" />
-                <input type="password" name="password" required placeholder="Mật khẩu" />
+                <label for="login_email">Email</label>
+                <input type="email" id="login_email" name="email" required placeholder="Email" />
+                <label for="login_password">Mật khẩu</label>
+                <input type="password" id="login_password" name="password" required placeholder="Mật khẩu" />
 
                 <button type="submit" class="auth-action">Đăng nhập</button>
 

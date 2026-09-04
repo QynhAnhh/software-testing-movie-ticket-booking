@@ -74,7 +74,6 @@ class BookingServiceNegativeTest extends TestCase
             'ticketModel' => $ticket
         ] as $property => $mock) {
             $propertyRef = $reflection->getProperty($property);
-            $propertyRef->setAccessible(true);
             $propertyRef->setValue($service, $mock);
         }
 
@@ -155,8 +154,4 @@ class BookingServiceNegativeTest extends TestCase
      * Các test sử dụng Mock nên không thay đổi
      * dữ liệu thật trong Database.
      */
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-    }
 }
