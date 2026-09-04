@@ -67,59 +67,59 @@ function getAdminPosterSrc($poster) {
             <div class="row g-4">
                 <div class="col-md-7">
                     <div class="mb-3">
-                        <label class="form-label">Tên phim <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="title" required value="<?= htmlspecialchars($edit_movie['title'] ?? '') ?>">
+                        <label for="movie_title" class="form-label">Tên phim <span class="text-danger">*</span></label>
+                        <input id="movie_title" type="text" class="form-control" name="title" required value="<?= htmlspecialchars($edit_movie['title'] ?? '') ?>">
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">Đạo diễn</label>
-                            <input type="text" class="form-control" name="director" value="<?= htmlspecialchars($edit_movie['director'] ?? '') ?>">
+                            <label for="movie_director" class="form-label">Đạo diễn</label>
+                            <input id="movie_director" type="text" class="form-control" name="director" value="<?= htmlspecialchars($edit_movie['director'] ?? '') ?>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Giới hạn tuổi</label>
-                            <input type="number" class="form-control" name="age_restriction" min="0" value="<?= htmlspecialchars($edit_movie['age_restriction'] ?? 0) ?>">
+                            <label for="movie_age_restriction" class="form-label">Giới hạn tuổi</label>
+                            <input id="movie_age_restriction" type="number" class="form-control" name="age_restriction" min="0" value="<?= htmlspecialchars($edit_movie['age_restriction'] ?? 0) ?>">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Diễn viên</label>
-                        <input type="text" class="form-control" name="cast" placeholder="Cách nhau bằng dấu phẩy" value="<?= htmlspecialchars($edit_movie['cast'] ?? '') ?>">
+                        <label for="movie_cast" class="form-label">Diễn viên</label>
+                        <input id="movie_cast" type="text" class="form-control" name="cast" placeholder="Cách nhau bằng dấu phẩy" value="<?= htmlspecialchars($edit_movie['cast'] ?? '') ?>">
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="form-label">Quốc gia <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="country" required value="<?= htmlspecialchars($edit_movie['country'] ?? '') ?>">
+                            <label for="movie_country" class="form-label">Quốc gia <span class="text-danger">*</span></label>
+                            <input id="movie_country" type="text" class="form-control" name="country" required value="<?= htmlspecialchars($edit_movie['country'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Thời lượng (phút) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" name="duration" required min="1" value="<?= htmlspecialchars($edit_movie['duration'] ?? '') ?>">
+                            <label for="movie_duration" class="form-label">Thời lượng (phút) <span class="text-danger">*</span></label>
+                            <input id="movie_duration" type="number" class="form-control" name="duration" required min="1" value="<?= htmlspecialchars($edit_movie['duration'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Ngày khởi chiếu <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" name="screening_date" required value="<?= htmlspecialchars($edit_movie['screening_date'] ?? '') ?>">
+                            <label for="movie_screening_date" class="form-label">Ngày khởi chiếu <span class="text-danger">*</span></label>
+                            <input id="movie_screening_date" type="date" class="form-control" name="screening_date" required value="<?= htmlspecialchars($edit_movie['screening_date'] ?? '') ?>">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Mô tả chi tiết</label>
-                        <textarea class="form-control" name="description" rows="4"><?= htmlspecialchars($edit_movie['description'] ?? '') ?></textarea>
+                        <label for="movie_description" class="form-label">Mô tả chi tiết</label>
+                        <textarea id="movie_description" class="form-control" name="description" rows="4"><?= htmlspecialchars($edit_movie['description'] ?? '') ?></textarea>
                     </div>
                 </div>
 
                 <div class="col-md-5">
                     <div class="mb-3">
-                        <label class="form-label">Poster (JPG, PNG)</label>
-                        <input type="file" class="form-control" name="poster" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+                        <label for="movie_poster" class="form-label">Poster (JPG, PNG)</label>
+                        <input id="movie_poster" type="file" class="form-control" name="poster" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
                         <?php if ($edit_movie && !empty($edit_movie['poster'])): ?>
                             <small class="text-muted d-block mt-1">Đang dùng poster hiện tại. Chọn file mới nếu muốn thay đổi.</small>
                         <?php endif; ?>
                         <small class="text-muted">Chỉ nhận file JPG hoặc PNG. Khi cập nhật phim, bỏ trống nếu muốn giữ poster hiện tại.</small>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Trailer (URL)</label>
-                        <input type="text" class="form-control" name="trailer_url" placeholder="https://youtube.com/..." value="<?= htmlspecialchars($edit_movie['trailer_url'] ?? '') ?>">
+                        <label for="movie_trailer_url" class="form-label">Trailer (URL)</label>
+                        <input id="movie_trailer_url" type="text" class="form-control" name="trailer_url" placeholder="https://youtube.com/..." value="<?= htmlspecialchars($edit_movie['trailer_url'] ?? '') ?>">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Trạng thái</label>
-                        <select class="form-select" name="status">
+                        <label for="movie_status" class="form-label">Trạng thái</label>
+                        <select id="movie_status" class="form-select" name="status">
                             <option value="coming" <?= ($edit_movie['status'] ?? '') == 'coming' ? 'selected' : '' ?>>Sắp chiếu</option>
                             <option value="now_showing" <?= ($edit_movie['status'] ?? 'now_showing') == 'now_showing' ? 'selected' : '' ?>>Đang chiếu</option>
                             <option value="ended" <?= ($edit_movie['status'] ?? '') == 'ended' ? 'selected' : '' ?>>Ngừng chiếu</option>
@@ -181,9 +181,8 @@ function getAdminPosterSrc($poster) {
                             <tr>
                                 <td><?= $movie['id'] ?></td>
                                 <td>
-                                    <img src="<?= htmlspecialchars(getAdminPosterSrc($movie['poster'])) ?>"
-                                         alt="<?= htmlspecialchars($movie['title']) ?>" style="width: 48px; height: 68px; object-fit: cover; border-radius: 6px;"
-                                         onerror="this.src='https://via.placeholder.com/300x450?text=No+Image';">
+                                    <img class="admin-movie-poster-img" src="<?= htmlspecialchars(getAdminPosterSrc($movie['poster'])) ?>"
+                                         alt="<?= htmlspecialchars($movie['title']) ?>" style="width: 48px; height: 68px; object-fit: cover; border-radius: 6px;">
                                 </td>
                                 <td>
                                     <div class="fw-bold text-white"><?= htmlspecialchars($movie['title']) ?></div>
@@ -234,5 +233,17 @@ function getAdminPosterSrc($poster) {
         </div>
     </div>
 </div>
+</div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.admin-movie-poster-img').forEach(function(img) {
+            img.addEventListener('error', function() {
+                if (this.src.indexOf('via.placeholder.com') === -1) {
+                    this.src = 'https://via.placeholder.com/300x450?text=No+Image';
+                }
+            });
+        });
+    });
+</script>
 <?php require_once 'admin_footer.php'; ?>

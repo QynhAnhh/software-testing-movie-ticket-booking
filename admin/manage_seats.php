@@ -236,28 +236,28 @@ function renderAdminSeatRow(string $rowLabel, array $rowSeats, string $formActio
                         <input type="hidden" name="room_id" value="<?= $room_id ?>">
                         <div class="row g-3">
                             <div class="col-sm-6">
-                                <label class="form-label">Hàng bắt đầu</label>
-                                <select class="form-select" name="start_row">
+                                <label for="start_row" class="form-label">Hàng bắt đầu</label>
+                                <select id="start_row" class="form-select" name="start_row">
                                     <?php foreach (range('A', 'H') as $row): ?>
                                         <option value="<?= $row ?>"><?= $row ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-sm-6">
-                                <label class="form-label">Hàng kết thúc</label>
-                                <select class="form-select" name="end_row">
+                                <label for="end_row" class="form-label">Hàng kết thúc</label>
+                                <select id="end_row" class="form-select" name="end_row">
                                     <?php foreach (range('A', 'H') as $row): ?>
                                         <option value="<?= $row ?>" <?= $row === 'H' ? 'selected' : '' ?>><?= $row ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-sm-6">
-                                <label class="form-label">Ghế mỗi hàng</label>
-                                <input type="number" class="form-control" name="seats_per_row" min="1" max="12" value="12" required>
+                                <label for="seats_per_row" class="form-label">Ghế mỗi hàng</label>
+                                <input id="seats_per_row" type="number" class="form-control" name="seats_per_row" min="1" max="12" value="12" required>
                             </div>
                             <div class="col-sm-6">
-                                <label class="form-label">Loại ghế</label>
-                                <select class="form-select" name="seat_type_id" required>
+                                <label for="seat_type_id" class="form-label">Loại ghế</label>
+                                <select id="seat_type_id" class="form-select" name="seat_type_id" required>
                                     <?php foreach ($seat_types_list as $type): ?>
                                         <option value="<?= $type['id'] ?>"><?= htmlspecialchars($type['name']) ?></option>
                                     <?php endforeach; ?>
@@ -281,28 +281,28 @@ function renderAdminSeatRow(string $rowLabel, array $rowSeats, string $formActio
                         <input type="hidden" name="room_id" value="<?= $room_id ?>">
                         <div class="row g-3">
                             <div class="col-sm-6">
-                                <label class="form-label">Hàng bắt đầu</label>
-                                <select class="form-select" name="delete_start_row">
+                                <label for="delete_start_row" class="form-label">Hàng bắt đầu</label>
+                                <select id="delete_start_row" class="form-select" name="delete_start_row">
                                     <?php foreach (range('A', 'H') as $row): ?>
                                         <option value="<?= $row ?>"><?= $row ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-sm-6">
-                                <label class="form-label">Hàng kết thúc</label>
-                                <select class="form-select" name="delete_end_row">
+                                <label for="delete_end_row" class="form-label">Hàng kết thúc</label>
+                                <select id="delete_end_row" class="form-select" name="delete_end_row">
                                     <?php foreach (range('A', 'H') as $row): ?>
                                         <option value="<?= $row ?>" <?= $row === 'H' ? 'selected' : '' ?>><?= $row ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-sm-6">
-                                <label class="form-label">Số ghế bắt đầu</label>
-                                <input type="number" class="form-control" name="delete_start_number" min="1" max="12" value="1" required>
+                                <label for="delete_start_number" class="form-label">Số ghế bắt đầu</label>
+                                <input id="delete_start_number" type="number" class="form-control" name="delete_start_number" min="1" max="12" value="1" required>
                             </div>
                             <div class="col-sm-6">
-                                <label class="form-label">Số ghế kết thúc</label>
-                                <input type="number" class="form-control" name="delete_end_number" min="1" max="12" value="12" required>
+                                <label for="delete_end_number" class="form-label">Số ghế kết thúc</label>
+                                <input id="delete_end_number" type="number" class="form-control" name="delete_end_number" min="1" max="12" value="12" required>
                             </div>
                         </div>
                         <div class="text-end mt-3">
@@ -358,7 +358,7 @@ function renderAdminSeatRow(string $rowLabel, array $rowSeats, string $formActio
                                     <input type="hidden" name="is_active" id="editor_is_active" value="1">
                                     <input type="hidden" name="seat_type_id" id="editor_seat_type_id">
 
-                                    <label class="form-label text-white fw-bold mt-3">Trạng thái ghế</label>
+                                    <p class="form-label text-white fw-bold mt-3 mb-2">Trạng thái ghế</p>
                                     <div class="admin-seat-picker-group mb-3" id="statusPickerGroup">
                                         <button type="button" class="admin-seat-picker" onclick="setSeatStatus(1, this)">
                                             <span class="admin-seat-picker-swatch status-active"></span>
@@ -372,7 +372,7 @@ function renderAdminSeatRow(string $rowLabel, array $rowSeats, string $formActio
                                         </button>
                                     </div>
 
-                                    <label class="form-label text-white fw-bold">Hạng ghế</label>
+                                    <p class="form-label text-white fw-bold mb-2">Hạng ghế</p>
                                     <div class="admin-seat-picker-group mb-3" id="rankPickerGroup">
                                         <?php foreach ($seat_types_list as $type): ?>
                                             <button type="button" class="admin-seat-picker" data-type-id="<?= (int) $type['id'] ?>" onclick="setSeatRank(<?= (int) $type['id'] ?>, this)">
