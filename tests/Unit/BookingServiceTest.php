@@ -90,7 +90,8 @@ class BookingServiceTest extends TestCase
         $booking->method('rollback');
 
         // Inject Mock vào BookingService
-        $service = new BookingService();
+        $reflection = new \ReflectionClass(BookingService::class);
+        $service = $reflection->newInstanceWithoutConstructor();
 
         $reflection = new \ReflectionClass($service);
 
@@ -102,7 +103,8 @@ class BookingServiceTest extends TestCase
         ] as $property => $mock) {
 
             $propertyRef = $reflection->getProperty($property);
-            $propertyRef->setValue($service, $mock);
+            $propertyRef->setAccessible(true); // NOSONAR
+            $propertyRef->setValue($service, $mock); // NOSONAR
         }
 
         return $service;

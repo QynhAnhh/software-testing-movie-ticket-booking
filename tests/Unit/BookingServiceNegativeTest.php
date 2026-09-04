@@ -63,7 +63,8 @@ class BookingServiceNegativeTest extends TestCase
         $booking->method('rollback');
 
         // Inject Mock vào BookingService
-        $service = new BookingService();
+        $reflection = new \ReflectionClass(BookingService::class);
+        $service = $reflection->newInstanceWithoutConstructor();
 
         $reflection = new \ReflectionClass($service);
 
@@ -74,7 +75,8 @@ class BookingServiceNegativeTest extends TestCase
             'ticketModel' => $ticket
         ] as $property => $mock) {
             $propertyRef = $reflection->getProperty($property);
-            $propertyRef->setValue($service, $mock);
+            $propertyRef->setAccessible(true); // NOSONAR
+            $propertyRef->setValue($service, $mock); // NOSONAR
         }
 
         return $service;
@@ -154,4 +156,5 @@ class BookingServiceNegativeTest extends TestCase
      * Các test sử dụng Mock nên không thay đổi
      * dữ liệu thật trong Database.
      */
+
 }
