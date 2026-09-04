@@ -124,7 +124,7 @@ require_once 'header.php';
                             <article class="booking-history-card status-<?= htmlspecialchars($statusMeta['class']) ?>">
                                 <div class="row g-4 align-items-stretch">
                                     <div class="col-md-3 col-xl-2">
-                                        <img src="<?= htmlspecialchars($poster) ?>" alt="<?= htmlspecialchars($booking['movie_title'] ?? 'Movie poster') ?>" class="booking-history-poster" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image';">
+                                        <img src="<?= htmlspecialchars($poster) ?>" alt="<?= htmlspecialchars($booking['movie_title'] ?? 'Movie poster') ?>" class="booking-history-poster">
                                     </div>
 
                                     <div class="col-md-6 col-xl-7">
@@ -178,7 +178,7 @@ require_once 'header.php';
                                             </div>
 
                                             <?php if (canCancelBooking($booking)): ?>
-                                                <form method="POST" action="booking_history.php" onsubmit="return confirm('Bạn có chắc muốn hủy vé này?');">
+                                                <form method="POST" action="booking_history.php">
                                                     <input type="hidden" name="action" value="cancel_booking">
                                                     <input type="hidden" name="booking_id" value="<?= (int)$booking['id'] ?>">
                                                     <button type="submit" class="btn btn-cancel-booking w-100">
@@ -209,4 +209,24 @@ require_once 'header.php';
     </div>
 </div>
 
+<script>
+document.querySelectorAll('.booking-history-poster').forEach((image) => {
+    image.addEventListener('error', () => {
+        image.src = 'https://via.placeholder.com/300x450?text=No+Image';
+    });
+});
+
+document.querySelectorAll('form[action="booking_history.php"]').forEach((form) => {
+    if (form.querySelector('input[name="action"][value="cancel_booking"]')) {
+        form.addEventListener('submit', (event) => {
+            if (!confirm('B?n c� ch?c mu?n h?y v� n�y?')) {
+                event.preventDefault();
+            }
+        });
+    }
+});
+</script>
 <?php require_once 'footer.php'; ?>
+
+
+

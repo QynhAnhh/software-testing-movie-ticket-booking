@@ -29,7 +29,7 @@ function renderMovieCard($movie, $variant = 'now_showing') {
     <div class="col-6 col-md-4 col-lg-3">
         <article class="movie-card h-100">
             <div class="movie-img-wrap">
-                <img src="<?= htmlspecialchars($poster) ?>" alt="<?= htmlspecialchars($title) ?>" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image';">
+                <img src="<?= htmlspecialchars($poster) ?>" alt="<?= htmlspecialchars($title) ?>">
                 <div class="movie-overlay">
                     <?php if ($variant === 'coming' && $trailerUrl !== ''): ?>
                         <a href="<?= htmlspecialchars($trailerUrl) ?>" target="_blank" class="btn-get-ticket">
