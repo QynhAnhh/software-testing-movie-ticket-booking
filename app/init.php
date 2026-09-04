@@ -21,6 +21,6 @@ spl_autoload_register(function ($class_name) {
 
     // Nếu file tồn tại thì require nó
     if (file_exists($file)) {
-        require $file;
+        require_once $file;
     }
 });
