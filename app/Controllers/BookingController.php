@@ -89,3 +89,4 @@ class BookingController {
         return $this->service->getAdminBookingDetail((int)$bookingId);
     }
 }
+
