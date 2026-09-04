@@ -239,7 +239,9 @@ class SeatModel {
 
 
     public function getByIds($seatIds) {
-        if (empty($seatIds)) return [];
+        if (empty($seatIds)) {
+            return [];
+        }
 
         $placeholders = implode(',', array_fill(0, count($seatIds), '?'));
         $sql = "SELECT s.*, st.name as seat_type_name, st.price as seat_type_price
@@ -248,6 +250,30 @@ class SeatModel {
                 WHERE s.id IN ($placeholders)";
         $stmt = $this->conn->prepare($sql);
 
+        $types = str_repeat('i', count($seatIds));
+        $stmt->bind_param($types, ...$seatIds);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $seats = [];
+        while ($row = $result->fetch_assoc()) {
+            $seats[] = $row;
+        }
+        return $seats;
+    }
+
+    public function lockByIds($seatIds) {
+        if (empty($seatIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($seatIds), '?'));
+        $sql = "SELECT s.*, st.name AS seat_type_name, st.price AS seat_type_price
+                FROM seats s
+                LEFT JOIN seat_types st ON s.seat_type_id = st.id
+                WHERE s.id IN ($placeholders)
+                ORDER BY s.id
+                FOR UPDATE";
+        $stmt = $this->conn->prepare($sql);
         $types = str_repeat('i', count($seatIds));
         $stmt->bind_param($types, ...$seatIds);
         $stmt->execute();

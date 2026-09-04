@@ -27,24 +27,12 @@ class BookingServiceTest extends TestCase
         $this->showtimeModelMock = $this->createMock(ShowtimeModel::class);
         $this->seatModelMock = $this->createMock(SeatModel::class);
 
-        // Khởi tạo service thực tế rồi inject các mock vào thuộc tính private bằng Reflection
-        $this->bookingService = new BookingService();
-
-        $refClass = new \ReflectionClass($this->bookingService);
-        $props = [
-            'bookingModel' => $this->bookingModelMock,
-            'ticketModel' => $this->ticketModelMock,
-            'showtimeModel' => $this->showtimeModelMock,
-            'seatModel' => $this->seatModelMock,
-        ];
-
-        foreach ($props as $name => $mock) {
-            if ($refClass->hasProperty($name)) {
-                $p = $refClass->getProperty($name);
-                $p->setAccessible(true); // NOSONAR
-                $p->setValue($this->bookingService, $mock); // NOSONAR
-            }
-        }
+        $this->bookingService = new BookingService(
+            $this->bookingModelMock,
+            $this->showtimeModelMock,
+            $this->seatModelMock,
+            $this->ticketModelMock
+        );
     }
 
     protected function tearDown(): void
@@ -74,7 +62,7 @@ class BookingServiceTest extends TestCase
         $this->showtimeModelMock->method('getDetailById')->with($showtimeId)
             ->willReturn(['id' => $showtimeId, 'room_id' => 5, 'base_price' => 90000, 'show_date' => date('Y-m-d'), 'start_time' => date('H:i:s', strtotime('+1 hour')), 'status' => 'active']);
 
-        $this->seatModelMock->method('getByIds')->with($seatIds)
+        $this->seatModelMock->method('lockByIds')->with($seatIds)
             ->willReturn([
                 ['id' => 1, 'room_id' => 5, 'is_active' => 1, 'seat_type_price' => 0],
                 ['id' => 2, 'room_id' => 5, 'is_active' => 1, 'seat_type_price' => 0],
@@ -184,7 +172,7 @@ class BookingServiceTest extends TestCase
         $seatIds = [1];
 
         $this->showtimeModelMock->method('getDetailById')->willReturn(['id' => $showtimeId, 'room_id' => 5, 'base_price' => 90000, 'status' => 'active', 'show_date' => date('Y-m-d'), 'start_time' => date('H:i:s', strtotime('+1 hour'))]);
-        $this->seatModelMock->method('getByIds')->willReturn([['id'=>1,'room_id'=>5,'is_active'=>1,'seat_type_price'=>0]]);
+        $this->seatModelMock->method('lockByIds')->willReturn([['id'=>1,'room_id'=>5,'is_active'=>1,'seat_type_price'=>0]]);
         $this->ticketModelMock->method('isSeatBooked')->willReturn(true);
 
         $result = $this->bookingService->processBooking($userId, $showtimeId, $seatIds, 'cash');
@@ -235,7 +223,7 @@ class BookingServiceTest extends TestCase
         $this->showtimeModelMock->method('getDetailById')->with($showtimeId)
             ->willReturn(['id' => $showtimeId, 'room_id' => 5, 'base_price' => 90000, 'status' => 'active', 'show_date' => date('Y-m-d'), 'start_time' => date('H:i:s', strtotime('+1 hour'))]);
 
-        $this->seatModelMock->method('getByIds')->with($seatIds)
+        $this->seatModelMock->method('lockByIds')->with($seatIds)
             ->willReturn([
                 ['id' => 1, 'room_id' => 5, 'is_active' => 1, 'seat_type_price' => 0],
                 ['id' => 2, 'room_id' => 5, 'is_active' => 1, 'seat_type_price' => 0],
