@@ -207,4 +207,14 @@ class AuthServiceTest extends TestCase
             $this->assertEquals($email, $_SESSION['user']['email']);
         }
     }
+
+    // --- TEST LOGOUT ---
+    public function testLogout()
+    {
+        $_SESSION['user'] = ['email' => 'exist@test.com'];
+        $result = $this->authService->logout();
+
+        $this->assertEquals('success', $result['status']);
+        $this->assertArrayNotHasKey('user', $_SESSION);
+    }
 }
