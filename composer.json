@@ -16,9 +16,6 @@
         "phpunit/phpunit": "^9.6"
     },
     "config": {
-        "preferred-install": "source",
-        "audit": {
-            "block-insecure": false
-        }
+        "preferred-install": "source"
     }
 }
