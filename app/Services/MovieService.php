@@ -6,6 +6,8 @@ use App\Models\MovieModel;
 class MovieService {
     private $model;
     private const POSTER_UPLOAD_DIR = 'images/movies';
+    private const MAX_POSTER_SIZE = 5 * 1024 * 1024;
+    private const MAX_DESCRIPTION_LENGTH = 5000;
 
     public function __construct() {
         $this->model = new MovieModel();
@@ -18,6 +20,14 @@ class MovieService {
         if ($data['duration'] <= 0){
             return ['status' => 'error', 'message' => 'Vui lòng nhập thời lượng phim hợp lệ!'];
         }
+
+        if (!$this->isValidDate($data['screening_date'])) {
+    return ['status' => 'error', 'message' => 'Ngày khởi chiếu không hợp lệ!'];
+}
+
+if (mb_strlen((string)($data['description'] ?? ''), 'UTF-8') > self::MAX_DESCRIPTION_LENGTH) {
+    return ['status' => 'error', 'message' => 'Mô tả vượt quá giới hạn 5000 ký tự'];
+}
 
         $posterResult = $this->handlePosterUpload($posterFile);
         if ($posterResult['status'] === 'error') {
@@ -37,6 +47,14 @@ class MovieService {
         if ($id <= 0 || empty($data['title']) || empty($data['country']) || $data['duration'] <= 0 || empty($data['screening_date'])) {
             return ['status' => 'error', 'message' => 'Dữ liệu cập nhật không hợp lệ!'];
         }
+
+        if (!$this->isValidDate($data['screening_date'])) {
+    return ['status' => 'error', 'message' => 'Ngày khởi chiếu không hợp lệ!'];
+}
+
+if (mb_strlen((string)($data['description'] ?? ''), 'UTF-8') > self::MAX_DESCRIPTION_LENGTH) {
+    return ['status' => 'error', 'message' => 'Mô tả vượt quá giới hạn 5000 ký tự'];
+}
 
         $currentMovie = $this->model->getMovieByIdWithGenres($id);
         if (!$currentMovie) {
@@ -58,13 +76,22 @@ class MovieService {
     }
 
     private function handlePosterUpload($posterFile, $oldPoster = '') {
+
         if (!$posterFile || ($posterFile['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
             return ['status' => 'success', 'poster' => $oldPoster];
         }
 
-        if ($posterFile['error'] !== UPLOAD_ERR_OK) {
-            return ['status' => 'error', 'message' => 'Upload poster không thành công. Vui lòng thử lại!'];
-        }
+        if (in_array($posterFile['error'], [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
+    return ['status' => 'error', 'message' => 'Dung lượng poster không được vượt quá 5MB!'];
+}
+
+if ($posterFile['error'] !== UPLOAD_ERR_OK) {
+    return ['status' => 'error', 'message' => 'Upload poster không thành công. Vui lòng thử lại!'];
+}
+
+if (($posterFile['size'] ?? 0) > self::MAX_POSTER_SIZE) {
+    return ['status' => 'error', 'message' => 'Dung lượng poster không được vượt quá 5MB!'];
+}
 
         $extension = strtolower(pathinfo($posterFile['name'], PATHINFO_EXTENSION));
         if (!in_array($extension, ['jpg', 'jpeg', 'png'], true)) {
@@ -91,16 +118,53 @@ class MovieService {
         ];
     }
 
-    public function deleteMovie($id) {
-        if ($id <= 0) {
-            return ['status' => 'error', 'message' => 'ID không hợp lệ!'];
-        }
-
-        if ($this->model->deleteMovie($id)) {
-            return ['status' => 'success', 'message' => 'Xóa phim thành công!'];
-        }
-        return ['status' => 'error', 'message' => 'Lỗi khi xóa: ' . $this->model->getError()];
+    private function isValidDate($date) {
+    if (empty($date)) {
+        return false;
     }
+
+    $parsedDate = \DateTime::createFromFormat('Y-m-d', $date);
+
+    return $parsedDate !== false
+        && $parsedDate->format('Y-m-d') === $date;
+}
+
+    public function deleteMovie($id) {
+    $id = (int)$id;
+
+    if ($id <= 0) {
+        return [
+            'status' => 'error',
+            'message' => 'ID phim không hợp lệ!'
+        ];
+    }
+
+    if ($this->model->hasBookedTickets($id)) {
+        return [
+            'status' => 'error',
+            'message' => 'Không thể xóa phim đã có vé được đặt'
+        ];
+    }
+
+    if ($this->model->hasShowtimes($id)) {
+        return [
+            'status' => 'error',
+            'message' => 'Không thể xóa phim đang có suất chiếu'
+        ];
+    }
+
+    if ($this->model->deleteMovie($id)) {
+        return [
+            'status' => 'success',
+            'message' => 'Xóa phim thành công!'
+        ];
+    }
+
+    return [
+        'status' => 'error',
+        'message' => 'Xóa phim thất bại!'
+    ];
+}
 
     public function getAllMovies() {
         return $this->model->getAllMoviesWithGenres();

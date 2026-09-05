@@ -45,11 +45,47 @@ class MovieModel {
         return mysqli_stmt_execute($stmt);
     }
 
+    public function hasShowtimes($movieId) {
+    $stmt = mysqli_prepare(
+        $this->conn,
+        "SELECT COUNT(*) AS count FROM showtimes WHERE movie_id = ?"
+    );
+    mysqli_stmt_bind_param($stmt, "i", $movieId);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+
+    return (int)$row['count'] > 0;
+}
+
+public function hasBookedTickets($movieId) {
+    $stmt = mysqli_prepare(
+        $this->conn,
+        "SELECT COUNT(*) AS count
+         FROM tickets t
+         INNER JOIN showtimes s ON t.showtime_id = s.id
+         WHERE s.movie_id = ?"
+    );
+    mysqli_stmt_bind_param($stmt, "i", $movieId);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+
+    return (int)$row['count'] > 0;
+}
+
     public function deleteMovie($id) {
-        $stmt = mysqli_prepare($this->conn, "DELETE FROM movies WHERE id = ?");
-        mysqli_stmt_bind_param($stmt, "i", $id);
-        return mysqli_stmt_execute($stmt);
-    }
+    $stmt = mysqli_prepare(
+        $this->conn,
+        "DELETE FROM movies WHERE id = ?"
+    );
+
+    mysqli_stmt_bind_param($stmt, "i", $id);
+
+    return mysqli_stmt_execute($stmt);
+}
 
     public function insertMovieGenres($movieId, $genreIds) {
         if (empty($genreIds)) return;

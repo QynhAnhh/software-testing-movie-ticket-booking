@@ -18,25 +18,68 @@ class ShowtimeModel {
         return mysqli_fetch_assoc($result);
     }
 
-    public function findConflict($roomId, $showDate, $startTime, $excludeId = null)
-    {
-        if ($excludeId) {
-            $stmt = mysqli_prepare(
-                $this->conn,
-                "SELECT id FROM showtimes WHERE room_id = ? AND show_date = ? AND start_time = ? AND id != ?"
-            );
-            mysqli_stmt_bind_param($stmt, "issi", $roomId, $showDate, $startTime, $excludeId);
-        } else {
-            $stmt = mysqli_prepare(
-                $this->conn,
-                "SELECT id FROM showtimes WHERE room_id = ? AND show_date = ? AND start_time = ?"
-            );
-            mysqli_stmt_bind_param($stmt, "iss", $roomId, $showDate, $startTime);
-        }
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        return mysqli_fetch_assoc($result);
+    public function countBookedTickets($showtimeId) {
+    $stmt = mysqli_prepare(
+        $this->conn,
+        "SELECT COUNT(*) AS total FROM tickets WHERE showtime_id = ?"
+    );
+
+    mysqli_stmt_bind_param($stmt, "i", $showtimeId);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+
+    return (int)($row['total'] ?? 0);
+}
+
+
+    public function findConflict($roomId, $showDate, $startTime, $endTime, $excludeId = null)
+{
+    $bufferMinutes = 15;
+
+    $query = "
+        SELECT id, start_time, end_time
+        FROM showtimes
+        WHERE room_id = ?
+          AND show_date = ?
+    ";
+
+    if ($excludeId) {
+        $query .= " AND id != ?";
     }
+
+    $stmt = mysqli_prepare($this->conn, $query);
+
+    if ($excludeId) {
+        mysqli_stmt_bind_param($stmt, "isi", $roomId, $showDate, $excludeId);
+    } else {
+        mysqli_stmt_bind_param($stmt, "is", $roomId, $showDate);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $newStart = strtotime($showDate . ' ' . $startTime);
+    $newEnd   = strtotime($showDate . ' ' . $endTime);
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $existingStart = strtotime($showDate . ' ' . $row['start_time']);
+        $existingEnd   = strtotime($showDate . ' ' . $row['end_time']);
+
+        $existingStartWithBuffer = $existingStart - ($bufferMinutes * 60);
+        $existingEndWithBuffer   = $existingEnd + ($bufferMinutes * 60);
+
+        if (
+            $newStart < $existingEndWithBuffer &&
+            $newEnd > $existingStartWithBuffer
+        ) {
+            return $row;
+        }
+    }
+
+    return false;
+}
 
     public function getMovieDuration($movieId)
     {
@@ -49,12 +92,18 @@ class ShowtimeModel {
     }
 
     public function movieExists($movieId) {
-        $stmt = mysqli_prepare($this->conn, "SELECT id FROM movies WHERE id = ?");
-        mysqli_stmt_bind_param($stmt, "i", $movieId);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        return (bool)mysqli_fetch_assoc($result);
-    }
+    $stmt = mysqli_prepare(
+        $this->conn,
+        "SELECT id FROM movies WHERE id = ? AND is_active = 1"
+    );
+
+    mysqli_stmt_bind_param($stmt, "i", $movieId);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    return (bool) mysqli_fetch_assoc($result);
+}
 
     public function roomExists($roomId) {
         $stmt = mysqli_prepare($this->conn, "SELECT id FROM rooms WHERE id = ?");
