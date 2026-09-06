@@ -1,0 +1,2073 @@
+{
+  "info": {
+    "_postman_id": "554230ec-8f17-4bea-a98c-a78f848bce9a",
+    "name": "KAN - Full Automated Test TC-DT-01 đến TC-DT-20",
+    "description": "Automation 20 test case Admin Movie & Showtime theo bảng Excel. Assertion bám Expected Result; FAIL có thể phản ánh bug/chưa implement, không phải collection hỏng.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47256440",
+    "_collection_link": "https://go.postman.co/collection/47256440-554230ec-8f17-4bea-a98c-a78f848bce9a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "MOVIE - TC-DT-01 đến TC-DT-10",
+      "item": [
+        {
+          "name": "TC-DT-01 - Thiếu tiêu đề phim",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-01 - Thiếu tiêu đề phải bị từ chối\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Vui lòng nhập đầy đủ các trường bắt buộc!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Automation test",
+                  "type": "text"
+                },
+                {
+                  "key": "director",
+                  "value": "Test Director",
+                  "type": "text"
+                },
+                {
+                  "key": "cast",
+                  "value": "Test Actor",
+                  "type": "text"
+                },
+                {
+                  "key": "age_restriction",
+                  "value": "13",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "120",
+                  "type": "text"
+                },
+                {
+                  "key": "screening_date",
+                  "value": "2026-09-15",
+                  "type": "text"
+                },
+                {
+                  "key": "trailer_url",
+                  "value": "https://youtube.com/test",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "coming",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            },
+            "description": "Expected theo Excel: hệ thống từ chối khi thiếu trường bắt buộc."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-02 - Duration âm",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-02 - Duration âm phải bị từ chối\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Vui lòng nhập thời lượng phim hợp lệ!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "TC-DT-02 Avatar",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Automation test",
+                  "type": "text"
+                },
+                {
+                  "key": "director",
+                  "value": "Test Director",
+                  "type": "text"
+                },
+                {
+                  "key": "cast",
+                  "value": "Test Actor",
+                  "type": "text"
+                },
+                {
+                  "key": "age_restriction",
+                  "value": "13",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "-120",
+                  "type": "text"
+                },
+                {
+                  "key": "screening_date",
+                  "value": "2026-09-15",
+                  "type": "text"
+                },
+                {
+                  "key": "trailer_url",
+                  "value": "https://youtube.com/test",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "coming",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-03 - Duration = 0",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-03 - Duration = 0 phải bị từ chối\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Vui lòng nhập thời lượng phim hợp lệ!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "TC-DT-03 Avatar",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Automation test",
+                  "type": "text"
+                },
+                {
+                  "key": "director",
+                  "value": "Test Director",
+                  "type": "text"
+                },
+                {
+                  "key": "cast",
+                  "value": "Test Actor",
+                  "type": "text"
+                },
+                {
+                  "key": "age_restriction",
+                  "value": "13",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "screening_date",
+                  "value": "2026-09-15",
+                  "type": "text"
+                },
+                {
+                  "key": "trailer_url",
+                  "value": "https://youtube.com/test",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "coming",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-04 - Ngày 31/02/2024",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-04 - Ngày 31/02/2024 phải bị từ chối\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "",
+                  "    const body = pm.response.text();",
+                  "",
+                  "    pm.expect(body).to.include(\"Ngày khởi chiếu không hợp lệ!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "TC-DT-04 Invalid Date",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Automation test",
+                  "type": "text"
+                },
+                {
+                  "key": "director",
+                  "value": "Test Director",
+                  "type": "text"
+                },
+                {
+                  "key": "cast",
+                  "value": "Test Actor",
+                  "type": "text"
+                },
+                {
+                  "key": "age_restriction",
+                  "value": "13",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "120",
+                  "type": "text"
+                },
+                {
+                  "key": "screening_date",
+                  "value": "31/02/2024",
+                  "type": "text"
+                },
+                {
+                  "key": "trailer_url",
+                  "value": "https://youtube.com/test",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "coming",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            },
+            "description": "Postman bypass browser date validation. Nếu server không validate ngày, case này sẽ FAIL và phản ánh thiếu server-side validation."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-05 - Poster PDF",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-05 - PDF phải bị từ chối\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "",
+                  "    const body = pm.response.text();",
+                  "",
+                  "    pm.expect(body).to.include(\"Poster chỉ chấp nhận file JPG hoặc PNG!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "TC-DT-05 Poster PDF {{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Automation test",
+                  "type": "text"
+                },
+                {
+                  "key": "director",
+                  "value": "Test Director",
+                  "type": "text"
+                },
+                {
+                  "key": "cast",
+                  "value": "Test Actor",
+                  "type": "text"
+                },
+                {
+                  "key": "age_restriction",
+                  "value": "13",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "120",
+                  "type": "text"
+                },
+                {
+                  "key": "screening_date",
+                  "value": "2026-09-15",
+                  "type": "text"
+                },
+                {
+                  "key": "trailer_url",
+                  "value": "https://youtube.com/test",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "coming",
+                  "type": "text"
+                },
+                {
+                  "key": "poster",
+                  "type": "file",
+                  "src": "/C:/Users/thanh dat/Downloads/document.pdf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            },
+            "description": "Sau khi import collection, nếu Postman báo file unresolved hãy chọn lại file document.pdf ở field poster."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-06 - Poster > 5MB",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-06 - File >5MB phải bị từ chối\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const b = pm.response.text();",
+                  "  pm.expect(b).to.include(\"5MB\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "TC-DT-06 Large Poster {{$timestamp}}",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Automation test",
+                  "type": "text"
+                },
+                {
+                  "key": "director",
+                  "value": "Test Director",
+                  "type": "text"
+                },
+                {
+                  "key": "cast",
+                  "value": "Test Actor",
+                  "type": "text"
+                },
+                {
+                  "key": "age_restriction",
+                  "value": "13",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "120",
+                  "type": "text"
+                },
+                {
+                  "key": "screening_date",
+                  "value": "2026-09-15",
+                  "type": "text"
+                },
+                {
+                  "key": "trailer_url",
+                  "value": "https://youtube.com/test",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "coming",
+                  "type": "text"
+                },
+                {
+                  "key": "poster",
+                  "type": "file",
+                  "src": "/C:/Users/thanh dat/Downloads/10mb-example-jpg.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            },
+            "description": "Expected theo Excel là reject >5MB. Source hiện tại chưa thấy kiểm tra kích thước nên case có thể FAIL."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-07 - Ký tự đặc biệt tiêu đề",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-07 - Xử lý an toàn ký tự đặc biệt\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "",
+                  "    const body = pm.response.text();",
+                  "",
+                  "    pm.expect(body).to.include(\"Thêm phim thành công!\");",
+                  "    pm.expect(body).to.include(\"Movie@#$%^&amp;*\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Movie@#$%^&*",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Automation test",
+                  "type": "text"
+                },
+                {
+                  "key": "director",
+                  "value": "Test Director",
+                  "type": "text"
+                },
+                {
+                  "key": "cast",
+                  "value": "Test Actor",
+                  "type": "text"
+                },
+                {
+                  "key": "age_restriction",
+                  "value": "13",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "120",
+                  "type": "text"
+                },
+                {
+                  "key": "screening_date",
+                  "value": "2026-09-15",
+                  "type": "text"
+                },
+                {
+                  "key": "trailer_url",
+                  "value": "https://youtube.com/test",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "coming",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-08 - Xóa phim đang có suất chiếu",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!Number(pm.collectionVariables.get(\"movie_with_showtime_id\"))) {",
+                  "  console.warn(\"SKIP TC-DT-08: chưa cấu hình movie_with_showtime_id\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-08 - Phải chặn xóa phim có suất chiếu\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Không thể xóa phim đang có suất chiếu\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "delete",
+                  "type": "text"
+                },
+                {
+                  "key": "id",
+                  "value": "{{movie_with_showtime_id}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            },
+            "description": "DÙNG ID TEST/DISPOSABLE. Source có thể xóa thật dữ liệu nếu không có guard."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-09 - Xóa phim đã có vé",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!Number(pm.collectionVariables.get(\"movie_with_booking_id\"))) {",
+                  "  console.warn(\"SKIP TC-DT-09: chưa cấu hình movie_with_booking_id\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-09 - Phải chặn xóa phim đã có vé\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Không thể xóa phim đã có vé được đặt\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "delete",
+                  "type": "text"
+                },
+                {
+                  "key": "id",
+                  "value": "{{movie_with_booking_id}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            },
+            "description": "DÙNG ID TEST/DISPOSABLE. Source có thể xóa thật dữ liệu nếu không có guard."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-10 - Mô tả 5001 ký tự",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set(\"long_description\", \"A\".repeat(5001));",
+                  "if (!Number(pm.collectionVariables.get(\"movie_edit_id\"))) {",
+                  "  console.warn(\"SKIP TC-DT-10: chưa cấu hình movie_edit_id\");",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-10 - Mô tả >5000 phải bị từ chối\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "",
+                  "    const body = pm.response.text();",
+                  "",
+                  "    pm.expect(",
+                  "        body,",
+                  "        \"Hệ thống đã không từ chối mô tả vượt quá 5000 ký tự\"",
+                  "    ).to.include(\"Mô tả vượt quá giới hạn 5000 ký tự\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "edit",
+                  "type": "text"
+                },
+                {
+                  "key": "id",
+                  "value": "{{movie_edit_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "TC-DT-10 Long Description",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "{{long_description}}",
+                  "type": "text"
+                },
+                {
+                  "key": "director",
+                  "value": "Test Director",
+                  "type": "text"
+                },
+                {
+                  "key": "cast",
+                  "value": "Test Actor",
+                  "type": "text"
+                },
+                {
+                  "key": "age_restriction",
+                  "value": "13",
+                  "type": "text"
+                },
+                {
+                  "key": "country",
+                  "value": "Vietnam",
+                  "type": "text"
+                },
+                {
+                  "key": "duration",
+                  "value": "120",
+                  "type": "text"
+                },
+                {
+                  "key": "screening_date",
+                  "value": "2026-09-15",
+                  "type": "text"
+                },
+                {
+                  "key": "trailer_url",
+                  "value": "https://youtube.com/test",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "coming",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_movies.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_movies.php"
+              ]
+            },
+            "description": "Source hiện tại chưa thấy validation 5000 ký tự nên case có thể FAIL."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "SHOWTIME - TC-DT-11 đến TC-DT-20",
+      "item": [
+        {
+          "name": "TC-DT-11 - Suất chiếu trong quá khứ",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const d=new Date(); d.setDate(d.getDate()-1); pm.collectionVariables.set(\"yesterday\", d.toISOString().slice(0,10));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-11 - Quá khứ phải bị từ chối\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Suất chiếu không thể ở trong quá khứ\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{valid_movie_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{valid_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "{{yesterday}}",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "10:00",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-12 - Giờ 25:30",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const d = new Date(); d.setDate(d.getDate()+7);",
+                  "pm.collectionVariables.set(\"future_date\", d.toISOString().slice(0,10));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-12 - 25:30 phải bị từ chối\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Giờ bắt đầu không hợp lệ!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{valid_movie_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{valid_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "{{future_date}}",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "25:30",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            },
+            "description": "Postman bypass client-side time input validation. Nếu server chỉ kiểm regex HH:MM, case có thể FAIL."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-13 - Trùng khoảng thời gian",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-13 - Overlap phải bị từ chối\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "",
+                  "    const body = pm.response.text();",
+                  "",
+                  "    pm.expect(body).to.satisfy(x =>",
+                  "        x.includes(\"Giữa hai suất chiếu phải nghỉ tối thiểu 15 phút\")",
+                  "        || x.includes(\"Phòng đã có suất chiếu trùng\")",
+                  "    );",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{valid_movie_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{conflict_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "{{conflict_date}}",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "11:00",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            },
+            "description": "Precondition: cùng phòng/ngày đã có suất 10:00-12:00. Source hiện tại có vẻ chỉ kiểm cùng start_time nên có thể FAIL."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-14 - Khoảng nghỉ chỉ 5 phút",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-14 - Phải đảm bảo nghỉ tối thiểu 15 phút\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"tối thiểu 15 phút\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{valid_movie_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{valid_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "2026-09-26",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "12:05",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-15 - Tự tính giờ kết thúc 12:00",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const d = new Date(); d.setDate(d.getDate()+7);",
+                  "pm.collectionVariables.set(\"future_date\", d.toISOString().slice(0,10));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-15 - HTTP response hợp lệ\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"TC-DT-15 - Tự tính giờ kết thúc đúng 12:00\", function () {",
+                  "    const body = pm.response.text();",
+                  "",
+                  "    pm.expect(",
+                  "        body.includes(\"12:00\") || body.includes(\"12:00:00\")",
+                  "    ).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{movie_120_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{valid_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "{{future_date}}",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "10:00",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            },
+            "description": "movie_120_id phải là phim có duration=120."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-16 - Phim ngừng chiếu vẫn được chọn",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const d = new Date(); d.setDate(d.getDate()+7);",
+                  "pm.collectionVariables.set(\"future_date\", d.toISOString().slice(0,10));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-16 - Phim inactive không được phép tạo suất\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const b=pm.response.text();",
+                  "  pm.expect(b).to.not.include(\"Thêm suất chiếu thành công!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{inactive_movie_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{valid_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "{{future_date}}",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "15:00",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-17 - Đổi sang phòng sức chứa nhỏ",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const d = new Date(); d.setDate(d.getDate()+7);",
+                  "pm.collectionVariables.set(\"future_date\", d.toISOString().slice(0,10));",
+                  "if (!Number(pm.collectionVariables.get(\"showtime_with_booking_id\")) || !Number(pm.collectionVariables.get(\"small_room_id\"))) {",
+                  "  console.warn(\"SKIP TC-DT-17: thiếu fixture ID\"); pm.execution.skipRequest();",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-17 - Phải chặn phòng không đủ sức chứa\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Sức chứa của phòng mới không đủ\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "edit",
+                  "type": "text"
+                },
+                {
+                  "key": "id",
+                  "value": "{{showtime_capacity_test_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{valid_movie_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{small_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "2026-09-27",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "16:00",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-18 - Update gây xung đột",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!Number(pm.collectionVariables.get(\"showtime_edit_id\"))) { console.warn(\"SKIP TC-DT-18: chưa cấu hình showtime_edit_id\"); pm.execution.skipRequest(); }"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-18 - Update overlap phải bị từ chối\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const b=pm.response.text();",
+                  "  pm.expect(b).to.satisfy(x => x.includes(\"Thời gian cập nhật trùng lặp\") || x.includes(\"Phòng đã có suất chiếu trùng\"));",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "edit",
+                  "type": "text"
+                },
+                {
+                  "key": "id",
+                  "value": "{{showtime_edit_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{valid_movie_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{conflict_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "{{update_conflict_date}}",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "13:00",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            },
+            "description": "Precondition: cùng room/date có suất khác 14:00-16:00; update target thành 13:00-15:00."
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-19 - Thiếu giờ bắt đầu",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const d = new Date(); d.setDate(d.getDate()+7);",
+                  "pm.collectionVariables.set(\"future_date\", d.toISOString().slice(0,10));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-19 - Thiếu giờ phải bị từ chối\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Giờ bắt đầu không được để trống!\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "add",
+                  "type": "text"
+                },
+                {
+                  "key": "movie_id",
+                  "value": "{{valid_movie_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "room_id",
+                  "value": "{{valid_room_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "show_date",
+                  "value": "{{future_date}}",
+                  "type": "text"
+                },
+                {
+                  "key": "start_time",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "base_price",
+                  "value": "100000",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "TC-DT-20 - Xóa suất chiếu đã có vé",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!Number(pm.collectionVariables.get(\"showtime_with_booking_id\"))) { console.warn(\"SKIP TC-DT-20: chưa cấu hình showtime_with_booking_id\"); pm.execution.skipRequest(); }"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"TC-DT-20 - Phải chặn xóa suất đã có vé\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.text()).to.include(\"Không thể xóa suất chiếu đã có vé được đặt\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "delete",
+                  "type": "text"
+                },
+                {
+                  "key": "id",
+                  "value": "{{showtime_with_booking_id}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "manage_showtimes.php"
+              ]
+            },
+            "description": "DÙNG ID TEST/DISPOSABLE. Source hiện tại có thể xóa thật nếu không guard."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "00 - Login Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Đăng nhập Admin thành công\", function () {",
+              "    pm.response.to.have.status(200);",
+              "",
+              "    const body = pm.response.text();",
+              "",
+              "    pm.expect(",
+              "        body.includes(\"Đăng xuất\") ||",
+              "        body.includes(\"Quản lý\") ||",
+              "        body.includes(\"admin\")",
+              "    ).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "auth_action",
+              "value": "login",
+              "type": "text",
+              "uuid": "43f485a3-f6f6-4215-8b74-f3e9048fc1a3"
+            },
+            {
+              "key": "email",
+              "value": "{{admin_email}}",
+              "type": "text",
+              "uuid": "8d602d26-4fc9-4d6c-a9f1-f6d76704a715"
+            },
+            {
+              "key": "password",
+              "value": "{{admin_password}}",
+              "type": "text",
+              "uuid": "b83a54a0-383a-4533-83a0-38f73066f4f9"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/login.php",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "login.php"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/software-testing-movie-ticket-booking"
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@example.com"
+    },
+    {
+      "key": "admin_password",
+      "value": "password"
+    },
+    {
+      "key": "movie_with_showtime_id",
+      "value": ""
+    },
+    {
+      "key": "movie_with_booking_id",
+      "value": ""
+    },
+    {
+      "key": "movie_edit_id",
+      "value": "17"
+    },
+    {
+      "key": "valid_movie_id",
+      "value": "17"
+    },
+    {
+      "key": "movie_120_id",
+      "value": "17"
+    },
+    {
+      "key": "inactive_movie_id",
+      "value": "13"
+    },
+    {
+      "key": "valid_room_id",
+      "value": "1"
+    },
+    {
+      "key": "small_room_id",
+      "value": ""
+    },
+    {
+      "key": "conflict_room_id",
+      "value": "1"
+    },
+    {
+      "key": "conflict_date",
+      "value": "2026-09-20"
+    },
+    {
+      "key": "update_conflict_date",
+      "value": "2026-09-21"
+    },
+    {
+      "key": "showtime_edit_id",
+      "value": ""
+    },
+    {
+      "key": "showtime_with_booking_id",
+      "value": ""
+    },
+    {
+      "key": "future_date",
+      "value": ""
+    },
+    {
+      "key": "yesterday",
+      "value": ""
+    },
+    {
+      "key": "long_description",
+      "value": ""
+    }
+  ]
+}
