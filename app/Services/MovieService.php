@@ -131,39 +131,36 @@ if (($posterFile['size'] ?? 0) > self::MAX_POSTER_SIZE) {
 
     public function deleteMovie($id) {
     $id = (int)$id;
+    $result = null;
 
     if ($id <= 0) {
-        return [
+        $result = [
             'status' => 'error',
             'message' => 'ID phim không hợp lệ!'
         ];
-    }
-
-    if ($this->model->hasBookedTickets($id)) {
-        return [
+    } elseif ($this->model->hasBookedTickets($id)) {
+        $result = [
             'status' => 'error',
             'message' => 'Không thể xóa phim đã có vé được đặt'
         ];
-    }
-
-    if ($this->model->hasShowtimes($id)) {
-        return [
+    } elseif ($this->model->hasShowtimes($id)) {
+        $result = [
             'status' => 'error',
             'message' => 'Không thể xóa phim đang có suất chiếu'
         ];
-    }
-
-    if ($this->model->deleteMovie($id)) {
-        return [
+    } elseif ($this->model->deleteMovie($id)) {
+        $result = [
             'status' => 'success',
             'message' => 'Xóa phim thành công!'
         ];
+    } else {
+        $result = [
+            'status' => 'error',
+            'message' => 'Xóa phim thất bại!'
+        ];
     }
 
-    return [
-        'status' => 'error',
-        'message' => 'Xóa phim thất bại!'
-    ];
+    return $result;
 }
 
     public function getAllMovies() {

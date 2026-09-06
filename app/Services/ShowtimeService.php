@@ -183,37 +183,29 @@ class ShowtimeService {
             : 'Giữa hai suất chiếu phải nghỉ tối thiểu 15 phút'
     ];
 }
-
         return null;
     }
 
     private function normalizeTime($time) {
     $time = trim($time);
+    $normalizedTime = null;
 
     if (preg_match('/^\d{2}:\d{2}$/', $time)) {
         $date = \DateTime::createFromFormat('H:i', $time);
 
         if ($date && $date->format('H:i') === $time) {
-            return $time . ':00';
+            $normalizedTime = $time . ':00';
         }
-
-        return null;
-    }
-
-    if (preg_match('/^\d{2}:\d{2}:\d{2}$/', $time)) {
+    } elseif (preg_match('/^\d{2}:\d{2}:\d{2}$/', $time)) {
         $date = \DateTime::createFromFormat('H:i:s', $time);
 
         if ($date && $date->format('H:i:s') === $time) {
-            return $time;
+            $normalizedTime = $time;
         }
-
-        return null;
     }
 
-    return null;
+    return $normalizedTime;
 }
-
-
     public function getShowtimesByMovie($movieId) {
         if ($movieId <= 0) {
             return [];
