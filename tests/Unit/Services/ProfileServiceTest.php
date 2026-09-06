@@ -8,8 +8,11 @@ use App\Config\Database;
 
 class ProfileServiceTest extends TestCase
 {
+    /** @var ProfileService */
     private $profileService;
+    /** @var \mysqli */
     private $conn;
+    /** @var int */
     private $dummyUserId;
 
     protected function setUp(): void
@@ -86,7 +89,7 @@ class ProfileServiceTest extends TestCase
         $this->assertEquals('Vui lòng đăng nhập để cập nhật hồ sơ!', $result['message']);
     }
 
-    public function updateProfileMissingFieldsProvider()
+    public static function updateProfileMissingFieldsProvider(): array
     {
         return [
             'Missing first_name' => [['last_name' => 'A', 'email' => 'a@test.com', 'phone' => '0933']],
