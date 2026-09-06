@@ -8,8 +8,11 @@ use App\Config\Database;
 
 class ProfileServiceTest extends TestCase
 {
+    /** @var ProfileService */
     private $profileService;
+    /** @var \mysqli */
     private $conn;
+    /** @var int */
     private $dummyUserId;
 
     protected function setUp(): void
@@ -33,6 +36,7 @@ class ProfileServiceTest extends TestCase
 
     protected function tearDown(): void
     {
+
         $this->cleanUpDummyData();
         if (isset($_SESSION['user'])) {
             unset($_SESSION['user']);
@@ -85,7 +89,7 @@ class ProfileServiceTest extends TestCase
         $this->assertEquals('Vui lòng đăng nhập để cập nhật hồ sơ!', $result['message']);
     }
 
-    public function updateProfileMissingFieldsProvider()
+    public static function updateProfileMissingFieldsProvider(): array
     {
         return [
             'Missing first_name' => [['last_name' => 'A', 'email' => 'a@test.com', 'phone' => '0933']],
@@ -198,5 +202,6 @@ class ProfileServiceTest extends TestCase
         $result = $this->profileService->updatePassword($this->dummyUserId, '123456', 'newpass123', 'newpass123');
         $this->assertEquals('success', $result['status']);
         $this->assertEquals('Đổi mật khẩu thành công!', $result['message']);
+
     }
 }
