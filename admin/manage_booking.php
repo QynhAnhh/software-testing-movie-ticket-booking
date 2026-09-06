@@ -103,37 +103,37 @@ if ($detailId > 0 && !$bookingDetail && !$error_msg) {
         </div>
     </div>
 
-    <div class="admin-card mb-4">
-        <form method="GET" action="manage_booking.php" class="row g-3 align-items-end">
-            <div class="col-xl-2 col-md-4">
-                <label class="form-label">Trạng thái</label>
-                <select name="status" class="form-select">
-                    <option value="">Tất cả</option>
-                    <option value="pending" <?= ($filters['status'] === 'pending') ? 'selected' : '' ?>>Chờ xử lý</option>
-                    <option value="paid" <?= ($filters['status'] === 'paid') ? 'selected' : '' ?>>Đã xác nhận</option>
-                    <option value="canceled" <?= ($filters['status'] === 'canceled') ? 'selected' : '' ?>>Đã hủy</option>
-                </select>
-            </div>
-            <div class="col-xl-2 col-md-4">
-                <label class="form-label">Từ ngày</label>
-                <input type="date" name="from_date" class="form-control" value="<?= htmlspecialchars($filters['from_date']) ?>">
-            </div>
-            <div class="col-xl-2 col-md-4">
-                <label class="form-label">Đến ngày</label>
-                <input type="date" name="to_date" class="form-control" value="<?= htmlspecialchars($filters['to_date']) ?>">
-            </div>
-            <div class="col-xl-4 col-md-8">
-                <label class="form-label">Tìm kiếm</label>
-                <input type="text" name="search" class="form-control" placeholder="Mã vé, tên KH, email, SĐT, phim, rạp..." value="<?= htmlspecialchars($filters['search']) ?>">
-            </div>
-            <div class="col-xl-2 col-md-4 d-flex gap-2">
-                <button type="submit" class="btn btn-netflix-red flex-fill">
-                    <i class="bi bi-search me-1"></i>Tìm
-                </button>
-                <a href="manage_booking.php" class="btn btn-admin-secondary">Reset</a>
-            </div>
-        </form>
-    </div>
+   <div class="admin-card mb-4">
+    <form method="GET" action="manage_booking.php" class="row g-3 align-items-end">
+        <div class="col-xl-2 col-md-4">
+            <label for="filter-status" class="form-label">Trạng thái</label>
+            <select id="filter-status" name="status" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="pending" <?= ($filters['status'] === 'pending') ? 'selected' : '' ?>>Chờ xử lý</option>
+                <option value="paid" <?= ($filters['status'] === 'paid') ? 'selected' : '' ?>>Đã xác nhận</option>
+                <option value="canceled" <?= ($filters['status'] === 'canceled') ? 'selected' : '' ?>>Đã hủy</option>
+            </select>
+        </div>
+        <div class="col-xl-2 col-md-4">
+            <label for="filter-from-date" class="form-label">Từ ngày</label>
+            <input id="filter-from-date" type="date" name="from_date" class="form-control" value="<?= htmlspecialchars($filters['from_date']) ?>">
+        </div>
+        <div class="col-xl-2 col-md-4">
+            <label for="filter-to-date" class="form-label">Đến ngày</label>
+            <input id="filter-to-date" type="date" name="to_date" class="form-control" value="<?= htmlspecialchars($filters['to_date']) ?>">
+        </div>
+        <div class="col-xl-4 col-md-8">
+            <label for="filter-search" class="form-label">Tìm kiếm</label>
+            <input id="filter-search" type="text" name="search" class="form-control" placeholder="Mã vé, tên KH, email, SĐT, phim, rạp..." value="<?= htmlspecialchars($filters['search']) ?>">
+        </div>
+        <div class="col-xl-2 col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-netflix-red flex-fill">
+                <i class="bi bi-search me-1"></i>Tìm
+            </button>
+            <a href="manage_booking.php" class="btn btn-admin-secondary">Reset</a>
+        </div>
+    </form>
+</div>
 
     <div class="admin-card">
         <div class="d-flex align-items-center justify-content-between gap-3 mb-3">

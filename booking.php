@@ -5,14 +5,15 @@ use App\Controllers\ShowtimeController;
 use App\Controllers\SeatController;
 use App\Controllers\TicketController;
 use App\Controllers\BookingController;
+use App\Models\VoucherModel;
 
 $showtimeController = new ShowtimeController();
 $seatController = new SeatController();
 $ticketController = new TicketController();
 $bookingController = new BookingController();
 
-// check session
-if(!isset($_SESSION['user'])) {
+// Check session
+if (!isset($_SESSION['user'])) {
     echo "<script>alert('Vui lòng đăng nhập để đặt vé!'); window.location='login.php';</script>";
     exit;
 }
@@ -20,14 +21,9 @@ if(!isset($_SESSION['user'])) {
 $result = $bookingController->handleRequest();
 if ($result) {
     if ($result['status'] === 'success') {
-        $bookingId = $result['booking_id'] ?? '';
-        $successMessage = json_encode($result['message'] . "\nMã đặt vé: #" . $bookingId);
-        echo "
-            <script>
-                alert($successMessage);
-                window.location.href = 'booking_history.php';
-            </script>
-        ";
+        $bookingId = (int)($result['booking_id'] ?? 0);
+        // Redirect bằng PHP để chắc chắn chuyển sang lịch sử đặt vé sau khi transaction commit.
+        header('Location: booking_history.php?booking_success=1&booking_id=' . $bookingId);
         exit;
     }
     if (isset($result['page'])) {
@@ -78,7 +74,8 @@ $poster = !empty($showtime['movie_poster']) ? $showtime['movie_poster'] : 'https
 $address = trim(($showtime['theatre_address'] ?? '') . ', ' . ($showtime['theatre_city'] ?? ''), ', ');
 $basePrice = (float)$showtime['base_price'];
 $vipPrice = (float)$showtime['base_price'] + 20000;
-
+$voucherModel = new VoucherModel();
+$availableVouchers = $voucherModel->getActiveForUser((int)$_SESSION['user']['id']);
 
 require_once 'header.php';
 ?>
@@ -92,10 +89,11 @@ require_once 'header.php';
         </a>
 
         <div class="row g-4">
+            <!-- Sidebar thông tin vé & Thanh toán -->
             <div class="col-md-4">
                 <div class="booking-card booking-sidebar">
                     <img src="<?= htmlspecialchars($poster) ?>" alt="<?= htmlspecialchars($showtime['movie_title']) ?>" onerror="this.src='https://via.placeholder.com/400x600?text=No+Image';">
-                    <h4 class="mb-3"><?= htmlspecialchars($showtime['movie_title']) ?></h4>
+                    <h4 class="mb-3 mt-3"><?= htmlspecialchars($showtime['movie_title']) ?></h4>
 
                     <p class="booking-meta">
                         <i class="bi bi-geo-alt-fill"></i>
@@ -116,7 +114,7 @@ require_once 'header.php';
                         <?= htmlspecialchars($showtime['room_name']) ?>
                     </p>
 
-                    <div class="booking-summary">
+                    <div class="booking-summary mt-3">
                         <p class="booking-meta">
                             Giá vé cơ bản:
                             <span class="summary-value"><?= number_format($basePrice, 0, ',', '.') ?>đ</span>
@@ -134,10 +132,29 @@ require_once 'header.php';
                             <span id="seat-count" class="summary-value">0</span>
                         </p>
                         <p class="booking-meta">
+                            Tạm tính:
+                            <span id="subtotal-price" class="summary-value">0đ</span>
+                        </p>
+                        <p class="booking-meta text-success">
+                            Giảm giá:
+                            <span id="discount-amount" class="summary-value text-success">-0đ</span>
+                        </p>
+                        <p class="booking-meta">
                             Tổng tiền:
                             <span id="total-price" class="summary-total">0đ</span>
                         </p>
 
+                        <!-- KHUNG NHẬP MÃ VOUCHER -->
+                        <div class="mb-3 mt-3 border-top pt-3 border-secondary">
+                            <label class="form-label text-white small fw-bold">Mã giảm giá / Voucher</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="voucher-code" class="form-control bg-dark text-white border-secondary" placeholder="Nhập mã (VD: VIP1)">
+                                <button type="button" id="btn-apply-voucher" class="btn btn-danger">Áp dụng</button>
+                            </div>
+                            <small id="voucher-message" class="d-block mt-1"></small>
+                        </div>
+
+                        <!-- PHƯƠNG THỨC THANH TOÁN -->
                         <div class="mb-3">
                             <label class="form-label text-white fw-bold">Phương thức thanh toán</label>
                             <div class="d-grid gap-2">
@@ -163,10 +180,11 @@ require_once 'header.php';
                 </div>
             </div>
 
+            <!-- Bản đồ ghế -->
             <div class="col-md-8">
                 <h2 class="mb-4">Chọn Ghế Ngồi</h2>
 
-                <div class="booking-card seat-legend-box">
+                <div class="booking-card seat-legend-box mb-4">
                     <div class="row text-center g-3">
                         <div class="col-6 col-lg-3">
                             <button class="seat available" type="button" disabled></button>
@@ -187,7 +205,7 @@ require_once 'header.php';
                     </div>
                 </div>
 
-                <div class="screen"></div>
+                <div class="screen mb-2"></div>
                 <p class="text-center text-secondary mb-4">MÀN HÌNH</p>
 
                 <div id="seat-map" class="booking-card seat-map">
@@ -247,91 +265,216 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
 ?>
 
 <script>
-    const seatButtons = document.querySelectorAll('.seat.available');
+    const seatButtons = document.querySelectorAll('.seat.available:not([disabled])');
     const seatCount = document.getElementById('seat-count');
     const selectedSeats = document.getElementById('selected-seats');
-    const totalPrice = document.getElementById('total-price');
+    const subtotalPriceEl = document.getElementById('subtotal-price');
+    const discountAmountEl = document.getElementById('discount-amount');
+    const totalPriceEl = document.getElementById('total-price');
     const confirmButton = document.getElementById('btn-confirm');
+    const btnApplyVoucher = document.getElementById('btn-apply-voucher');
+    const voucherInput = document.getElementById('voucher-code');
+    const voucherMsg = document.getElementById('voucher-message');
+
     const formatter = new Intl.NumberFormat('vi-VN');
+    const availableVouchers = <?= json_encode($availableVouchers, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+    const voucherMap = {};
+    availableVouchers.forEach(voucher => {
+        voucherMap[String(voucher.code).toUpperCase()] = voucher;
+    });
+    let discountAmount = 0;
+    let appliedVoucherCode = '';
 
     function getSelectedSeatButtons() {
         return Array.from(document.querySelectorAll('.seat.selected[data-seat-id]'));
     }
 
+    function showVoucherMessage(message, type = 'danger') {
+        voucherMsg.className = `d-block mt-1 text-${type} small`;
+        voucherMsg.textContent = message;
+    }
+
+    function resetVoucher(message = '') {
+        discountAmount = 0;
+        appliedVoucherCode = '';
+
+        if (message) {
+            showVoucherMessage(message, 'warning');
+        } else {
+            voucherMsg.textContent = '';
+        }
+    }
+
     function updateSummary() {
         const selected = getSelectedSeatButtons();
-        const names = selected.map((seat) => seat.dataset.seatName);
-        const total = selected.reduce((sum, seat) => sum + Number(seat.dataset.price || 0), 0);
+        const names = selected.map(seat => seat.dataset.seatName);
+        const subtotal = selected.reduce(
+            (sum, seat) => sum + Number(seat.dataset.price || 0),
+            0
+        );
+
+        // Nếu bỏ chọn hết ghế thì hủy voucher đã áp dụng.
+        if (selected.length === 0 || subtotal === 0) {
+            if (appliedVoucherCode !== '') {
+                resetVoucher('Voucher đã bị hủy vì bạn chưa chọn ghế.');
+            }
+        } else {
+            // Kiểm tra lại điều kiện voucher khi số ghế thay đổi.
+            if (appliedVoucherCode !== '') {
+                const voucher = voucherMap[appliedVoucherCode];
+                if (!voucher) {
+                    resetVoucher('Voucher không còn khả dụng hoặc tài khoản đã dùng mã này.');
+                } else if (subtotal < Number(voucher.min_order_amount)) {
+                    resetVoucher(
+                        `Mã ${appliedVoucherCode} yêu cầu đơn từ ${formatter.format(Number(voucher.min_order_amount))}đ.`
+                    );
+                } else {
+                    discountAmount = Math.min(Number(voucher.discount_amount), subtotal);
+                }
+            }
+        }
+
+        const finalTotal = Math.max(0, subtotal - discountAmount);
 
         seatCount.textContent = selected.length;
         selectedSeats.textContent = names.length ? names.join(', ') : 'Chưa chọn';
-        totalPrice.textContent = formatter.format(total) + 'đ';
+        subtotalPriceEl.textContent = formatter.format(subtotal) + 'đ';
+        discountAmountEl.textContent = '-' + formatter.format(discountAmount) + 'đ';
+        totalPriceEl.textContent = formatter.format(finalTotal) + 'đ';
+
+        // Chỉ cho phép đặt vé khi đã chọn ít nhất 1 ghế.
         confirmButton.disabled = selected.length === 0;
     }
 
-    seatButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            button.classList.toggle('available');
-            button.classList.toggle('selected');
+    // =========================
+    // CHỌN / BỎ CHỌN GHẾ
+    // =========================
+    seatButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            this.classList.toggle('selected');
+
+            // Khi người dùng chọn/bỏ ghế, cập nhật lại tiền ngay lập tức.
             updateSummary();
         });
     });
 
-    confirmButton.addEventListener('click', () => {
-            const selected = getSelectedSeatButtons();
-            if (!selected.length) {
-                alert("Vui lòng chọn ghế");
-                return;
-            }
+    // =========================
+    // ÁP DỤNG VOUCHER
+    // =========================
+    btnApplyVoucher.addEventListener('click', function () {
+        const code = voucherInput.value.trim().toUpperCase();
+        const selected = getSelectedSeatButtons();
 
-            if (!confirm("Bạn có chắc chắn muốn đặt vé không?")) {
-                return;
-            }
+        const subtotal = selected.reduce(
+            (sum, seat) => sum + Number(seat.dataset.price || 0),
+            0
+        );
 
-            const payment = document.querySelector(
-                'input[name="payment_method"]:checked'
+        // QUAN TRỌNG:
+        // Chưa chọn ghế mà bấm "Áp dụng" -> hiện đúng thông báo yêu cầu.
+        if (selected.length === 0 || subtotal === 0) {
+            showVoucherMessage('Vui lòng chọn ghế ngồi trước khi áp dụng voucher!', 'danger');
+            voucherInput.focus();
+            return;
+        }
+
+        if (!code) {
+            showVoucherMessage('Vui lòng nhập mã giảm giá!', 'danger');
+            voucherInput.focus();
+            return;
+        }
+
+        const voucher = voucherMap[code];
+
+        if (!voucher) {
+            resetVoucher();
+            showVoucherMessage(
+                'Mã không tồn tại, đã hết lượt, hết hạn hoặc tài khoản đã sử dụng mã này.',
+                'danger'
             );
+            return;
+        }
 
-            const form = document.createElement('form');
-            form.method = "POST";
-            form.action = "booking.php";
-            // action
-            let action = document.createElement('input');
+        const minOrder = Number(voucher.min_order_amount);
+        const discount = Number(voucher.discount_amount);
 
-            action.type = "hidden";
-            action.name = "action";
-            action.value = "book_ticket";
+        if (subtotal < minOrder) {
+            resetVoucher();
+            showVoucherMessage(
+                `Mã ${code} chỉ áp dụng cho đơn từ ${formatter.format(minOrder)}đ trở lên!`,
+                'danger'
+            );
+            return;
+        }
 
-            form.appendChild(action);
+        discountAmount = Math.min(discount, subtotal);
+        appliedVoucherCode = code;
+        showVoucherMessage(
+            `Áp dụng thành công ${code} (-${formatter.format(discountAmount)}đ)`,
+            'success'
+        );
 
-            // showtime id
-            let showtime = document.createElement('input');
+        updateSummary();
+    });
 
-            showtime.type = "hidden";
-            showtime.name = "showtime_id";
-            showtime.value = "<?= $showtimeId ?>";
+    // Cho phép nhấn Enter trong ô voucher để áp dụng.
+    voucherInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            btnApplyVoucher.click();
+        }
+    });
 
-            form.appendChild(showtime);
+    // =========================
+    // XÁC NHẬN ĐẶT VÉ
+    // =========================
+    confirmButton.addEventListener('click', function () {
+        const selected = getSelectedSeatButtons();
 
-            // payment
-            let paymentInput = document.createElement('input');
+        // Kiểm tra lại một lần nữa trước khi gửi form.
+        if (selected.length === 0) {
+            alert('Vui lòng chọn ghế ngồi trước khi đặt vé!');
+            return;
+        }
 
-            paymentInput.type = "hidden";
-            paymentInput.name = "payment_method";
-            paymentInput.value = payment.value;
+        if (!confirm('Bạn có chắc chắn muốn đặt vé không?')) {
+            return;
+        }
 
-            form.appendChild(paymentInput);
-            // selected seats
-            selected.forEach(seat => {
-                let input = document.createElement('input');
-                input.type = "hidden";
-                input.name = "seats[]";
-                input.value = seat.dataset.seatId;
-                form.appendChild(input);
-            });
-            document.body.appendChild(form);
-            form.submit();
+        const paymentInput = document.querySelector(
+            'input[name="payment_method"]:checked'
+        );
+
+        if (!paymentInput) {
+            alert('Vui lòng chọn phương thức thanh toán!');
+            return;
+        }
+
+        const payment = paymentInput.value;
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'booking.php';
+
+        let inputsHTML = `
+            <input type="hidden" name="action" value="book_ticket">
+            <input type="hidden" name="showtime_id" value="<?= $showtimeId ?>">
+            <input type="hidden" name="payment_method" value="${payment}">
+            <input type="hidden" name="voucher_code" value="${appliedVoucherCode}">
+        `;
+
+        selected.forEach(seat => {
+            inputsHTML += `
+                <input type="hidden" name="seats[]" value="${seat.dataset.seatId}">
+            `;
         });
-</script>
 
+        form.innerHTML = inputsHTML;
+        document.body.appendChild(form);
+        form.submit();
+    });
+
+    // Khởi tạo trạng thái ban đầu.
+    updateSummary();
+</script>
 <?php require_once 'footer.php'; ?>

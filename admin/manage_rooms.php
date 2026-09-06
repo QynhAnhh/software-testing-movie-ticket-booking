@@ -148,8 +148,8 @@ function renderRoomFormFields($prefix, $theatres_list, $room = null) {
 ?>
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label">Rạp chiếu <span class="text-danger">*</span></label>
-            <select class="form-select" name="theatre_id" id="<?= $prefix ?>_theatre_id" required>
+            <label class="form-label" for="<?= $prefix ?>_theatre_id">Rạp chiếu <span class="text-danger">*</span></label>        
+                <select class="form-select" name="theatre_id" id="<?= $prefix ?>_theatre_id" required>
                 <option value="">-- Chọn rạp --</option>
                 <?php foreach ($theatres_list as $theatre): ?>
                     <option value="<?= $theatre['id'] ?>" <?= (int)($room['theatre_id'] ?? 0) === (int)$theatre['id'] ? 'selected' : '' ?>>
@@ -159,11 +159,11 @@ function renderRoomFormFields($prefix, $theatres_list, $room = null) {
             </select>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Tên phòng <span class="text-danger">*</span></label>
+            <label class="form-label" for="<?= $prefix ?>_name">Tên phòng <span class="text-danger">*</span></label>
             <input type="text" class="form-control" name="name" id="<?= $prefix ?>_name" required placeholder="VD: Phòng 1" value="<?= htmlspecialchars($room['name'] ?? '') ?>">
         </div>
         <div class="col-md-6">
-            <label class="form-label">Số ghế <span class="text-danger">*</span></label>
+            <label class="form-label" for="<?= $prefix ?>_total_seats">Số ghế <span class="text-danger">*</span></label>
             <input type="number" class="form-control" name="total_seats" id="<?= $prefix ?>_total_seats" min="1" value="<?= htmlspecialchars((string)($room['total_seats'] ?? 40)) ?>" required>
         </div>
         <div class="col-md-6 d-flex align-items-end">

@@ -80,10 +80,20 @@ require_once 'header.php';
                         <?php unset($_SESSION['success_msg']); ?>
                     </div>
                 <?php endif; ?>
+                <input type="email"
+                    name="email"
+                    placeholder="Email"
+                    required
+                    oninvalid="this.setCustomValidity('Vui lòng điền vào ô này.')"
+                    oninput="this.setCustomValidity('')" />
 
-                <input type="email" name="email" required placeholder="Email" />
-                <input type="password" name="password" required placeholder="Mật khẩu" />
-
+<input type="password"
+       name="password"
+       placeholder="Mật khẩu"
+       required
+       oninvalid="this.setCustomValidity('Vui lòng điền vào ô này.')"
+       oninput="this.setCustomValidity('')" />
+                
                 <button type="submit" class="auth-action">Đăng nhập</button>
 
                 <p class="auth-mobile-switch">

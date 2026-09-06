@@ -1106,3 +1106,48 @@ VALUES (1, 1, 2, 90000),
        (6, 7, 46, 110000),
        (7, 5, 43, 90000),
        (7, 5, 47, 110000);
+-- 13. Bảng vouchers: quản lý mã giảm giá theo số tài khoản được phép sử dụng
+DROP TABLE IF EXISTS voucher_usages;
+DROP TABLE IF EXISTS vouchers;
+CREATE TABLE vouchers
+(
+    id                INT PRIMARY KEY AUTO_INCREMENT,
+    code              VARCHAR(50) NOT NULL UNIQUE,
+    discount_amount   DECIMAL(10,2) NOT NULL,
+    min_order_amount  DECIMAL(10,2) NOT NULL DEFAULT 0,
+    total_quantity    INT NOT NULL DEFAULT 1,
+    used_quantity     INT NOT NULL DEFAULT 0,
+    per_user_limit    INT NOT NULL DEFAULT 1,
+    valid_from        DATETIME NULL,
+    expires_at        DATETIME NULL,
+    status            ENUM('active','inactive') NOT NULL DEFAULT 'active',
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_voucher_status (status),
+    INDEX idx_voucher_code (code)
+);
+
+-- Mỗi tài khoản chỉ được dùng một mã một lần.
+CREATE TABLE voucher_usages
+(
+    id               INT PRIMARY KEY AUTO_INCREMENT,
+    voucher_id       INT NOT NULL,
+    user_id          INT NOT NULL,
+    booking_id       INT NULL,
+    discount_amount  DECIMAL(10,2) NOT NULL DEFAULT 0,
+    used_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_voucher_user (voucher_id, user_id),
+    INDEX idx_voucher_usage_booking (booking_id),
+    FOREIGN KEY (voucher_id) REFERENCES vouchers(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE SET NULL
+);
+
+-- Mã mẫu theo đúng yêu cầu: VIP1 giảm 20.000đ cho đơn từ 80.000đ,
+-- tối đa 10 tài khoản, mỗi tài khoản dùng 1 lần.
+INSERT INTO vouchers
+    (code, discount_amount, min_order_amount, total_quantity, used_quantity, per_user_limit, valid_from, expires_at, status)
+VALUES
+    ('VIP1', 20000, 80000, 10, 0, 1, NULL, NULL, 'active'),
+    ('VIP20', 20000, 0, 10, 0, 1, NULL, NULL, 'active'),
+    ('MOVIE50', 50000, 300000, 10, 0, 1, NULL, NULL, 'active');

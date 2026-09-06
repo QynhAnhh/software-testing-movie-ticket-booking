@@ -5,22 +5,25 @@ use App\Models\BookingModel;
 use App\Models\ShowtimeModel;
 use App\Models\SeatModel;
 use App\Models\TicketModel;
+use App\Models\VoucherModel;
 
 class BookingService {
     private $bookingModel;
     private $showtimeModel;
     private $seatModel;
     private $ticketModel;
+    private $voucherModel;
 
     public function __construct() {
         $this->bookingModel = new BookingModel();
         $this->showtimeModel = new ShowtimeModel();
         $this->seatModel = new SeatModel();
         $this->ticketModel = new TicketModel();
+        $this->voucherModel = new VoucherModel();
     }
 
     // process
-    public function processBooking($userId, $showtimeId, $seatIds, $paymentMethod) {
+    public function processBooking($userId, $showtimeId, $seatIds, $paymentMethod, $voucherCode = '') {
         if ($userId <= 0) {
             return ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.', 'page' => 'login.php'];
         }
@@ -33,11 +36,14 @@ class BookingService {
             return ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế.'];
         }
 
-        $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
+        // Chỉ nhận đúng các phương thức có trong ENUM của bảng bookings.
+        $allowedPaymentMethods = ['momo', 'vnpay', 'bank_transfer'];
 
         if (!in_array($paymentMethod, $allowedPaymentMethods, true)) {
-            $paymentMethod = 'cash';
+            return ['status' => 'error', 'message' => 'Phương thức thanh toán không hợp lệ.'];
         }
+
+        $voucherCode = strtoupper(trim((string)$voucherCode));
 
         $showtime = $this->showtimeModel->getDetailById($showtimeId);
 
@@ -97,19 +103,80 @@ class BookingService {
             $totalPrice += $price;
         }
 
+        // Voucher được kiểm tra ở server. JavaScript chỉ dùng để hiển thị nhanh;
+        // quyết định cuối cùng luôn lấy từ database để tránh gian lận/sử dụng quá số lượt.
+        $discountAmount = 0;
+        $voucher = null;
+
+        if ($voucherCode !== '') {
+            $voucher = $this->voucherModel->getActiveByCode($voucherCode, $userId);
+            if (!$voucher || ($voucher['status'] ?? '') !== 'active') {
+                return ['status' => 'error', 'message' => 'Mã giảm giá không tồn tại hoặc đã bị tắt.'];
+            }
+            if ((int)$voucher['used_quantity'] >= (int)$voucher['total_quantity']) {
+                return ['status' => 'error', 'message' => 'Mã giảm giá đã hết lượt sử dụng.'];
+            }
+            if (!empty($voucher['valid_from']) && strtotime($voucher['valid_from']) > time()) {
+                return ['status' => 'error', 'message' => 'Mã giảm giá chưa đến thời gian sử dụng.'];
+            }
+            if (!empty($voucher['expires_at']) && strtotime($voucher['expires_at']) < time()) {
+                return ['status' => 'error', 'message' => 'Mã giảm giá đã hết hạn.'];
+            }
+            if ((int)$voucher['user_used'] === 1) {
+                return ['status' => 'error', 'message' => 'Tài khoản của bạn đã sử dụng mã này trước đó.'];
+            }
+            if ($totalPrice < (float)$voucher['min_order_amount']) {
+                return ['status' => 'error', 'message' => 'Đơn hàng chưa đạt tối thiểu ' . number_format((float)$voucher['min_order_amount'], 0, ',', '.') . 'đ để dùng mã ' . $voucherCode . '.'];
+            }
+            $discountAmount = min((float)$voucher['discount_amount'], $totalPrice);
+        }
+
+        $finalTotal = max(0, $totalPrice - $discountAmount);
+
         $this->bookingModel->beginTransaction();
 
         try {
-            $bookingId = $this->bookingModel->createBooking($userId, $totalPrice, $paymentMethod);
+            // Khóa dòng voucher trong transaction để 2 người không thể cùng lấy lượt cuối.
+            if ($voucherCode !== '') {
+                $voucher = $this->voucherModel->getByCodeForUpdate($voucherCode);
+                if (!$voucher || ($voucher['status'] ?? '') !== 'active') {
+                    throw new \Exception('Mã giảm giá không tồn tại hoặc đã bị tắt.');
+                }
+                if ((int)$voucher['used_quantity'] >= (int)$voucher['total_quantity']) {
+                    throw new \Exception('Mã giảm giá đã hết lượt sử dụng.');
+                }
+                if (!empty($voucher['valid_from']) && strtotime($voucher['valid_from']) > time()) {
+                    throw new \Exception('Mã giảm giá chưa đến thời gian sử dụng.');
+                }
+                if (!empty($voucher['expires_at']) && strtotime($voucher['expires_at']) < time()) {
+                    throw new \Exception('Mã giảm giá đã hết hạn.');
+                }
+                if ($this->voucherModel->hasUserUsed((int)$voucher['id'], $userId)) {
+                    throw new \Exception('Tài khoản của bạn đã sử dụng mã này trước đó.');
+                }
+                if ($totalPrice < (float)$voucher['min_order_amount']) {
+                    throw new \Exception('Đơn hàng chưa đạt tối thiểu ' . number_format((float)$voucher['min_order_amount'], 0, ',', '.') . 'đ để dùng mã ' . $voucherCode . '.');
+                }
+                $discountAmount = min((float)$voucher['discount_amount'], $totalPrice);
+                $finalTotal = max(0, $totalPrice - $discountAmount);
+            }
+
+            $bookingId = $this->bookingModel->createBooking($userId, $finalTotal, $paymentMethod);
 
             if (!$bookingId) {
-                throw new \Exception('Không thể tạo booking.');
+                throw new \Exception('Không thể tạo booking: ' . $this->bookingModel->getError());
             }
 
             $ticketsCreated = $this->ticketModel->createMany($bookingId, $showtimeId, $seatPrices);
 
             if (!$ticketsCreated) {
-                throw new \Exception('Không thể tạo vé.');
+                throw new \Exception('Không thể tạo vé: ' . $this->ticketModel->getError());
+            }
+
+            if ($voucherCode !== '') {
+                if (!$this->voucherModel->consume((int)$voucher['id'], $userId, $bookingId, $discountAmount)) {
+                    throw new \Exception('Không thể ghi nhận lượt sử dụng voucher: ' . $this->voucherModel->getError());
+                }
             }
 
             $this->bookingModel->commit();
@@ -124,7 +191,7 @@ class BookingService {
 
             return [
                 'status' => 'error',
-                'message' => 'Có lỗi xảy ra khi đặt vé.'
+                'message' => $e->getMessage() ?: 'Có lỗi xảy ra khi đặt vé.'
             ];
         }
     }
@@ -171,6 +238,11 @@ class BookingService {
         try {
             if (!$this->bookingModel->cancelBooking($bookingId, $userId)) {
                 throw new \Exception('Loi khi huy booking: ' . $this->bookingModel->getError());
+            }
+
+            // Nếu booking có voucher và bị hủy, trả lại 1 lượt cho voucher.
+            if (!$this->voucherModel->releaseByBookingId($bookingId)) {
+                throw new \Exception('Không thể hoàn lại lượt sử dụng voucher.');
             }
 
             $this->bookingModel->commit();

@@ -11,6 +11,14 @@ if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
 $bookingController = new BookingController();
 $actionResult = $bookingController->handleRequest();
 
+if (!$actionResult && isset($_GET['booking_success']) && (int)$_GET['booking_success'] === 1) {
+    $bookingId = (int)($_GET['booking_id'] ?? 0);
+    $actionResult = [
+        'status' => 'success',
+        'message' => 'Đặt vé thành công!' . ($bookingId > 0 ? ' Mã đặt vé: #' . $bookingId : '')
+    ];
+}
+
 $userId = (int)($_SESSION['user']['id'] ?? 0);
 $bookings = $bookingController->getUserBookings($userId);
 $fullName = trim(($_SESSION['user']['first_name'] ?? '') . ' ' . ($_SESSION['user']['last_name'] ?? ''));

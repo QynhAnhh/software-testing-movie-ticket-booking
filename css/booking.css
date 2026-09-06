@@ -178,3 +178,46 @@
         min-width: 650px;
     }
 }
+
+
+/* Khắc phục lỗi đè giao diện giữa Sidebar và Sơ đồ ghế */
+.booking-page .col-md-8 {
+    overflow-x: auto; /* Tạo thanh cuộn ngang nếu sơ đồ ghế quá rộng */
+    max-width: 100%;
+}
+
+.seat-map {
+    min-width: 600px; /* Chiều rộng tối thiểu cho phòng chiếu */
+    overflow-x: auto;
+    padding: 20px 10px;
+}
+
+/* Cố định kích thước từng hàng ghế để không tràn đè lên chữ */
+.seat-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    flex-wrap: nowrap;
+}
+
+.seat-group {
+    display: flex;
+    gap: 4px;
+}
+
+.seat-aisle {
+    width: 25px; /* Lối đi giữa hai dãy ghế */
+}
+
+/* Đảm bảo nút ghế không bị phình kích thước */
+.seat {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px;
+    padding: 0;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

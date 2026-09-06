@@ -30,6 +30,9 @@
         <a href="manage_booking.php" class="nav-link <?= ($current_page == 'manage_booking.php') ? 'active' : '' ?>">
             <i class="bi bi-ticket-perforated"></i> Quản lý Đặt vé
         </a>
+        <a href="manage_vouchers.php" class="nav-link <?= ($current_page == 'manage_vouchers.php') ? 'active' : '' ?>">
+            <i class="bi bi-ticket-perforated-fill"></i> Quản lý Mã giảm giá
+        </a>
         <a href="manage_users.php" class="nav-link <?= ($current_page == 'manage_users.php') ? 'active' : '' ?>">
             <i class="bi bi-people"></i> Quản lý Người dùng
         </a>

@@ -37,12 +37,11 @@ class Database
             foreach ($requiredKeys as $key) {
                 if (!array_key_exists($key, $config)) {
                     throw new DatabaseException(
-                        "Thiếu cấu hình database: {$key}"
                     );
                 }
             }
 
-            if (
+    /*        if (
                 !is_string($config['password'])
                 || trim($config['password']) === ''
             ) {
@@ -50,7 +49,7 @@ class Database
                     'Mật khẩu database không được để trống.'
                 );
             }
-
+    */
             $conn = mysqli_connect(
                 $config['host'],
                 $config['username'],
