@@ -266,41 +266,51 @@ class BookingService {
         $allowedStatuses = ['pending', 'paid', 'canceled'];
         $result = null;
 
-        if ($bookingId <= 0) {
-            $result = ['status' => 'error', 'message' => 'Booking không hợp lệ.'];
-        } elseif (!in_array($status, $allowedStatuses, true)) {
-            $result = ['status' => 'error', 'message' => 'Trạng thái booking không hợp lệ.'];
-        } else {
+        do {
+            if ($bookingId <= 0) {
+                $result = ['status' => 'error', 'message' => 'Booking không hợp lệ.'];
+                break;
+            }
+
+            if (!in_array($status, $allowedStatuses, true)) {
+                $result = ['status' => 'error', 'message' => 'Trạng thái booking không hợp lệ.'];
+                break;
+            }
+
             $booking = $this->bookingModel->getAdminBookingById($bookingId);
             if (!$booking) {
                 $result = ['status' => 'error', 'message' => 'Không tìm thấy booking cần cập nhật.'];
-            } elseif (($booking['status'] ?? '') === 'canceled' && $status !== 'canceled'
-                && $this->bookingModel->hasSeatConflictWhenRestoring($bookingId)) {
+                break;
+            }
+
+            $isRestoring = ($booking['status'] ?? '') === 'canceled' && $status !== 'canceled';
+            if ($isRestoring && $this->bookingModel->hasSeatConflictWhenRestoring($bookingId)) {
                 $result = [
                     'status' => 'error',
                     'message' => 'Không thể khôi phục booking vì có ghế đã được đặt bởi booking khác.'
                 ];
-            } else {
-                $ticketStatus = $status === 'canceled' ? 'canceled' : 'booked';
-                $this->bookingModel->beginTransaction();
-
-                try {
-                    if (!$this->bookingModel->updateBookingStatus($bookingId, $status)) {
-                        throw new \RuntimeException('Lỗi khi cập nhật trạng thái booking: ' . $this->bookingModel->getError());
-                    }
-
-                    if (!$this->bookingModel->updateTicketsStatusByBooking($bookingId, $ticketStatus)) {
-                        throw new \RuntimeException('Lỗi khi cập nhật trạng thái vé: ' . $this->bookingModel->getError());
-                    }
-
-                    $this->bookingModel->commit();
-                    $result = ['status' => 'success', 'message' => 'Cập nhật trạng thái booking thành công.'];
-                } catch (\Throwable $e) {
-                    $this->bookingModel->rollback();
-                    $result = ['status' => 'error', 'message' => $e->getMessage()];
-                }
+                break;
             }
-        }
+
+            $ticketStatus = $status === 'canceled' ? 'canceled' : 'booked';
+            $this->bookingModel->beginTransaction();
+
+            try {
+                if (!$this->bookingModel->updateBookingStatus($bookingId, $status)) {
+                    throw new \RuntimeException('Lỗi khi cập nhật trạng thái booking: ' . $this->bookingModel->getError());
+                }
+
+                if (!$this->bookingModel->updateTicketsStatusByBooking($bookingId, $ticketStatus)) {
+                    throw new \RuntimeException('Lỗi khi cập nhật trạng thái vé: ' . $this->bookingModel->getError());
+                }
+
+                $this->bookingModel->commit();
+                $result = ['status' => 'success', 'message' => 'Cập nhật trạng thái booking thành công.'];
+            } catch (\Throwable $e) {
+                $this->bookingModel->rollback();
+                $result = ['status' => 'error', 'message' => $e->getMessage()];
+            }
+        } while (false);
 
         return $result;
     }
@@ -309,28 +319,32 @@ class BookingService {
         $bookingId = (int)$bookingId;
         $result = null;
 
-        if ($bookingId <= 0) {
-            $result = ['status' => 'error', 'message' => 'Booking không hợp lệ.'];
-        } else {
+        do {
+            if ($bookingId <= 0) {
+                $result = ['status' => 'error', 'message' => 'Booking không hợp lệ.'];
+                break;
+            }
+
             $booking = $this->bookingModel->getAdminBookingById($bookingId);
             if (!$booking) {
                 $result = ['status' => 'error', 'message' => 'Không tìm thấy booking cần xóa.'];
-            } else {
-                $this->bookingModel->beginTransaction();
-
-                try {
-                    if (!$this->bookingModel->deleteBooking($bookingId)) {
-                        throw new \RuntimeException('Lỗi khi xóa booking: ' . $this->bookingModel->getError());
-                    }
-
-                    $this->bookingModel->commit();
-                    $result = ['status' => 'success', 'message' => 'Xóa booking thành công.'];
-                } catch (\Throwable $e) {
-                    $this->bookingModel->rollback();
-                    $result = ['status' => 'error', 'message' => $e->getMessage()];
-                }
+                break;
             }
-        }
+
+            $this->bookingModel->beginTransaction();
+
+            try {
+                if (!$this->bookingModel->deleteBooking($bookingId)) {
+                    throw new \RuntimeException('Lỗi khi xóa booking: ' . $this->bookingModel->getError());
+                }
+
+                $this->bookingModel->commit();
+                $result = ['status' => 'success', 'message' => 'Xóa booking thành công.'];
+            } catch (\Throwable $e) {
+                $this->bookingModel->rollback();
+                $result = ['status' => 'error', 'message' => $e->getMessage()];
+            }
+        } while (false);
 
         return $result;
     }
