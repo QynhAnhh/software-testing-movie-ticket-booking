@@ -2002,9 +2002,9 @@
       "value": "admin@example.com"
     },
     {
-      "key": "admin_password",
-      "value": "password"
-    },
+  "key": "admin_password",
+  "value": "Admin@123"
+},
     {
       "key": "movie_with_showtime_id",
       "value": ""
@@ -2035,7 +2035,7 @@
     },
     {
       "key": "small_room_id",
-      "value": ""
+      "value": "341"
     },
     {
       "key": "conflict_room_id",
@@ -2055,7 +2055,7 @@
     },
     {
       "key": "showtime_with_booking_id",
-      "value": ""
+      "value": "340"
     },
     {
       "key": "future_date",
