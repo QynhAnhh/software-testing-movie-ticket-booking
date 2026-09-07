@@ -12,70 +12,82 @@ function validateBookingRequestData($showtimeModel, $userId, $showtimeId, $seatI
         'data' => null
     ];
 
-    do {
-        if ($userId <= 0) {
+    $input = [
+        'user_id' => $userId,
+        'showtime_id' => $showtimeId,
+        'seat_ids' => $seatIds,
+        'payment_method' => $paymentMethod
+    ];
+    $rules = [
+        'user_id' => 'required|integer|gt:0',
+        'showtime_id' => 'required|integer|gt:0',
+        'seat_ids' => 'required|array|min:1',
+        'payment_method' => 'required|string'
+    ];
+
+    if (class_exists('Illuminate\\Support\\Facades\\Validator')) {
+        $validator = \Illuminate\Support\Facades\Validator::make($input, $rules);
+        if ($validator->fails()) {
             $result['error'] = [
                 'status' => 'error',
-                'message' => 'Vui lòng đăng nhập để đặt vé.',
-                'page' => 'login.php'
+                'message' => $validator->errors()->first()
             ];
-            break;
+        }
+    } else {
+        $fallbackError = null;
+        if ($userId <= 0) {
+            $fallbackError = ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.', 'page' => 'login.php'];
+        } elseif ($showtimeId <= 0) {
+            $fallbackError = ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'];
+        } elseif (!is_array($seatIds) || count($seatIds) === 0) {
+            $fallbackError = ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'];
+        } elseif (!is_string($paymentMethod) || $paymentMethod === '') {
+            $fallbackError = ['status' => 'error', 'message' => 'Phương thức thanh toán không hợp lệ.'];
         }
 
-        if ($showtimeId <= 0) {
-            $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'];
-            break;
-        }
+        $result['error'] = $fallbackError;
+    }
 
-        if (!is_array($seatIds) || count($seatIds) === 0) {
-            $result['error'] = ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'];
-            break;
-        }
-
+    if ($result['error'] === null) {
         $showtime = $showtimeModel->getDetailById($showtimeId);
         $normalizedSeatIds = array_values(array_unique(array_map('intval', $seatIds)));
 
         if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
             $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'];
-            break;
-        }
-
-        if (!empty($showtime['show_date']) && !empty($showtime['start_time'])) {
+        } elseif (!empty($showtime['show_date']) && !empty($showtime['start_time'])) {
             $showDateTime = \DateTime::createFromFormat(
                 'Y-m-d H:i:s',
                 $showtime['show_date'] . ' ' . $showtime['start_time']
             );
-
             if ($showDateTime && $showDateTime <= new \DateTime()) {
                 $result['error'] = [
                     'status' => 'error',
                     'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'
                 ];
-                break;
             }
         }
 
-        if (count($normalizedSeatIds) > 10) {
+        if ($result['error'] === null && count($normalizedSeatIds) > 10) {
             $result['error'] = [
                 'status' => 'error',
                 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'
             ];
-            break;
         }
 
-        $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
-        $normalizedPaymentMethod = in_array($paymentMethod, $allowedPaymentMethods, true)
-            ? $paymentMethod
-            : 'cash';
-
-        $result['data'] = [
-            'user_id' => $userId,
-            'showtime_id' => $showtimeId,
-            'seat_ids' => $normalizedSeatIds,
-            'payment_method' => $normalizedPaymentMethod,
-            'showtime' => $showtime
-        ];
-    } while (false);
+        if ($result['error'] === null) {
+            $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
+            $normalizedPaymentMethod = in_array($paymentMethod, $allowedPaymentMethods, true)
+                ? $paymentMethod
+                : 'cash';
+            $result['data'] = [
+                'user_id' => $userId,
+                'showtime_id' => $showtimeId,
+                'seat_ids' => $normalizedSeatIds,
+                'payment_method' => $normalizedPaymentMethod,
+                'showtime' => $showtime
+            ];
+        }
+    }
 
     return $result;
 }
