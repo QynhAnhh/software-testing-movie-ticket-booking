@@ -8,9 +8,9 @@ class AuthService
 {
     private $userModel;
 
-    public function __construct()
+    public function __construct(UserModel $userModel = null)
     {
-        $this->userModel = new UserModel();
+        $this->userModel = $userModel ?? new UserModel();
     }
 
     public function register($data)
@@ -46,7 +46,7 @@ class AuthService
             return ['status' => 'error', 'message' => 'Họ không được chứa số hoặc ký tự đặc biệt!'];
         }
 
-        if (!preg_match('/^[0-9]+$/', $data['phone'])) {
+        if (!preg_match('/^\d+$/', $data['phone'])) {
             return ['status' => 'error', 'message' => 'Số điện thoại không hợp lệ, chỉ được chứa số!'];
         }
 

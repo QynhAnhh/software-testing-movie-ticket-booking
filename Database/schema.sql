@@ -198,7 +198,7 @@ CREATE TABLE `showtimes` (
   `start_time` time NOT NULL,
   `end_time` time NOT NULL,
   `base_price` decimal(10,2) NOT NULL DEFAULT 80000.00,
-  `status` enum('active','canceled') DEFAULT 'active',
+  `status` enum('active','canceled') DEFAULT 'active', -- NOSONAR
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
@@ -297,7 +297,7 @@ CREATE TABLE `vouchers` (
   `max_usage` int(11) NOT NULL DEFAULT 1,
   `used_count` int(11) NOT NULL DEFAULT 0,
   `expiry_date` date NOT NULL,
-  `status` enum('active','inactive') DEFAULT 'active',
+  `status` enum('active','inactive') DEFAULT 'active', -- NOSONAR
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),

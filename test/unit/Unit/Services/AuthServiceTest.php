@@ -227,15 +227,10 @@ class AuthServiceTest extends TestCase
         $userModelMock->method('insert')->willReturn(false);
         $userModelMock->method('getError')->willReturn('DB constraint error');
 
-        $service = new AuthService();
-        // Inject mock via reflection
-        $ref = new \ReflectionProperty(AuthService::class, 'userModel');
-        $ref->setAccessible(true);
-        $ref->setValue($service, $userModelMock);
-
-        $data = $this->getBaseRegisterData();
+        $service = new AuthService($userModelMock);
+        $data    = $this->getBaseRegisterData();
         $data['email'] = 'mock@test.com';
-        $result = $service->register($data);
+        $result  = $service->register($data);
 
         $this->assertEquals('error', $result['status']);
         $this->assertStringContainsString('Lỗi khi đăng ký', $result['message']);

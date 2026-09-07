@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\VoucherModel;
+use App\Exceptions\VoucherException;
 
 class VoucherService
 {
@@ -62,22 +63,22 @@ class VoucherService
         // 2. Find voucher
         $voucher = $this->voucherModel->findByCode($code);
         if (!$voucher) {
-            throw new \Exception('Voucher not found.');
+            throw new VoucherException('Voucher not found.');
         }
 
         // 3. Check expiry
         if (strtotime($voucher['expiry_date']) < strtotime(date('Y-m-d'))) {
-            throw new \Exception('Voucher has expired.');
+            throw new VoucherException('Voucher has expired.');
         }
 
         // 4. Check active status
         if ($voucher['status'] !== 'active') {
-            throw new \Exception('Voucher is inactive.');
+            throw new VoucherException('Voucher is inactive.');
         }
 
         // 5. Check minimum order amount
         if ($orderAmount < (float) $voucher['min_order']) {
-            throw new \Exception(
+            throw new VoucherException(
                 sprintf(
                     'Order amount does not meet the minimum required (%.0f VND).',
                     $voucher['min_order']
@@ -87,12 +88,12 @@ class VoucherService
 
         // 6. Check usage limit
         if ($voucher['used_count'] >= $voucher['max_usage']) {
-            throw new \Exception('Voucher has reached its maximum usage limit.');
+            throw new VoucherException('Voucher has reached its maximum usage limit.');
         }
 
         // 7. Check if this user already used it
         if ($userId > 0 && $this->voucherModel->hasUserUsed((int) $voucher['id'], $userId)) {
-            throw new \Exception('You have already used this voucher.');
+            throw new VoucherException('You have already used this voucher.');
         }
 
         // 8. Calculate discount (result must never be negative)

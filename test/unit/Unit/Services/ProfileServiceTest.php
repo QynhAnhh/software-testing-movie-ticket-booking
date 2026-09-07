@@ -246,13 +246,9 @@ class ProfileServiceTest extends TestCase
         $userModelMock->method('updateProfile')->willReturn(false);
         $userModelMock->method('getError')->willReturn('DB error');
 
-        $service = new ProfileService();
-        $ref = new \ReflectionProperty(ProfileService::class, 'userModel');
-        $ref->setAccessible(true);
-        $ref->setValue($service, $userModelMock);
-
-        $data = ['first_name' => 'A', 'last_name' => 'B', 'email' => 'mock@test.com', 'phone' => '0933333333'];
-        $result = $service->updateProfile($this->dummyUserId, $data);
+        $service = new ProfileService($userModelMock);
+        $data    = ['first_name' => 'A', 'last_name' => 'B', 'email' => 'mock@test.com', 'phone' => '0933333333'];
+        $result  = $service->updateProfile($this->dummyUserId, $data);
 
         $this->assertEquals('error', $result['status']);
         $this->assertStringContainsString('Lỗi khi cập nhật', $result['message']);
@@ -261,18 +257,14 @@ class ProfileServiceTest extends TestCase
     // --- COVERAGE: updatePassword DB failure via mock (line 121) ---
     public function testUpdatePasswordDbFailureMock()
     {
-        $hashedPw = password_hash('123456', PASSWORD_DEFAULT);
+        $hashedPw      = password_hash('123456', PASSWORD_DEFAULT);
         $userModelMock = $this->createMock(\App\Models\UserModel::class);
         $userModelMock->method('getById')->willReturn(['id' => 1, 'password' => $hashedPw]);
         $userModelMock->method('updatePassword')->willReturn(false);
         $userModelMock->method('getError')->willReturn('DB error');
 
-        $service = new ProfileService();
-        $ref = new \ReflectionProperty(ProfileService::class, 'userModel');
-        $ref->setAccessible(true);
-        $ref->setValue($service, $userModelMock);
-
-        $result = $service->updatePassword($this->dummyUserId, '123456', 'newpass123', 'newpass123');
+        $service = new ProfileService($userModelMock);
+        $result  = $service->updatePassword($this->dummyUserId, '123456', 'newpass123', 'newpass123');
 
         $this->assertEquals('error', $result['status']);
         $this->assertStringContainsString('Lỗi khi đổi mật khẩu', $result['message']);
