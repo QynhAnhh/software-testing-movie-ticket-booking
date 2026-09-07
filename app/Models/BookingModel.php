@@ -359,7 +359,7 @@ class BookingModel {
 
     //
     public function createBooking($userId, $totalPrice, $paymentMethod) {
-        $status = 'paid';
+        $status = 'pending';
 
         $stmt = mysqli_prepare(
             $this->conn,

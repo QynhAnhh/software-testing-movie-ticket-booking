@@ -33,10 +33,13 @@ class BookingService {
             return ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế.'];
         }
 
-        $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
+        $allowedPaymentMethods = ['momo', 'vnpay', 'bank_transfer'];
 
         if (!in_array($paymentMethod, $allowedPaymentMethods, true)) {
-            $paymentMethod = 'cash';
+            return [
+                'status' => 'error',
+                'message' => 'Phương thức thanh toán không hợp lệ.'
+            ];
         }
 
         $showtime = $this->showtimeModel->getDetailById($showtimeId);

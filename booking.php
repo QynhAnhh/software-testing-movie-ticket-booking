@@ -21,7 +21,7 @@ $result = $bookingController->handleRequest();
 if ($result) {
     if ($result['status'] === 'success') {
         $bookingId = $result['booking_id'] ?? '';
-        $successMessage = json_encode($result['message'] . "\nMã đặt vé: #" . $bookingId);
+        $successMessage = json_encode($result['message'] . "\nMã đặt vé: #" . $bookingId . "\nTrạng thái: Chờ xác nhận.");
         echo "
             <script>
                 alert($successMessage);

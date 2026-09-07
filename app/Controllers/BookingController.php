@@ -22,7 +22,7 @@ class BookingController {
             $userId = (int)($_SESSION['user']['id'] ?? 0);
             $showtimeId = (int)($_POST['showtime_id'] ?? 0);
             $seatIds = $_POST['seats'] ?? [];
-            $paymentMethod = $_POST['payment_method'] ?? 'cash';
+            $paymentMethod = $_POST['payment_method'] ?? '';
 
             return $this->service->processBooking(
                 $userId,

@@ -81,6 +81,29 @@ class BookingServiceNegativeTest extends TestCase
     }
 
     /**
+     * KAN-81
+     *
+     * Phương thức thanh toán không nằm trong danh sách được hỗ trợ
+     * phải bị từ chối, không được tự động chuyển sang phương thức khác.
+     */
+    public function testRejectsInvalidPaymentMethod(): void
+    {
+        $service = $this->createService(false);
+
+        $result = $service->processBooking(
+            1,
+            1,
+            [1],
+            'cash'
+        );
+
+        $this->assertSame('error', $result['status']);
+        $this->assertSame(
+            'Phương thức thanh toán không hợp lệ.',
+            $result['message']
+        );
+    }
+    /**
      * TC-QG-10
      *
      * Ghế đã được người khác đặt trước.
@@ -94,7 +117,7 @@ class BookingServiceNegativeTest extends TestCase
             1,
             1,
             [1],
-            'cash'
+            'momo'
         );
 
         // Phải trả về lỗi
@@ -122,7 +145,7 @@ class BookingServiceNegativeTest extends TestCase
             1,
             1,
             [1],
-            'cash'
+            'momo'
         );
 
         // Giao dịch thứ nhất thành công
@@ -138,7 +161,7 @@ class BookingServiceNegativeTest extends TestCase
             2,
             1,
             [1],
-            'cash'
+            'momo'
         );
 
         // Giao dịch thứ hai phải bị từ chối

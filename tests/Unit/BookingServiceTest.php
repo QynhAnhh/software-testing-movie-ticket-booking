@@ -124,7 +124,7 @@ class BookingServiceTest extends TestCase
             1,
             1,
             [1, 2],
-            'cash'
+            'momo'
         );
 
         $this->assertSame('success', $result['status']);
@@ -146,7 +146,7 @@ class BookingServiceTest extends TestCase
             1,
             1,
             [1, 2],
-            'cash'
+            'momo'
         );
 
         $this->assertSame('success', $result['status']);
@@ -170,7 +170,7 @@ class BookingServiceTest extends TestCase
             1,
             1,
             [1],
-            'cash'
+            'momo'
         );
 
         $this->assertSame('success', $result['status']);
@@ -193,7 +193,7 @@ class BookingServiceTest extends TestCase
             1,
             1,
             [2],
-            'cash'
+            'momo'
         );
 
         $this->assertSame('success', $result['status']);
@@ -212,7 +212,7 @@ class BookingServiceTest extends TestCase
             1,
             1,
             [],
-            'cash'
+            'momo'
         );
 
         $this->assertSame('error', $result['status']);
@@ -234,7 +234,7 @@ class BookingServiceTest extends TestCase
             1,
             1,
             [1, 2],
-            'cash'
+            'momo'
         );
 
         $this->assertSame('success', $result['status']);
@@ -260,7 +260,7 @@ class BookingServiceTest extends TestCase
             1,
             1,
             [1, 2, 3, 4],
-            'cash'
+            'momo'
         );
 
         $this->assertSame('success', $result['status']);
