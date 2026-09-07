@@ -15,16 +15,17 @@ class BookingService {
     private $seatModel;
     private $ticketModel;
 
+    // Sửa constructor để hỗ trợ Dependency Injection cho Unit Test
     public function __construct(
-        BookingModel $bookingModel = null,
-        ShowtimeModel $showtimeModel = null,
-        SeatModel $seatModel = null,
-        TicketModel $ticketModel = null
+        $bookingModel = null,
+        $showtimeModel = null,
+        $seatModel = null,
+        $ticketModel = null
     ) {
-        $this->bookingModel = $bookingModel ?: new BookingModel();
-        $this->showtimeModel = $showtimeModel ?: new ShowtimeModel();
-        $this->seatModel = $seatModel ?: new SeatModel();
-        $this->ticketModel = $ticketModel ?: new TicketModel();
+        $this->bookingModel = $bookingModel ?? new BookingModel();
+        $this->showtimeModel = $showtimeModel ?? new ShowtimeModel();
+        $this->seatModel = $seatModel ?? new SeatModel();
+        $this->ticketModel = $ticketModel ?? new TicketModel();
     }
 
     public function processBooking($userId, $showtimeId, $seatIds, $paymentMethod) {
