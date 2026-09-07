@@ -46,24 +46,23 @@ class BookingRequestValidator {
     }
 
     private function validateInputParameters($userId, $showtimeId, $seatIds) {
+        $result = null;
+
         if ($userId <= 0) {
-            return [
+            $result = [
                 'status' => 'error',
                 'message' => 'Vui lòng đăng nhập để đặt vé.',
                 'page' => 'login.php'
             ];
-        }
-        if ($showtimeId <= 0) {
-            return ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'];
-        }
-        if (!is_array($seatIds) || empty($seatIds)) {
-            return ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'];
-        }
-        if (count($seatIds) > 10) {
-            return ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'];
+        } elseif ($showtimeId <= 0) {
+            $result = ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'];
+        } elseif (!is_array($seatIds) || empty($seatIds)) {
+            $result = ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'];
+        } elseif (count($seatIds) > 10) {
+            $result = ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'];
         }
 
-        return null;
+        return $result;
     }
 
     private function validateShowtime($showtimeId) {
