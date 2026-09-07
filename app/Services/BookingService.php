@@ -37,52 +37,71 @@ class BookingService {
     }
 
     private function validateBookingRequest($userId, $showtimeId, $seatIds, $paymentMethod) {
-        $result = [
-            'error' => null,
-            'data' => null
-        ];
-
         if ($userId <= 0) {
-            $result['error'] = ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.', 'page' => 'login.php'];
-        } elseif ($showtimeId <= 0) {
-            $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'];
-        } elseif (!is_array($seatIds) || count($seatIds) === 0) {
-            $result['error'] = ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'];
-        } else {
-            $showtime = $this->showtimeModel->getDetailById($showtimeId);
-            $normalizedSeatIds = array_values(array_unique(array_map('intval', $seatIds)));
-            $showtimeHasStarted = false;
-            if (is_array($showtime) && !empty($showtime['show_date']) && !empty($showtime['start_time'])) {
-                $showDateTime = \DateTime::createFromFormat(
-                    'Y-m-d H:i:s',
-                    $showtime['show_date'] . ' ' . $showtime['start_time']
-                );
-                $showtimeHasStarted = $showDateTime && $showDateTime <= new \DateTime();
-            }
+            return [
+                'error' => ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.', 'page' => 'login.php'],
+                'data' => null
+            ];
+        }
 
-            if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
-                $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'];
-            } elseif ($showtimeHasStarted) {
-                $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'];
-            } elseif (count($normalizedSeatIds) > 10) {
-                $result['error'] = ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'];
-            } else {
-                $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
-                $normalizedPaymentMethod = in_array($paymentMethod, $allowedPaymentMethods, true)
-                    ? $paymentMethod
-                    : 'cash';
+        if ($showtimeId <= 0) {
+            return [
+                'error' => ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'],
+                'data' => null
+            ];
+        }
 
-                $result['data'] = [
-                    'user_id' => $userId,
-                    'showtime_id' => $showtimeId,
-                    'seat_ids' => $normalizedSeatIds,
-                    'payment_method' => $normalizedPaymentMethod,
-                    'showtime' => $showtime
+        if (!is_array($seatIds) || count($seatIds) === 0) {
+            return [
+                'error' => ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'],
+                'data' => null
+            ];
+        }
+
+        $showtime = $this->showtimeModel->getDetailById($showtimeId);
+        if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
+            return [
+                'error' => ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'],
+                'data' => null
+            ];
+        }
+
+        if (!empty($showtime['show_date']) && !empty($showtime['start_time'])) {
+            $showDateTime = \DateTime::createFromFormat(
+                'Y-m-d H:i:s',
+                $showtime['show_date'] . ' ' . $showtime['start_time']
+            );
+            if ($showDateTime && $showDateTime <= new \DateTime()) {
+                return [
+                    'error' => ['status' => 'error', 'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'],
+                    'data' => null
                 ];
             }
         }
 
-        return $result;
+        $normalizedSeatIds = array_values(array_unique(array_map('intval', $seatIds)));
+        if (count($normalizedSeatIds) > 10) {
+            return [
+                'error' => ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'],
+                'data' => null
+            ];
+        }
+
+        $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
+        $normalizedPaymentMethod = in_array($paymentMethod, $allowedPaymentMethods, true)
+            ? $paymentMethod
+            : 'cash';
+
+        return [
+            'error' => null,
+            'data' => [
+                'user_id' => $userId,
+                'showtime_id' => $showtimeId,
+                'seat_ids' => $normalizedSeatIds,
+                'payment_method' => $normalizedPaymentMethod,
+                'showtime' => $showtime
+            ]
+        ];
     }
 
     private function createBookingTransaction(array $bookingData) {
