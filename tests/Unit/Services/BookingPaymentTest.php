@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Unit\Services;
 
-use App\Config\Database;
 use App\Models\UserModel;
 use PHPUnit\Framework\TestCase;
 
@@ -30,110 +29,40 @@ class BookingPaymentTest extends TestCase
     }
 
     /**
-     * @testdox TC-PAY-01: Từ chối phương thức thanh toán không hợp lệ (Nhánh N2 -> N3)
+     * @dataProvider paymentCases
+        * @testdox {testdox}
      */
-    public function test_TC_PAY_01_invalid_payment_method_returns_false()
+        public function test_payment_cases($testdox, $userId, $totalPrice, $paymentMethod, $userBalance, $deducted, $expected)
     {
-        $paymentService = new BookingPayment($this->userModelMock);
-        $result = $paymentService->processPayment(1, 100000, 'bitcoin');
-        $this->assertFalse($result);
-    }
+        if ($userBalance !== null) {
+            $this->userModelMock->expects($this->once())
+                ->method('getUserBalance')
+                ->with($userId)
+                ->willReturn($userBalance);
+        }
 
-    /**
-     * @testdox TC-PAY-02: Từ chối MoMo khi số dư không đủ (Nhánh N5 -> N6)
-     */
-    public function test_TC_PAY_02_insufficient_balance_with_e_wallet_fails()
-    {
-        $userId = 1;
-        $totalPrice = 150000;
-        $paymentMethod = 'momo';
-        $userBalance = 50000; // 50k < 150k
-
-        $this->userModelMock->expects($this->once())
-            ->method('getUserBalance')
-            ->with($userId)
-            ->willReturn($userBalance);
-
-        $this->userModelMock->expects($this->never())
+        $deductExpectation = $deducted === null ? $this->never() : $this->once();
+        $deductMock = $this->userModelMock->expects($deductExpectation)
             ->method('deductBalance');
+        if ($deducted !== null) {
+            $deductMock->with($userId, $totalPrice)->willReturn($deducted);
+        }
 
-        $paymentService = new BookingPayment($this->userModelMock);
-        $result = $paymentService->processPayment($userId, $totalPrice, $paymentMethod);
-        $this->assertFalse($result);
+        $result = (new BookingPayment($this->userModelMock))
+            ->processPayment($userId, $totalPrice, $paymentMethod);
+
+        $this->assertSame($expected, $result);
     }
 
-    /**
-     * @testdox TC-PAY-03: Cho phép tiền mặt khi số dư tài khoản không đủ (Tiền mặt qua biên)
-     */
-    public function test_TC_PAY_03_insufficient_balance_with_cash_succeeds()
+    public static function paymentCases()
     {
-        $userId = 1;
-        $totalPrice = 150000;
-        $paymentMethod = 'cash';
-        $userBalance = 10000; // 10k < 150k nhưng là cash
-
-        $this->userModelMock->expects($this->once())
-            ->method('getUserBalance')
-            ->with($userId)
-            ->willReturn($userBalance);
-
-        $this->userModelMock->expects($this->once())
-            ->method('deductBalance')
-            ->with($userId, $totalPrice)
-            ->willReturn(true);
-
-        $paymentService = new BookingPayment($this->userModelMock);
-        $result = $paymentService->processPayment($userId, $totalPrice, $paymentMethod);
-        $this->assertTrue($result);
-    }
-
-    /**
-     * @testdox TC-PAY-04: Thanh toán MoMo thành công khi đủ số dư (Happy Path)
-     */
-    public function test_TC_PAY_04_sufficient_balance_with_e_wallet_succeeds()
-    {
-        $userId = 1;
-        $totalPrice = 100000;
-        $paymentMethod = 'momo';
-        $userBalance = 250000;
-
-        $this->userModelMock->expects($this->once())
-            ->method('getUserBalance')
-            ->with($userId)
-            ->willReturn($userBalance);
-
-        $this->userModelMock->expects($this->once())
-            ->method('deductBalance')
-            ->with($userId, $totalPrice)
-            ->willReturn(true);
-
-        $paymentService = new BookingPayment($this->userModelMock);
-        $result = $paymentService->processPayment($userId, $totalPrice, $paymentMethod);
-        $this->assertTrue($result);
-    }
-
-    /**
-     * @testdox TC-PAY-05: Trả về thất bại khi Database không thể trừ tiền (Nhánh N8 -> N9)
-     */
-    public function test_TC_PAY_05_db_deduct_failure_returns_false()
-    {
-        $userId = 1;
-        $totalPrice = 100000;
-        $paymentMethod = 'vnpay';
-        $userBalance = 150000;
-
-        $this->userModelMock->expects($this->once())
-            ->method('getUserBalance')
-            ->with($userId)
-            ->willReturn($userBalance);
-
-        $this->userModelMock->expects($this->once())
-            ->method('deductBalance')
-            ->willReturn(false); // giả lập DB treo
-
-        $paymentService = new BookingPayment($this->userModelMock);
-        $result = $paymentService->processPayment($userId, $totalPrice, $paymentMethod);
-        $this->assertFalse($result);
+        return [
+            'TC-PAY-01: Từ chối phương thức thanh toán không hợp lệ (Nhánh N2 -> N3)' => ['TC-PAY-01: Từ chối phương thức thanh toán không hợp lệ (Nhánh N2 -> N3)', 1, 100000, 'bitcoin', null, null, false],
+            'TC-PAY-02: Từ chối MoMo khi số dư không đủ (Nhánh N5 -> N6)' => ['TC-PAY-02: Từ chối MoMo khi số dư không đủ (Nhánh N5 -> N6)', 1, 150000, 'momo', 50000, null, false],
+            'TC-PAY-03: Cho phép tiền mặt khi số dư tài khoản không đủ (Tiền mặt qua biên)' => ['TC-PAY-03: Cho phép tiền mặt khi số dư tài khoản không đủ (Tiền mặt qua biên)', 1, 150000, 'cash', 10000, true, true],
+            'TC-PAY-04: Thanh toán MoMo thành công khi đủ số dư (Happy Path)' => ['TC-PAY-04: Thanh toán MoMo thành công khi đủ số dư (Happy Path)', 1, 100000, 'momo', 250000, true, true],
+            'TC-PAY-05: Trả về thất bại khi Database không thể trừ tiền (Nhánh N8 -> N9)' => ['TC-PAY-05: Trả về thất bại khi Database không thể trừ tiền (Nhánh N8 -> N9)', 1, 100000, 'vnpay', 150000, false, false],
+        ];
     }
 }
 
@@ -145,17 +74,11 @@ class BookingPayment {
     public function __construct($db) { $this->db = $db; }
     public function processPayment(int $userId, float $totalPrice, string $paymentMethod): bool
     {
-        if (!in_array($paymentMethod, ['cash', 'momo', 'vnpay', 'bank_transfer'])) {
-            return false;
-        }
-        $balance = $this->db->getUserBalance($userId);
-        if ($balance < $totalPrice && $paymentMethod !== 'cash') {
-            return false;
-        }
-        $deducted = $this->db->deductBalance($userId, $totalPrice);
-        if (!$deducted) {
-            return false;
-        }
-        return true;
+        $validMethod = in_array($paymentMethod, ['cash', 'momo', 'vnpay', 'bank_transfer']);
+        $balance = $validMethod ? $this->db->getUserBalance($userId) : 0;
+        $canPay = $validMethod && ($balance >= $totalPrice || $paymentMethod === 'cash');
+        $deducted = $canPay ? $this->db->deductBalance($userId, $totalPrice) : false;
+
+        return $canPay && $deducted;
     }
 }
