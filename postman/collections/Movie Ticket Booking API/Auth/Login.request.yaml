@@ -1,0 +1,32 @@
+$kind: http-request
+url: "{{base_url}}/api/auth.php?action=login"
+method: POST
+headers:
+  Content-Type: application/json
+queryParams:
+  action: login
+body:
+  type: text
+  content: |-
+    {
+        "email": "admin@example.com",
+        "password": "password"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status code is 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response time is less than 500ms", function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
+
+      pm.test("Verify success JSON response", function () {
+          var jsonData = pm.response.json();
+          pm.expect(jsonData.status).to.eql("success");
+          pm.expect(jsonData.data).to.have.property("role");
+      });
+    language: text/javascript
+order: 1000

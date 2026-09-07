@@ -17,3 +17,5 @@ public/uploads/*
 
 # Composer
 /vendor/
+# Local database configuration
+app/Config/database.local.php
