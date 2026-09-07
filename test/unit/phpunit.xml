@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="bootstrap.php"
-         colors="true"
-         verbose="true">
+         colors="true">
     <testsuites>
         <testsuite name="Unit">
             <directory>Unit</directory>
             <directory>../../tests/Unit</directory>
         </testsuite>
     </testsuites>
-    <coverage processUncoveredFiles="false">
+
+    <source>
         <include>
             <file>../../backend/app/Services/AuthService.php</file>
             <file>../../backend/app/Services/BookingService.php</file>
@@ -18,7 +18,10 @@
             <file>../../backend/app/Services/TicketService.php</file>
             <file>../../backend/app/Services/VoucherService.php</file>
         </include>
-    </coverage>
+    </source>
+
+    <coverage/>
+
     <php>
         <env name="APP_ENV" value="testing"/>
     </php>
