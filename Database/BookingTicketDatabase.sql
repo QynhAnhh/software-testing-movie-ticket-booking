@@ -1,7 +1,7 @@
--- ==============================================
+movie_ticket_bookingmovie_ticket_booking-- ==============================================
 -- DATABASE: movie_ticket_booking (Hoàn chỉnh)
 -- ==============================================
-
+SET SESSION sql_mode = '';
 SET NAMES utf8mb4;
 SET CHARACTER SET utf8mb4;
 

@@ -21,8 +21,12 @@ public/uploads/*
 app/Config/database.local.php
 
 # CodeceptJS / Playwright
-node_modules/
 tests/e2e/output/
 
-# PHPUnit Coverage Report
+# PHPUnit Coverage & Cache
 coverage_report/
+.phpunit.result.cache
+
+# Node
+node_modules/
+backend/app/Config/database.local.php

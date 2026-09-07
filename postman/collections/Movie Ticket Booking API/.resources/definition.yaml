@@ -1,4 +1,0 @@
-$kind: collection
-description: Collection cho kiểm thử tự động API dự án Movie Ticket Booking
-variables:
-  base_url: http://localhost/software-testing-movie-ticket-booking

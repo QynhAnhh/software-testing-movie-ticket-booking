@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="bootstrap.php"
+         colors="true"
+         verbose="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>Unit</directory>
+        </testsuite>
+    </testsuites>
+    <coverage processUncoveredFiles="false">
+        <include>
+            <file>../../backend/app/Services/AuthService.php</file>
+            <file>../../backend/app/Services/BookingService.php</file>
+            <file>../../backend/app/Services/MovieService.php</file>
+            <file>../../backend/app/Services/ProfileService.php</file>
+            <file>../../backend/app/Services/ShowtimeService.php</file>
+            <file>../../backend/app/Services/VoucherService.php</file>
+        </include>
+    </coverage>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+    </php>
+</phpunit>
