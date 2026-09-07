@@ -10,6 +10,7 @@ exports.config = {
       keepVideoForPassedTests: true
     }
   },
+
   include: {},
   name: 'software-testing-movie-ticket-booking'
 }

@@ -42,13 +42,23 @@ class AuthService
             return ['status' => 'error', 'message' => 'Mật khẩu không được vượt quá 20 ký tự!'];
         }
 
-        if (!preg_match('/^[\p{L}\s]+$/u', $data['first_name'])) {
-            return ['status' => 'error', 'message' => 'Tên không được chứa số hoặc ký tự đặc biệt!'];
-        }
+        // Kiểm tra Họ
+if (!preg_match('/^[\p{L}\s]+$/u', $data['first_name'])) {
+    return ['status' => 'error', 'message' => 'Họ không được chứa số hoặc ký tự đặc biệt!'];
+}
 
-        if (!preg_match('/^[\p{L}\s]+$/u', $data['last_name'])) {
-            return ['status' => 'error', 'message' => 'Họ không được chứa số hoặc ký tự đặc biệt!'];
-        }
+if (mb_strlen($data['first_name']) > 255) {
+    return ['status' => 'error', 'message' => 'Họ không được vượt quá 255 ký tự!'];
+}
+
+// Kiểm tra Tên
+if (!preg_match('/^[\p{L}\s]+$/u', $data['last_name'])) {
+    return ['status' => 'error', 'message' => 'Tên không được chứa số hoặc ký tự đặc biệt!'];
+}
+
+if (mb_strlen($data['last_name']) > 255) {
+    return ['status' => 'error', 'message' => 'Tên không được vượt quá 255 ký tự!'];
+}
 
         if (mb_strlen($data['first_name']) > 255) {
             return ['status' => 'error', 'message' => 'Tên không được vượt quá 255 ký tự!'];

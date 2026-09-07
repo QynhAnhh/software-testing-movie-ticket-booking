@@ -314,3 +314,64 @@ Scenario('[TC-AH-32] Kiểm tra Họ vượt quá 255 ký tự', ({ I }) => {
     I.click('Đăng ký', '.auth-action');
     I.see('Họ không được vượt quá 255 ký tự');
 });
+Scenario('[TC-AH-28] Tên có ký tự đặc biệt', ({ I }) => {
+    I.amOnPage('/login.php?mode=register');
+
+    I.fillField('input[name=first_name]', 'Nguyen');
+    I.fillField('input[name=last_name]', 'A@');
+    I.fillField('input[name=email]', 'test28@example.com');
+    I.fillField('input[name=phone]', '0901234567');
+    I.fillField('input[name=password]', '123456');
+    I.fillField('input[name=confirm_password]', '123456');
+
+    I.click('Đăng ký', '.auth-action');
+
+    I.seeInCurrentUrl('login.php?mode=register');
+    I.seeElement('.auth-alert-error');
+    I.see('Tên không được chứa số hoặc ký tự đặc biệt!');
+});
+
+
+Scenario('[TC-AH-30] Tên vượt quá 255 ký tự', ({ I }) => {
+    I.amOnPage('/login.php?mode=register');
+
+    const longName = 'a'.repeat(256);
+
+    I.fillField('input[name=first_name]', 'Nguyen');
+    I.executeScript((value) => {
+    const input = document.querySelector('input[name="last_name"]');
+    input.value = value;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+}, longName);    
+    I.fillField('input[name=email]', 'test30@example.com');
+    I.fillField('input[name=phone]', '0901234567');
+    I.fillField('input[name=password]', '123456');
+    I.fillField('input[name=confirm_password]', '123456');
+
+    I.click('Đăng ký', '.auth-action');
+
+    I.seeInCurrentUrl('login.php?mode=register');
+    I.seeElement('.auth-alert-error');
+    I.see('Tên không được vượt quá 255 ký tự!');
+});
+
+
+Scenario('[TC-AH-32] Họ vượt quá 255 ký tự', ({ I }) => {
+    I.amOnPage('/login.php?mode=register');
+
+    const longName = 'a'.repeat(256);
+
+    I.fillField('input[name=first_name]', longName);
+    I.fillField('input[name=last_name]', 'A');
+    I.fillField('input[name=email]', 'test32@example.com');
+    I.fillField('input[name=phone]', '0901234567');
+    I.fillField('input[name=password]', '123456');
+    I.fillField('input[name=confirm_password]', '123456');
+
+    I.click('Đăng ký', '.auth-action');
+
+    I.seeInCurrentUrl('login.php?mode=register');
+    I.seeElement('.auth-alert-error');
+    I.see('Họ không được vượt quá 255 ký tự!');
+});

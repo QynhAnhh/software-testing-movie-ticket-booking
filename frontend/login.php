@@ -1,5 +1,5 @@
 <?php
-require_once '../backend/config.php';
+require_once __DIR__ . '/../backend/config.php';
 
 use App\Controllers\AuthController;
 
@@ -18,7 +18,7 @@ if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
 
 $showRegister = ($_GET['mode'] ?? '') === 'register';
 
-require_once 'header.php';
+require_once __DIR__ . '/header.php';
 ?>
 
 <div class="auth-page-wrapper">
@@ -133,4 +133,4 @@ require_once 'header.php';
     });
 </script>
 
-<?php require_once 'footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>
