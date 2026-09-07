@@ -43,19 +43,39 @@ class TicketServiceTest extends TestCase
 
     /**
      * @dataProvider ticketCases
-        * @testdox {testdox}
+     * @testdox {testdox}
      */
-        public function test_ticket_cases($testdox, $scenario, $data, $expectedStatus, $expectedMessage, $expectedTicketId = null)
+    public function test_ticket_cases($testdox, $scenario, $data, $expectedStatus, $expectedMessage, $expectedTicketId = null)
     {
-        $this->bookingModelMock->method('getById')->willReturn($scenario === 'invalid_booking' ? null : ['id' => 101]);
-        $this->showtimeModelMock->method('findById')->willReturn($scenario === 'invalid_showtime' ? null : ['id' => 1, 'room_id' => 5]);
-        $this->seatModelMock->method('findById')->willReturn($scenario === 'invalid_seat' ? null : ['id' => 10, 'room_id' => $scenario === 'room_mismatch' ? 6 : 5]);
+        $booking = ['id' => 101];
+        if ($scenario === 'invalid_booking') {
+            $booking = null;
+        }
+        $this->bookingModelMock->method('getById')->willReturn($booking);
+
+        $showtime = ['id' => 1, 'room_id' => 5];
+        if ($scenario === 'invalid_showtime') {
+            $showtime = null;
+        }
+        $this->showtimeModelMock->method('findById')->willReturn($showtime);
+
+        $seat = ['id' => 10, 'room_id' => 5];
+        if ($scenario === 'invalid_seat') {
+            $seat = null;
+        } elseif ($scenario === 'room_mismatch') {
+            $seat['room_id'] = 6;
+        }
+        $this->seatModelMock->method('findById')->willReturn($seat);
         $this->ticketModelMock->method('isSeatBooked')->willReturn($scenario === 'already_booked');
 
         if ($scenario === 'db_failure' || $scenario === 'success') {
+            $createdTicketId = false;
+            if ($scenario === 'success') {
+                $createdTicketId = 77;
+            }
             $this->ticketModelMock->expects($this->once())
                 ->method('create')
-                ->willReturn($scenario === 'success' ? 77 : false);
+                ->willReturn($createdTicketId);
         }
         if ($scenario === 'db_failure') {
             $this->ticketModelMock->method('getError')->willReturn('Database Connection Timeout');

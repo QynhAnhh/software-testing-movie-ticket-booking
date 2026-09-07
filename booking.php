@@ -239,7 +239,7 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     $isInactive = !(bool)$seat['is_active'];
     $price = (float)$basePrice + (float)$seat['seat_type_price'];
     $isVip = strtoupper($seat['seat_type_name']) === 'VIP';
-    $class = $isBooked ? 'booked' : ($isInactive ? 'inactive' : 'available' . ($isVip ? ' vip' : ''));
+    $class = $isBooked ? 'booked sold' : ($isInactive ? 'inactive' : 'available' . ($isVip ? ' vip' : ''));
     $disabled = ($isBooked || $isInactive) ? 'disabled' : '';
 
     echo '<button type="button" class="seat ' . $class . '" data-seat-id="' . $seatId . '" data-seat-name="' . htmlspecialchars($seatName) . '" data-price="' . $price . '" title="' . htmlspecialchars($seat['seat_type_name']) . '" ' . $disabled . '>' . (int)$seat['seat_number'] . '</button>';
@@ -253,6 +253,7 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     const totalPrice = document.getElementById('total-price');
     const confirmButton = document.getElementById('btn-confirm');
     const formatter = new Intl.NumberFormat('vi-VN');
+    const maxSeats = 10;
 
     function getSelectedSeatButtons() {
         return Array.from(document.querySelectorAll('.seat.selected[data-seat-id]'));
@@ -271,6 +272,12 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
 
     seatButtons.forEach((button) => {
         button.addEventListener('click', () => {
+            const selected = getSelectedSeatButtons();
+            if (!button.classList.contains('selected') && selected.length >= maxSeats) {
+                alert('Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.');
+                return;
+            }
+
             button.classList.toggle('available');
             button.classList.toggle('selected');
             updateSummary();

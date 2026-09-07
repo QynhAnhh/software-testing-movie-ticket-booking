@@ -14,12 +14,10 @@ class BookingServiceTest extends TestCase
     {
         $this->bookingService = new BookingService();
         $this->conn = Database::getConnection();
-        // TODO: Thiết lập dữ liệu ảo (Dummy data) nếu cần
     }
 
     protected function tearDown(): void
     {
-        // TODO: Xóa dữ liệu ảo
     }
 
     /**

@@ -51,7 +51,7 @@ class Database
                 );
             }
 
-            $conn = mysqli_connect(
+             $conn = \mysqli_connect(
                 $config['host'],
                 $config['username'],
                 $config['password'],
@@ -62,11 +62,11 @@ class Database
             if (!$conn) {
                 throw new DatabaseException(
                     'Database connection failed: '
-                    . mysqli_connect_error()
+                    . \mysqli_connect_error()
                 );
             }
 
-            mysqli_set_charset($conn, 'utf8mb4');
+            \mysqli_set_charset($conn, 'utf8mb4');
             self::$connection = $conn;
         }
 
