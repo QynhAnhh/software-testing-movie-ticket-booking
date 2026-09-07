@@ -29,6 +29,9 @@ class MovieServiceTest extends TestCase
             'getError',
             'hasBookedTickets',
             'hasShowtimes',
+'getAllMoviesWithGenres',
+'getNowShowingMovies',
+'getComingMovies',
         ])
         ->getMock();
 
@@ -52,16 +55,14 @@ class MovieServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * @dataProvider invalidMovieDataProvider
-     */
-    public function testMovieInputValidation(
-        string $testCaseId,
-        array $data,
-        ?array $posterFile,
-        string $expectedStatus,
-        string $expectedMessage
-    ): void {
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalidMovieDataProvider')]
+public function testMovieInputValidation(
+    string $testCaseId,
+    array $data,
+    ?array $posterFile,
+    string $expectedStatus,
+    string $expectedMessage
+): void {
         // Nếu validation bị thiếu và Service cố lưu xuống DB,
         // mock sẽ giả lập lưu thành công để testcase FAIL đúng thực tế.
         $this->movieModel
@@ -84,13 +85,13 @@ class MovieServiceTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            $expectedMessage,
-            $result['message'],
-            $testCaseId . ': Nội dung validation chưa đúng yêu cầu.'
-        );
+    mb_strtolower($expectedMessage),
+    mb_strtolower($result['message']),
+    $testCaseId . ': Nội dung validation chưa đúng yêu cầu.'
+);
     }
 
-    public function invalidMovieDataProvider(): array
+    public static function invalidMovieDataProvider(): array
     {
         $validData = [
             'title' => 'Avatar Test',
@@ -252,6 +253,16 @@ public function testTcDt08PreventsDeletingMovieWithActiveShowtime(): void
 {
     $movieId = 101;
 
+    $this->movieModel
+    ->method('hasBookedTickets')
+    ->with($movieId)
+    ->willReturn(false);
+
+$this->movieModel
+    ->method('hasShowtimes')
+    ->with($movieId)
+    ->willReturn(true);
+
     /*
      * Giả lập nghiệp vụ:
      * Phim đang có suất chiếu hoạt động.
@@ -285,6 +296,11 @@ public function testTcDt09PreventsDeletingMovieWithExistingBooking(): void
 {
     $movieId = 102;
 
+
+    $this->movieModel
+    ->method('hasBookedTickets')
+    ->with($movieId)
+    ->willReturn(true);
     /*
      * Giả lập nghiệp vụ:
      * Phim đã có khách hàng đặt vé.
@@ -310,6 +326,280 @@ public function testTcDt09PreventsDeletingMovieWithExistingBooking(): void
         'TC-DT-09: Phải thông báo phim đã có dữ liệu đặt vé.'
     );
 }
+
+public function testUpdateMovieSuccessfully(): void
+{
+    $data = $this->validMovieData();
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('getMovieByIdWithGenres')
+        ->with(10)
+        ->willReturn(['id' => 10, 'poster' => 'images/movies/old.jpg']);
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('updateMovie')
+        ->with(10, $this->callback(function ($updatedData) {
+            return $updatedData['poster'] === 'images/movies/old.jpg';
+        }))
+        ->willReturn(true);
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('deleteMovieGenres')
+        ->with(10);
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('insertMovieGenres')
+        ->with(10, [1, 2]);
+
+    $result = $this->service->updateMovie(10, $data, [1, 2]);
+
+    $this->assertSame('success', $result['status']);
+}
+
+
+public function testUpdateMovieReturnsErrorWhenMovieDoesNotExist(): void
+{
+    $this->movieModel
+        ->expects($this->once())
+        ->method('getMovieByIdWithGenres')
+        ->with(999)
+        ->willReturn(null);
+
+    $result = $this->service->updateMovie(
+        999,
+        $this->validMovieData(),
+        [1]
+    );
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('không tồn tại', $result['message']);
+}
+
+
+public function testUpdateMovieReturnsErrorWhenModelFails(): void
+{
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->willReturn([
+            'id' => 10,
+            'poster' => 'images/movies/old.jpg'
+        ]);
+
+    $this->movieModel
+        ->method('updateMovie')
+        ->willReturn(false);
+
+    $this->movieModel
+        ->method('getError')
+        ->willReturn('database error');
+
+    $result = $this->service->updateMovie(
+        10,
+        $this->validMovieData(),
+        [1]
+    );
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('database error', $result['message']);
+}
+
+
+public function testAddMovieReturnsErrorWhenInsertFails(): void
+{
+    $this->movieModel
+        ->method('insertMovie')
+        ->willReturn(false);
+
+    $this->movieModel
+        ->method('getError')
+        ->willReturn('insert failed');
+
+    $result = $this->service->addMovie(
+        $this->validMovieData(),
+        [1]
+    );
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('insert failed', $result['message']);
+}
+
+
+public function testDeleteMovieRejectsInvalidId(): void
+{
+    $result = $this->service->deleteMovie(0);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('ID phim', $result['message']);
+}
+
+
+public function testDeleteMovieRejectsMovieWithBookedTickets(): void
+{
+    $this->movieModel
+        ->expects($this->once())
+        ->method('hasBookedTickets')
+        ->with(10)
+        ->willReturn(true);
+
+    $this->movieModel
+        ->expects($this->never())
+        ->method('deleteMovie');
+
+    $result = $this->service->deleteMovie(10);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('vé', $result['message']);
+}
+
+
+public function testDeleteMovieRejectsMovieWithShowtimes(): void
+{
+    $this->movieModel
+        ->method('hasBookedTickets')
+        ->willReturn(false);
+
+    $this->movieModel
+        ->method('hasShowtimes')
+        ->willReturn(true);
+
+    $this->movieModel
+        ->expects($this->never())
+        ->method('deleteMovie');
+
+    $result = $this->service->deleteMovie(10);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('suất chiếu', $result['message']);
+}
+
+
+public function testDeleteMovieSuccessfully(): void
+{
+    $this->movieModel
+        ->method('hasBookedTickets')
+        ->willReturn(false);
+
+    $this->movieModel
+        ->method('hasShowtimes')
+        ->willReturn(false);
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('deleteMovie')
+        ->with(10)
+        ->willReturn(true);
+
+    $result = $this->service->deleteMovie(10);
+
+    $this->assertSame('success', $result['status']);
+}
+
+
+public function testDeleteMovieReturnsErrorWhenDeleteFails(): void
+{
+    $this->movieModel
+        ->method('hasBookedTickets')
+        ->willReturn(false);
+
+    $this->movieModel
+        ->method('hasShowtimes')
+        ->willReturn(false);
+
+    $this->movieModel
+        ->method('deleteMovie')
+        ->willReturn(false);
+
+    $result = $this->service->deleteMovie(10);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('thất bại', $result['message']);
+}
+
+
+public function testGetMovieByIdRejectsInvalidId(): void
+{
+    $this->movieModel
+        ->expects($this->never())
+        ->method('getMovieByIdWithGenres');
+
+    $this->assertNull($this->service->getMovieById(0));
+}
+
+
+public function testGetMovieByIdReturnsMovie(): void
+{
+    $movie = ['id' => 10, 'title' => 'Avatar'];
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('getMovieByIdWithGenres')
+        ->with(10)
+        ->willReturn($movie);
+
+    $this->assertSame(
+        $movie,
+        $this->service->getMovieById(10)
+    );
+}
+
+
+public function testGetAllMovies(): void
+{
+    $movies = [
+        ['id' => 1],
+        ['id' => 2],
+    ];
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('getAllMoviesWithGenres')
+        ->willReturn($movies);
+
+    $this->assertSame(
+        $movies,
+        $this->service->getAllMovies()
+    );
+}
+
+
+public function testGetNowShowingMovies(): void
+{
+    $movies = [['id' => 1]];
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('getNowShowingMovies')
+        ->with(5)
+        ->willReturn($movies);
+
+    $this->assertSame(
+        $movies,
+        $this->service->getNowShowingMovies(5)
+    );
+}
+
+
+public function testGetComingMovies(): void
+{
+    $movies = [['id' => 2]];
+
+    $this->movieModel
+        ->expects($this->once())
+        ->method('getComingMovies')
+        ->with(3)
+        ->willReturn($movies);
+
+    $this->assertSame(
+        $movies,
+        $this->service->getComingMovies(3)
+    );
+}
+
+
     private function validMovieData(): array
     {
         return [

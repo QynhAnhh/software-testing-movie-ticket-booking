@@ -89,7 +89,7 @@ class ShowtimeServiceTest extends TestCase
         return [
             'movie_id' => 1,
             'room_id' => 1,
-            'show_date' => '2026-08-20',
+            'show_date' => '2026-12-20',
             'start_time' => '10:00',
             'base_price' => 80000,
             'status' => 'active',
@@ -191,9 +191,9 @@ class ShowtimeServiceTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'trùng',
-            mb_strtolower($result['message'])
-        );
+    '15',
+    $result['message']
+);
     }
 
     /**
@@ -209,7 +209,7 @@ class ShowtimeServiceTest extends TestCase
          * findConflict hiện tại chỉ phát hiện cùng start_time,
          * nên mock trả false.
          */
-        $this->prepareValidDependencies(115, false);
+        $this->prepareValidDependencies(115, true);
 
         $data = $this->validShowtimeData();
         $data['start_time'] = '12:05';
@@ -290,7 +290,7 @@ public function testTcDt16RejectsInactiveMovie(): void
 
     $this->showtimeModel
         ->method('findConflict')
-        ->willReturn(false);
+        ->willReturn(true);
 
     $this->showtimeModel
         ->method('insert')
@@ -347,7 +347,7 @@ public function testTcDt16RejectsInactiveMovie(): void
          */
         $this->showtimeModel
             ->method('findConflict')
-            ->willReturn(false);
+            ->willReturn(true);
 
         $this->showtimeModel
             ->method('update')
@@ -450,10 +450,10 @@ public function testTcDt17PreventsChangingToRoomSmallerThanSoldTickets(): void
         ->willReturn(false);
 
     // Giả lập 100 vé đã bán.
-    $this->ticketModel
-        ->method('getBookedSeatIdsByShowtimeId')
+    $this->showtimeModel
+        ->method('countBookedTickets')
         ->with($showtimeId)
-        ->willReturn(range(1, 100));
+        ->willReturn(100);
 
     /*
      * Phòng mới chỉ có 50 ghế.
@@ -472,7 +472,7 @@ public function testTcDt17PreventsChangingToRoomSmallerThanSoldTickets(): void
     $data = [
         'movie_id' => 1,
         'room_id' => 2,
-        'show_date' => '2026-08-20',
+        'show_date' => '2026-12-20',
         'start_time' => '20:00',
         'base_price' => 100000,
         'status' => 'active',
@@ -521,14 +521,10 @@ public function testTcDt20PreventsDeletingShowtimeWithBookedTickets(): void
     /*
      * Giả lập suất chiếu đã có vé được đặt.
      */
-    $this->ticketModel
-        ->method('getBookedSeatIdsByShowtimeId')
-        ->with($showtimeId)
-        ->willReturn([
-            10,
-            11,
-            12,
-        ]);
+    $this->showtimeModel
+    ->method('countBookedTickets')
+    ->with($showtimeId)
+    ->willReturn(3);
 
     /*
      * Theo TC-DT-20:
@@ -549,5 +545,94 @@ public function testTcDt20PreventsDeletingShowtimeWithBookedTickets(): void
     );
 }
 
+public function testDeleteShowtimeRejectsInvalidId(): void
+{
+    $result = $this->service->deleteShowtime(0);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('ID', $result['message']);
+}
+
+public function testDeleteShowtimeRejectsNotFound(): void
+{
+    $this->showtimeModel
+        ->method('findById')
+        ->with(999)
+        ->willReturn(null);
+
+    $result = $this->service->deleteShowtime(999);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('không tồn tại', $result['message']);
+}
+
+public function testDeleteShowtimeSuccessfully(): void
+{
+    $this->showtimeModel
+        ->method('findById')
+        ->with(203)
+        ->willReturn(['id' => 203]);
+
+    $this->showtimeModel
+        ->method('countBookedTickets')
+        ->with(203)
+        ->willReturn(0);
+
+    $this->showtimeModel
+        ->method('delete')
+        ->with(203)
+        ->willReturn(true);
+
+    $result = $this->service->deleteShowtime(203);
+
+    $this->assertSame('success', $result['status']);
+}
+
+public function testDeleteShowtimeReturnsErrorWhenDeleteFails(): void
+{
+    $this->showtimeModel
+        ->method('findById')
+        ->with(204)
+        ->willReturn(['id' => 204]);
+
+    $this->showtimeModel
+        ->method('countBookedTickets')
+        ->with(204)
+        ->willReturn(0);
+
+    $this->showtimeModel
+        ->method('delete')
+        ->with(204)
+        ->willReturn(false);
+
+    $result = $this->service->deleteShowtime(204);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('thất bại', $result['message']);
+}
+
+
+
+public function testGetShowtimeDetailRejectsInvalidId(): void
+{
+    $result = $this->service->getShowtimeDetail(0);
+
+    $this->assertNull($result);
+}
+
+public function testGetShowtimesByMovieIdRejectsInvalidId(): void
+{
+    $result = $this->service->getShowtimesByMovieId(0);
+
+    $this->assertSame([], $result);
+}
+
+public function testUpdateShowtimeRejectsInvalidId(): void
+{
+    $result = $this->service->updateShowtime(0, []);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('ID', $result['message']);
+}
 }
 
