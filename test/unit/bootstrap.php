@@ -16,9 +16,9 @@ if (session_status() === PHP_SESSION_NONE) {
 putenv('APP_ENV=testing');
 
 // Load Composer autoloader
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
+    require_once __DIR__ . '/../../vendor/autoload.php';
 }
 
 // Load App autoloader
-require_once __DIR__ . '/../app/init.php';
+require_once __DIR__ . '/../../backend/app/init.php';

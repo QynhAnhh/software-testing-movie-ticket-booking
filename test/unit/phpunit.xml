@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="tests/bootstrap.php"
+<phpunit bootstrap="bootstrap.php"
          colors="true"
          verbose="true">
     <testsuites>
         <testsuite name="Unit">
-            <directory>tests/Unit</directory>
+            <directory>Unit</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">app/Services</directory>
-            <directory suffix=".php">app/Controllers</directory>
-            <directory suffix=".php">app/Models</directory>
+            <directory suffix=".php">../../backend/app/Services</directory>
+            <directory suffix=".php">../../backend/app/Controllers</directory>
+            <directory suffix=".php">../../backend/app/Models</directory>
         </include>
     </coverage>
     <php>
