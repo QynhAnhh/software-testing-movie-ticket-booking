@@ -867,7 +867,15 @@ public function testAddMovieRejectsEmptyScreeningDate(): void
 
     $this->assertSame('error', $result['status']);
 }
+public function testIsValidDateReturnsFalseForEmptyDate(): void
+{
+    $reflection = new \ReflectionClass($this->service);
+    $method = $reflection->getMethod('isValidDate');
 
+    $result = $method->invoke($this->service, '');
+
+    $this->assertFalse($result);
+}
 
 }
 
