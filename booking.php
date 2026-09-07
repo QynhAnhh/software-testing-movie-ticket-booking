@@ -239,8 +239,21 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     $isInactive = !(bool)$seat['is_active'];
     $price = (float)$basePrice + (float)$seat['seat_type_price'];
     $isVip = strtoupper($seat['seat_type_name']) === 'VIP';
-    $class = $isBooked ? 'booked sold' : ($isInactive ? 'inactive' : 'available' . ($isVip ? ' vip' : ''));
-    $disabled = ($isBooked || $isInactive) ? 'disabled' : '';
+    if ($isBooked) {
+        $class = 'booked sold';
+    } elseif ($isInactive) {
+        $class = 'inactive';
+    } else {
+        $class = 'available';
+        if ($isVip) {
+            $class .= ' vip';
+        }
+    }
+
+    $disabled = '';
+    if ($isBooked || $isInactive) {
+        $disabled = 'disabled';
+    }
 
     echo '<button type="button" class="seat ' . $class . '" data-seat-id="' . $seatId . '" data-seat-name="' . htmlspecialchars($seatName) . '" data-price="' . $price . '" title="' . htmlspecialchars($seat['seat_type_name']) . '" ' . $disabled . '>' . (int)$seat['seat_number'] . '</button>';
 }

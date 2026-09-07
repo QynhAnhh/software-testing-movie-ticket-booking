@@ -16,10 +16,6 @@ class BookingServiceTest extends TestCase
         $this->conn = Database::getConnection();
     }
 
-    protected function tearDown(): void
-    {
-    }
-
     /**
      * @test
      * Chiến lược: Bao phủ nhánh - điều kiện (Branch-Condition Coverage)
