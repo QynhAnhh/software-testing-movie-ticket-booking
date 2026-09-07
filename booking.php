@@ -239,10 +239,19 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     $isInactive = !(bool)$seat['is_active'];
     $price = (float)$basePrice + (float)$seat['seat_type_price'];
     $isVip = strtoupper($seat['seat_type_name']) === 'VIP';
-    $class = $isBooked ? 'booked' : ($isInactive ? 'inactive' : 'available' . ($isVip ? ' vip' : ''));
+    if ($isBooked) {
+        $class = 'booked sold';
+    } elseif ($isInactive) {
+        $class = 'inactive';
+    } else {
+        $class = 'available' . ($isVip ? ' vip' : '');
+    }
     $disabled = ($isBooked || $isInactive) ? 'disabled' : '';
+    $content = $isBooked
+        ? '<i class="bi bi-lock-fill" aria-hidden="true"></i>'
+        : (int)$seat['seat_number'];
 
-    echo '<button type="button" class="seat ' . $class . '" data-seat-id="' . $seatId . '" data-seat-name="' . htmlspecialchars($seatName) . '" data-price="' . $price . '" title="' . htmlspecialchars($seat['seat_type_name']) . '" ' . $disabled . '>' . (int)$seat['seat_number'] . '</button>';
+    echo '<button type="button" class="seat ' . $class . '" data-seat-id="' . $seatId . '" data-seat-name="' . htmlspecialchars($seatName) . '" data-price="' . $price . '" title="' . htmlspecialchars($seat['seat_type_name']) . '" ' . $disabled . '>' . $content . '</button>';
 }
 ?>
 
@@ -267,10 +276,19 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
         selectedSeats.textContent = names.length ? names.join(', ') : 'Chưa chọn';
         totalPrice.textContent = formatter.format(total) + 'đ';
         confirmButton.disabled = selected.length === 0;
+        confirmButton.style.opacity = selected.length === 0 ? '0.5' : '';
     }
 
     seatButtons.forEach((button) => {
         button.addEventListener('click', () => {
+            const selected = getSelectedSeatButtons();
+            const isSelected = button.classList.contains('selected');
+
+            if (!isSelected && selected.length >= 10) {
+                alert('Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch');
+                return;
+            }
+
             button.classList.toggle('available');
             button.classList.toggle('selected');
             updateSummary();

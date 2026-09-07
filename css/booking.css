@@ -67,6 +67,12 @@
     box-shadow: 0 10px 28px rgba(229, 9, 20, 0.38);
 }
 
+.booking-page .btn-confirm-booking:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 .booking-page .seat-legend-box {
     padding: 20px;
     margin-bottom: 25px;
@@ -144,10 +150,19 @@
 }
 
 .booking-page .seat.booked,
+.booking-page .seat.sold,
 .booking-page .seat.inactive {
     background: #111;
     color: #6b7280;
     cursor: not-allowed;
+}
+
+.booking-page .seat.sold {
+    background: #4b5563;
+}
+
+.booking-page .seat.sold i {
+    font-size: 14px;
 }
 
 .booking-page .payment-option {

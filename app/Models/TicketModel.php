@@ -144,19 +144,37 @@ class TicketModel {
     }
 
     public function createMany($bookingId, $showtimeId, $seatPrices) {
-        foreach ($seatPrices as $seatPrice) {
-            $created = $this->create([
-                'booking_id' => $bookingId,
-                'showtime_id' => $showtimeId,
-                'seat_id' => $seatPrice['seat_id'],
-                'price' => $seatPrice['price'],
-                'status' => 'booked'
-            ]);
-            if (!$created) {
-                return false;
-            }
+        if (empty($seatPrices)) {
+            return false;
         }
-        return true;
+
+        $valueGroups = implode(', ', array_fill(0, count($seatPrices), '(?, ?, ?, ?, ?)'));
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "INSERT INTO tickets (booking_id, showtime_id, seat_id, price, status) VALUES {$valueGroups}"
+        );
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $types = str_repeat('iiids', count($seatPrices));
+        $values = [];
+        foreach ($seatPrices as $seatPrice) {
+            $values[] = $bookingId;
+            $values[] = $showtimeId;
+            $values[] = (int)$seatPrice['seat_id'];
+            $values[] = (float)$seatPrice['price'];
+            $values[] = 'booked';
+        }
+
+        $parameters = [$types];
+        foreach ($values as $index => $value) {
+            $parameters[] = &$values[$index];
+        }
+
+        call_user_func_array('mysqli_stmt_bind_param', array_merge([$stmt], $parameters));
+        return mysqli_stmt_execute($stmt);
     }
 
     public function getByBookingId($bookingId) {

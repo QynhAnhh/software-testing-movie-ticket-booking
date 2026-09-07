@@ -245,7 +245,8 @@ class SeatModel {
         $sql = "SELECT s.*, st.name as seat_type_name, st.price as seat_type_price
                 FROM seats s
                 LEFT JOIN seat_types st ON s.seat_type_id = st.id
-                WHERE s.id IN ($placeholders)";
+                WHERE s.id IN ($placeholders)
+                FOR UPDATE";
         $stmt = $this->conn->prepare($sql);
 
         $types = str_repeat('i', count($seatIds));
