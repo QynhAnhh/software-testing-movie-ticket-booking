@@ -1,0 +1,752 @@
+{
+  "info": {
+    "_postman_id": "31be73cd-2474-4e7b-9b6e-379510408990",
+    "name": "Movie Ticket Booking API Test",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56810077",
+    "_collection_link": "https://go.postman.co/collection/56810077-31be73cd-2474-4e7b-9b6e-379510408990?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "TC01_Valid_Voucher",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"VIP1\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC02_Min_Order_Not_Met",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"VIP1\",\r\n    \"subtotal\": 70000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC03_Expired_Voucher_Eligible_Order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"OLD50\",\r\n    \"subtotal\": 300000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC04_Expired_Voucher_Not_Eligible",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC05_Voucher_Not_Exist_Eligible_Order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABC123\",\r\n    \"subtotal\": 300000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC06_Voucher_Not_Exist_Not_Eligible",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC07_Invalid_Voucher",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC08_Invalid_Voucher_Not_Eligible",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC09_Empty_Voucher",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"\",\r\n    \"subtotal\": 300000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC10_Voucher_With_Leading_Trailing_Spaces",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC11_Lowercase_Voucher",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC12_Special_Characters",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC13_Voucher_Used_Up",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"USED50\",\r\n    \"subtotal\": 300000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC14_Voucher_Used_Twice",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"VIP1\",\r\n    \"subtotal\": 100000,\r\n    \"seat_count\": 1,\r\n    \"user_id\": 2\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC15_Multiple_Vouchers",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_codes\": [\r\n        \"MOVIE50\",\r\n        \"VIP20\"\r\n    ],\r\n    \"subtotal\": 500000,\r\n    \"seat_count\": 1,\r\n    \"user_id\": 2\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC16_100_Percent_Discount",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC17_Discount_Exceeds_Order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC18_Voucher_Too_Long",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC19_Voucher_With_Internal_Space",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"voucher_code\": \"ABCXYZ\",\r\n    \"subtotal\": 80000,\r\n    \"seat_count\": 1\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "software-testing-movie-ticket-booking",
+            "check_voucher.php"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
