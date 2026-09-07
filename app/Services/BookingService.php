@@ -56,7 +56,7 @@ class BookingService {
                 $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'];
             } elseif ($this->showtimeHasStarted($showtime)) {
                 $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'];
-            } elseif (count($normalizedSeatIds) > 10) {
+            } elseif (count($seatIds) > 10) {
                 $result['error'] = ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'];
             } else {
                 $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
