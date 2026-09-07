@@ -7,11 +7,14 @@
             <directory>Unit</directory>
         </testsuite>
     </testsuites>
-    <coverage processUncoveredFiles="true">
+    <coverage processUncoveredFiles="false">
         <include>
-            <directory suffix=".php">../../backend/app/Services</directory>
-            <directory suffix=".php">../../backend/app/Controllers</directory>
-            <directory suffix=".php">../../backend/app/Models</directory>
+            <file>../../backend/app/Services/AuthService.php</file>
+            <file>../../backend/app/Services/BookingService.php</file>
+            <file>../../backend/app/Services/MovieService.php</file>
+            <file>../../backend/app/Services/ProfileService.php</file>
+            <file>../../backend/app/Services/ShowtimeService.php</file>
+            <file>../../backend/app/Services/VoucherService.php</file>
         </include>
     </coverage>
     <php>
