@@ -872,6 +872,164 @@ public function testAddShowtimeRejectsInvalidMovieDuration(): void
         $result['message']
     );
 }
+public function testAddShowtimeRejectsInvalidMovie(): void
+{
+    $data = $this->validShowtimeData();
 
+    $this->showtimeModel
+        ->method('movieExists')
+        ->willReturn(false);
+
+    $result = $this->service->addShowtime($data);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertSame('Phim không hợp lệ!', $result['message']);
+}
+
+public function testAddShowtimeRejectsInvalidRoom(): void
+{
+    $data = $this->validShowtimeData();
+
+    $this->showtimeModel->method('movieExists')->willReturn(true);
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->willReturn(['id' => 1, 'is_active' => 1, 'status' => 'active']);
+
+    $this->showtimeModel
+        ->method('roomExists')
+        ->willReturn(false);
+
+    $result = $this->service->addShowtime($data);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertSame('Phòng chiếu không hợp lệ!', $result['message']);
+}
+
+public function testAddShowtimeRejectsEmptyShowDate(): void
+{
+    $data = $this->validShowtimeData();
+    $data['show_date'] = '';
+
+    $this->showtimeModel->method('movieExists')->willReturn(true);
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->willReturn(['id' => 1, 'is_active' => 1, 'status' => 'active']);
+    $this->showtimeModel->method('roomExists')->willReturn(true);
+
+    $result = $this->service->addShowtime($data);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertSame('Ngày chiếu không được để trống!', $result['message']);
+}
+
+public function testAddShowtimeRejectsZeroBasePrice(): void
+{
+    $data = $this->validShowtimeData();
+    $data['base_price'] = 0;
+
+    $this->showtimeModel->method('movieExists')->willReturn(true);
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->willReturn(['id' => 1, 'is_active' => 1, 'status' => 'active']);
+    $this->showtimeModel->method('roomExists')->willReturn(true);
+    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
+
+    $result = $this->service->addShowtime($data);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertSame('Giá vé cơ bản phải lớn hơn 0!', $result['message']);
+}
+
+public function testAddShowtimeRejectsInvalidStatus(): void
+{
+    $data = $this->validShowtimeData();
+    $data['status'] = 'invalid_status';
+
+    $this->showtimeModel->method('movieExists')->willReturn(true);
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->willReturn(['id' => 1, 'is_active' => 1, 'status' => 'active']);
+    $this->showtimeModel->method('roomExists')->willReturn(true);
+    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
+
+    $result = $this->service->addShowtime($data);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertSame('Trạng thái suất chiếu không hợp lệ!', $result['message']);
+}
+public function testAcceptsStartTimeWithSeconds(): void
+{
+    $this->prepareValidDependencies(120, false);
+
+    $data = $this->validShowtimeData();
+    $data['start_time'] = '10:30:45';
+
+    $capturedData = null;
+
+    $this->showtimeModel
+    ->expects($this->once())
+    ->method('insert')
+    ->willReturnCallback(function ($input) use (&$capturedData) {
+        $capturedData = $input;
+        return true;
+    });
+
+    $result = $this->service->addShowtime($data);
+
+    $this->assertSame('success', $result['status']);
+    $this->assertSame('10:30:45', $capturedData['start_time']);
+}
+public function testGetShowtimesByMovieWithValidId(): void
+{
+    $expected = [
+        ['showtime_id' => 1, 'movie_id' => 5]
+    ];
+
+    $this->showtimeModel
+        ->expects($this->once())
+        ->method('getByMovieId')
+        ->with(5)
+        ->willReturn($expected);
+
+    $result = $this->service->getShowtimesByMovie(5);
+
+    $this->assertSame($expected, $result);
+}
+
+public function testGetShowtimeDetailsWithValidId(): void
+{
+    $expected = [
+        'showtime_id' => 10,
+        'movie_id' => 5
+    ];
+
+    $this->showtimeModel
+        ->expects($this->once())
+        ->method('getDetailById')
+        ->with(10)
+        ->willReturn($expected);
+
+    $result = $this->service->getShowtimeDetails(10);
+
+    $this->assertSame($expected, $result);
+}
+
+public function testGetShowtimeByIdWithValidId(): void
+{
+    $expected = [
+        'id' => 20,
+        'movie_id' => 5
+    ];
+
+    $this->showtimeModel
+        ->expects($this->once())
+        ->method('findById')
+        ->with(20)
+        ->willReturn($expected);
+
+    $result = $this->service->getShowtimeById(20);
+
+    $this->assertSame($expected, $result);
+}
 }
 

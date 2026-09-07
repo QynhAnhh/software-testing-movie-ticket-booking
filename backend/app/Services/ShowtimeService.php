@@ -233,28 +233,31 @@ class ShowtimeService {
     return $normalizedTime;
 }
     public function getShowtimesByMovie($movieId) {
-        if ($movieId <= 0) {
-            return [];
-        }
-
-        return $this->model->getShowtimesByMovie($movieId);
+    if ($movieId <= 0) {
+        return [];
     }
 
-    public function getShowtimeDetails($showtimeId) {
-        if ($showtimeId <= 0) {
-            return null;
-        }
+    return $this->showtimeModel->getByMovieId($movieId);
+}
 
-        return $this->model->getShowtimeDetails($showtimeId);
+public function getShowtimeDetails($showtimeId) {
+    if ($showtimeId <= 0) {
+        return null;
     }
 
-    private function computeEndTime($startTime, $durationMinutes) {
-        $start = strtotime($startTime);
-        return date('H:i:s', $start + ($durationMinutes * 60));
+    return $this->showtimeModel->getDetailById($showtimeId);
+}
+
+private function computeEndTime($startTime, $durationMinutes) {
+    $start = strtotime($startTime);
+    return date('H:i:s', $start + ($durationMinutes * 60));
+}
+
+public function getShowtimeById($id) {
+    if ($id <= 0) {
+        return null;
     }
 
-    public function getShowtimeById($id) {
-        if ($id <= 0) return null;
-        return $this->model->getById($id);
-    }
+    return $this->showtimeModel->findById($id);
+}
 }

@@ -786,8 +786,87 @@ public function testAddMovieValidPosterButMoveUploadFails(): void
     );
 }
 
+public function testUpdateMovieRejectsInvalidRequiredData(): void
+{
+    $data = $this->validMovieData();
+    $data['title'] = '';
 
+    $this->movieModel
+        ->expects($this->never())
+        ->method('getMovieByIdWithGenres');
 
+    $result = $this->service->updateMovie(10, $data, [1]);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString(
+        'Dữ liệu cập nhật không hợp lệ',
+        $result['message']
+    );
+}
+
+public function testUpdateMovieRejectsInvalidScreeningDate(): void
+{
+    $data = $this->validMovieData();
+    $data['screening_date'] = '2026-02-31';
+
+    $this->movieModel
+        ->expects($this->never())
+        ->method('getMovieByIdWithGenres');
+
+    $result = $this->service->updateMovie(10, $data, [1]);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString(
+        'Ngày khởi chiếu không hợp lệ',
+        $result['message']
+    );
+}
+
+public function testUpdateMovieReturnsPosterValidationError(): void
+{
+    $data = $this->validMovieData();
+
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->with(10)
+        ->willReturn([
+            'id' => 10,
+            'poster' => 'images/movies/old.jpg'
+        ]);
+
+    $poster = [
+        'error' => UPLOAD_ERR_OK,
+        'name' => 'document.pdf',
+        'size' => 1024,
+        'tmp_name' => __FILE__
+    ];
+
+    $this->movieModel
+        ->expects($this->never())
+        ->method('updateMovie');
+
+    $result = $this->service->updateMovie(
+        10,
+        $data,
+        [1],
+        $poster
+    );
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString(
+        'JPG hoặc PNG',
+        $result['message']
+    );
+}
+public function testAddMovieRejectsEmptyScreeningDate(): void
+{
+    $data = $this->validMovieData();
+    $data['screening_date'] = '';
+
+    $result = $this->service->addMovie($data, [1]);
+
+    $this->assertSame('error', $result['status']);
+}
 
 
 }
