@@ -1,0 +1,3 @@
+# Cho phép Apache serve file tĩnh trong thư mục frontend/ trực tiếp
+Options -Indexes
+RewriteEngine Off
