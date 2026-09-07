@@ -51,10 +51,18 @@ class BookingService {
         } else {
             $showtime = $this->showtimeModel->getDetailById($showtimeId);
             $normalizedSeatIds = array_values(array_unique(array_map('intval', $seatIds)));
+            $showtimeHasStarted = false;
+            if (is_array($showtime) && !empty($showtime['show_date']) && !empty($showtime['start_time'])) {
+                $showDateTime = \DateTime::createFromFormat(
+                    'Y-m-d H:i:s',
+                    $showtime['show_date'] . ' ' . $showtime['start_time']
+                );
+                $showtimeHasStarted = $showDateTime && $showDateTime <= new \DateTime();
+            }
 
             if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
                 $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'];
-            } elseif ($this->showtimeHasStarted($showtime)) {
+            } elseif ($showtimeHasStarted) {
                 $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'];
             } elseif (count($normalizedSeatIds) > 10) {
                 $result['error'] = ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'];
@@ -75,19 +83,6 @@ class BookingService {
         }
 
         return $result;
-    }
-
-    private function showtimeHasStarted($showtime) {
-        if (!is_array($showtime) || empty($showtime['show_date']) || empty($showtime['start_time'])) {
-            return false;
-        }
-
-        $showDateTime = \DateTime::createFromFormat(
-            'Y-m-d H:i:s',
-            $showtime['show_date'] . ' ' . $showtime['start_time']
-        );
-
-        return $showDateTime && $showDateTime <= new \DateTime();
     }
 
     private function createBookingTransaction(array $bookingData) {
@@ -135,8 +130,18 @@ class BookingService {
 
         $seatPrices = [];
         $totalPrice = 0;
+        $findSeat = static function (array $seats, $seatId) {
+            foreach ($seats as $seat) {
+                if ((int)$seat['id'] === (int)$seatId) {
+                    return $seat;
+                }
+            }
+
+            return null;
+        };
+
         foreach ($bookingData['seat_ids'] as $seatId) {
-            $seat = $this->findSeat($selectedSeats, $seatId);
+            $seat = $findSeat($selectedSeats, $seatId);
             $this->validateSeat($seat, $bookingData);
             $price = (float)$bookingData['showtime']['base_price'] + (float)($seat['seat_type_price'] ?? 0);
             $seatPrices[] = ['seat_id' => $seatId, 'price' => $price];
@@ -144,16 +149,6 @@ class BookingService {
         }
 
         return ['seat_prices' => $seatPrices, 'total_price' => $totalPrice];
-    }
-
-    private function findSeat(array $selectedSeats, $seatId) {
-        foreach ($selectedSeats as $seat) {
-            if ((int)$seat['id'] === (int)$seatId) {
-                return $seat;
-            }
-        }
-
-        return null;
     }
 
     private function validateSeat($seat, array $bookingData) {
@@ -186,7 +181,19 @@ class BookingService {
         $response = $validation['error'];
 
         if ($response === null) {
-            $response = $this->executeCancellation($validation['data']);
+            $bookingData = $validation['data'];
+            $this->bookingModel->beginTransaction();
+            try {
+                if (!$this->bookingModel->cancelBooking($bookingData['booking_id'], $bookingData['user_id'])) {
+                    throw new \RuntimeException('Loi khi huy booking: ' . $this->bookingModel->getError());
+                }
+
+                $this->bookingModel->commit();
+                $response = ['status' => 'success', 'message' => 'Huy ve thanh cong.'];
+            } catch (\Throwable $e) {
+                $this->bookingModel->rollback();
+                $response = ['status' => 'error', 'message' => $e->getMessage()];
+            }
         }
 
         return $response;
@@ -201,12 +208,20 @@ class BookingService {
         } else {
             $booking = $this->bookingModel->getByIdAndUser($bookingId, $userId);
             $showtime = $booking ? $this->bookingModel->getPrimaryShowtimeByBookingId($bookingId) : null;
+            $showtimeHasStarted = false;
+            if (is_array($showtime) && !empty($showtime['show_date']) && !empty($showtime['start_time'])) {
+                $showDateTime = \DateTime::createFromFormat(
+                    'Y-m-d H:i:s',
+                    $showtime['show_date'] . ' ' . $showtime['start_time']
+                );
+                $showtimeHasStarted = $showDateTime && $showDateTime <= new \DateTime();
+            }
 
             if (!$booking) {
                 $result['error'] = ['status' => 'error', 'message' => 'Khong tim thay booking can huy.'];
             } elseif (($booking['status'] ?? '') === 'canceled') {
                 $result['error'] = ['status' => 'error', 'message' => 'Booking nay da duoc huy truoc do.'];
-            } elseif ($this->showtimeHasStarted($showtime)) {
+            } elseif ($showtimeHasStarted) {
                 $result['error'] = ['status' => 'error', 'message' => 'Khong the huy ve khi suat chieu da bat dau.'];
             } else {
                 $result['data'] = ['user_id' => $userId, 'booking_id' => $bookingId];
@@ -214,24 +229,6 @@ class BookingService {
         }
 
         return $result;
-    }
-
-    private function executeCancellation(array $bookingData) {
-        $response = null;
-        $this->bookingModel->beginTransaction();
-        try {
-            if (!$this->bookingModel->cancelBooking($bookingData['booking_id'], $bookingData['user_id'])) {
-                throw new \RuntimeException('Loi khi huy booking: ' . $this->bookingModel->getError());
-            }
-
-            $this->bookingModel->commit();
-            $response = ['status' => 'success', 'message' => 'Huy ve thanh cong.'];
-        } catch (\Throwable $e) {
-            $this->bookingModel->rollback();
-            $response = ['status' => 'error', 'message' => $e->getMessage()];
-        }
-
-        return $response;
     }
 
     public function getAdminBookingStats() {
@@ -335,25 +332,18 @@ class BookingService {
         } elseif (!$booking) {
             $response = ['status' => 'error', 'message' => 'Không tìm thấy booking cần xóa.'];
         } else {
-            $response = $this->executeAdminBookingDeletion($bookingId);
-        }
+            $this->bookingModel->beginTransaction();
+            try {
+                if (!$this->bookingModel->deleteBooking($bookingId)) {
+                    throw new \RuntimeException('Lỗi khi xóa booking: ' . $this->bookingModel->getError());
+                }
 
-        return $response;
-    }
-
-    private function executeAdminBookingDeletion($bookingId) {
-        $response = null;
-        $this->bookingModel->beginTransaction();
-        try {
-            if (!$this->bookingModel->deleteBooking($bookingId)) {
-                throw new \RuntimeException('Lỗi khi xóa booking: ' . $this->bookingModel->getError());
+                $this->bookingModel->commit();
+                $response = ['status' => 'success', 'message' => 'Xóa booking thành công.'];
+            } catch (\Throwable $e) {
+                $this->bookingModel->rollback();
+                $response = ['status' => 'error', 'message' => $e->getMessage()];
             }
-
-            $this->bookingModel->commit();
-            $response = ['status' => 'success', 'message' => 'Xóa booking thành công.'];
-        } catch (\Throwable $e) {
-            $this->bookingModel->rollback();
-            $response = ['status' => 'error', 'message' => $e->getMessage()];
         }
 
         return $response;
@@ -367,6 +357,14 @@ class BookingService {
             'to_date' => '',
             'search' => ''
         ];
+        $isValidDate = static function ($date) {
+            if ($date === '') {
+                return false;
+            }
+
+            $dateTime = \DateTime::createFromFormat('Y-m-d', $date);
+            return $dateTime && $dateTime->format('Y-m-d') === $date;
+        };
 
         $status = trim((string)($input['status'] ?? ''));
         if (in_array($status, $allowedStatuses, true)) {
@@ -374,12 +372,12 @@ class BookingService {
         }
 
         $fromDate = trim((string)($input['from_date'] ?? ''));
-        if ($this->isValidDate($fromDate)) {
+        if ($isValidDate($fromDate)) {
             $filters['from_date'] = $fromDate;
         }
 
         $toDate = trim((string)($input['to_date'] ?? ''));
-        if ($this->isValidDate($toDate)) {
+        if ($isValidDate($toDate)) {
             $filters['to_date'] = $toDate;
         }
 
@@ -396,12 +394,4 @@ class BookingService {
         return $this->bookingModel->getTotalSpentByUser($userId);
     }
 
-    private function isValidDate($date) {
-        if ($date === '') {
-            return false;
-        }
-
-        $dateTime = \DateTime::createFromFormat('Y-m-d', $date);
-        return $dateTime && $dateTime->format('Y-m-d') === $date;
-    }
 }
