@@ -35,7 +35,7 @@ class BookingServiceBoundaryTest extends TestCase
         $showtimeModel->method('getDetailById')
             ->willReturn($showtime ?: $defaultShowtime);
 
-        $seatModel->method('getByIds')
+        $seatModel->method('lockByIds')
             ->willReturn($seats);
 
         $ticketModel->method('isSeatBooked')
@@ -154,7 +154,7 @@ class BookingServiceBoundaryTest extends TestCase
             'status' => 'active'
         ]);
 
-        $seatModel->method('getByIds')->willReturn([
+        $seatModel->method('lockByIds')->willReturn([
             $this->validSeat()
         ]);
 

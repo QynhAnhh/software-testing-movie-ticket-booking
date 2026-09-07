@@ -37,7 +37,7 @@ class BookingServiceNegativeTest extends TestCase
             ]);
 
         // Ghế hợp lệ
-        $seat->method('getByIds')
+        $seat->method('lockByIds')
             ->willReturn([
                 [
                     'id' => 1,

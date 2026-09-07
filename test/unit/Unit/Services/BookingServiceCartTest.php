@@ -42,7 +42,7 @@ class BookingServiceCartTest extends TestCase
             ];
         }
 
-        $seat->method('getByIds')
+        $seat->method('lockByIds')
             ->willReturnCallback(function (array $ids) use ($seats) {
                 return array_values(
                     array_filter(

@@ -55,7 +55,9 @@ class MovieServiceTest extends TestCase
         parent::tearDown();
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('invalidMovieDataProvider')]
+    /**
+     * @dataProvider invalidMovieDataProvider
+     */
 public function testMovieInputValidation(
     string $testCaseId,
     array $data,
