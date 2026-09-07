@@ -60,6 +60,14 @@ if (mb_strlen($data['last_name']) > 255) {
     return ['status' => 'error', 'message' => 'Tên không được vượt quá 255 ký tự!'];
 }
 
+        if (mb_strlen($data['first_name']) > 255) {
+            return ['status' => 'error', 'message' => 'Tên không được vượt quá 255 ký tự!'];
+        }
+
+        if (mb_strlen($data['last_name']) > 255) {
+            return ['status' => 'error', 'message' => 'Họ không được vượt quá 255 ký tự!'];
+        }
+
         if (!preg_match('/^\d+$/', $data['phone'])) {
             return ['status' => 'error', 'message' => 'Số điện thoại không hợp lệ, chỉ được chứa số!'];
         }

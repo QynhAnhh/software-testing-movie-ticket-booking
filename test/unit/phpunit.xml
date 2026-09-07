@@ -5,6 +5,7 @@
     <testsuites>
         <testsuite name="Unit">
             <directory>Unit</directory>
+            <directory>../../tests/Unit</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="false">
@@ -14,6 +15,7 @@
             <file>../../backend/app/Services/MovieService.php</file>
             <file>../../backend/app/Services/ProfileService.php</file>
             <file>../../backend/app/Services/ShowtimeService.php</file>
+            <file>../../backend/app/Services/TicketService.php</file>
             <file>../../backend/app/Services/VoucherService.php</file>
         </include>
     </coverage>

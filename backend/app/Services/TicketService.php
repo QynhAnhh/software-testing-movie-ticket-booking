@@ -12,11 +12,11 @@ class TicketService {
     private $showtimeModel;
     private $seatModel;
 
-    public function __construct() {
-        $this->model = new TicketModel();
-        $this->bookingModel = new BookingModel();
-        $this->showtimeModel = new ShowtimeModel();
-        $this->seatModel = new SeatModel();
+    public function __construct($model = null, $bookingModel = null, $showtimeModel = null, $seatModel = null) {
+        $this->model = $model ?: new TicketModel();
+        $this->bookingModel = $bookingModel ?: new BookingModel();
+        $this->showtimeModel = $showtimeModel ?: new ShowtimeModel();
+        $this->seatModel = $seatModel ?: new SeatModel();
     }
 
     public function addTicket($data) {

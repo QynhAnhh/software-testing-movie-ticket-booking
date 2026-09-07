@@ -144,6 +144,7 @@
 }
 
 .booking-page .seat.booked,
+.booking-page .seat.sold,
 .booking-page .seat.inactive {
     background: #111;
     color: #6b7280;
