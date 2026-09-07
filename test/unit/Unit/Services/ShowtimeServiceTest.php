@@ -102,29 +102,38 @@ class ShowtimeServiceTest extends TestCase
     }
 
     private function prepareValidDependencies(
-        int $duration = 120,
-        bool $conflict = false
-    ): void {
-        $this->showtimeModel
-            ->method('movieExists')
-            ->willReturn(true);
+    int $duration = 120,
+    bool $conflict = false,
+    bool $movieActive = true
+): void {
+    $this->showtimeModel
+        ->method('movieExists')
+        ->willReturn(true);
 
-        $this->showtimeModel
-            ->method('roomExists')
-            ->willReturn(true);
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->willReturn([
+            'id' => 1,
+            'is_active' => $movieActive ? 1 : 0,
+            'status' => $movieActive ? 'active' : 'inactive',
+        ]);
 
-        $this->showtimeModel
-            ->method('getMovieDuration')
-            ->willReturn($duration);
+    $this->showtimeModel
+        ->method('roomExists')
+        ->willReturn(true);
 
-        $this->showtimeModel
-            ->method('findConflict')
-            ->willReturn($conflict);
+    $this->showtimeModel
+        ->method('getMovieDuration')
+        ->willReturn($duration);
 
-        $this->showtimeModel
-            ->method('insert')
-            ->willReturn(true);
-    }
+    $this->showtimeModel
+        ->method('findConflict')
+        ->willReturn($conflict);
+
+    $this->showtimeModel
+        ->method('insert')
+        ->willReturn(true);
+}
 
     /**
      * @testdox TC-DT-11 - Chặn tạo suất chiếu trong quá khứ
@@ -761,11 +770,7 @@ public function testUpdateShowtimeSuccess(): void
     $this->roomModel->method('findById')->willReturn(['id' => 1, 'total_seats' => 100]);
     $this->showtimeModel->method('countBookedTickets')->willReturn(10);
 
-    $this->showtimeModel->method('movieExists')->willReturn(true);
-    $this->movieModel->method('getMovieByIdWithGenres')->willReturn(['id' => 1, 'is_active' => 1]);
-    $this->showtimeModel->method('roomExists')->willReturn(true);
-    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
-    $this->showtimeModel->method('findConflict')->willReturn(false);
+    $this->prepareValidDependencies(120, false);
 
     $this->showtimeModel
         ->method('update')
@@ -785,11 +790,7 @@ public function testUpdateShowtimeFailure(): void
     $this->roomModel->method('findById')->willReturn(['id' => 1, 'total_seats' => 100]);
     $this->showtimeModel->method('countBookedTickets')->willReturn(10);
 
-    $this->showtimeModel->method('movieExists')->willReturn(true);
-    $this->movieModel->method('getMovieByIdWithGenres')->willReturn(['id' => 1, 'is_active' => 1]);
-    $this->showtimeModel->method('roomExists')->willReturn(true);
-    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
-    $this->showtimeModel->method('findConflict')->willReturn(false);
+    $this->prepareValidDependencies(120, false);
 
     $this->showtimeModel->method('update')->willReturn(false);
     $this->showtimeModel->method('getError')->willReturn('Update failed');
@@ -809,11 +810,7 @@ public function testUpdateShowtimeWithoutRoomData(): void
     // Cover nhánh $room == false
     $this->roomModel->method('findById')->willReturn(false);
 
-    $this->showtimeModel->method('movieExists')->willReturn(true);
-    $this->movieModel->method('getMovieByIdWithGenres')->willReturn(['id' => 1, 'is_active' => 1]);
-    $this->showtimeModel->method('roomExists')->willReturn(true);
-    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
-    $this->showtimeModel->method('findConflict')->willReturn(false);
+    $this->prepareValidDependencies(120, false);
     $this->showtimeModel->method('update')->willReturn(true);
 
     $result = $this->service->updateShowtime(302, $data);
