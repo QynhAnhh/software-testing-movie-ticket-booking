@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Unit\Services;
+
 use PHPUnit\Framework\TestCase;
 
 class VoucherServiceTest extends TestCase

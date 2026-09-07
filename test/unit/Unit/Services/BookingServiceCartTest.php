@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Services;
 
 use App\Services\BookingService;
 use App\Models\BookingModel;
@@ -9,7 +9,7 @@ use App\Models\SeatModel;
 use App\Models\TicketModel;
 use PHPUnit\Framework\TestCase;
 
-class BookingServiceTest extends TestCase
+class BookingServiceCartTest extends TestCase
 {
     private function createService(
         array $seatPrices = [0, 0, 20000, 20000],
