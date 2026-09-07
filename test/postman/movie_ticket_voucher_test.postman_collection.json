@@ -15,7 +15,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 200\", () => {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -33,13 +41,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -54,7 +63,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -72,13 +89,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -93,7 +111,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -111,13 +137,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -132,7 +159,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -150,13 +185,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -171,7 +207,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -189,13 +233,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -210,7 +255,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -228,13 +281,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -249,7 +303,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -267,13 +329,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -288,7 +351,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -306,13 +377,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -327,7 +399,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -345,13 +425,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -366,7 +447,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -384,13 +473,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -405,7 +495,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -423,13 +521,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -444,7 +543,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -462,13 +569,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -483,7 +591,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -501,13 +617,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -522,7 +639,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -540,13 +665,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -561,7 +687,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -579,13 +713,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -600,7 +735,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -618,13 +761,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -639,7 +783,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -657,13 +809,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -678,7 +831,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -696,13 +857,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
@@ -717,7 +879,15 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test(\"Status code is 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst res = pm.response.json();\r\n\r\npm.test(\"Response có trường success\", () => {\r\n    pm.expect(res).to.have.property(\"success\");\r\n});"
+              "pm.test(\"Status code is 400\", () => {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Response có trường success\", () => {\r",
+              "    pm.expect(res).to.have.property(\"status\");\r",
+              "});"
             ]
           }
         }
@@ -735,13 +905,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost/software-testing-movie-ticket-booking/check_voucher.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/api/check_voucher.php",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "path": [
             "software-testing-movie-ticket-booking",
+            "api",
             "check_voucher.php"
           ]
         }
