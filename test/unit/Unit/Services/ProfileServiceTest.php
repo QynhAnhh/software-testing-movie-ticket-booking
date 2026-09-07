@@ -202,6 +202,71 @@ class ProfileServiceTest extends TestCase
         $result = $this->profileService->updatePassword($this->dummyUserId, '123456', 'newpass123', 'newpass123');
         $this->assertEquals('success', $result['status']);
         $this->assertEquals('Đổi mật khẩu thành công!', $result['message']);
+    }
 
+    // --- COVERAGE: updateProfile with empty birth_date (line 74-75) ---
+    public function testUpdateProfileWithEmptyBirthDate()
+    {
+        // birth_date = '' should set null and NOT return error
+        $data = [
+            'first_name' => 'A',
+            'last_name'  => 'B',
+            'email'      => 'updated2@test.com',
+            'phone'      => '0933333333',
+            'birth_date' => ''
+        ];
+        $result = $this->profileService->updateProfile($this->dummyUserId, $data);
+        $this->assertEquals('success', $result['status']);
+    }
+
+    // --- COVERAGE: syncSessionUser when no session (line 133-134) ---
+    public function testUpdateProfileSyncSessionWhenNoSession()
+    {
+        // Ensure $_SESSION['user'] is not set
+        unset($_SESSION['user']);
+        $data = [
+            'first_name' => 'A',
+            'last_name'  => 'B',
+            'email'      => 'nosession@test.com',
+            'phone'      => '0933333333',
+        ];
+        $result = $this->profileService->updateProfile($this->dummyUserId, $data);
+        // Should succeed even without session
+        $this->assertEquals('success', $result['status']);
+        // Session should remain unset
+        $this->assertArrayNotHasKey('user', $_SESSION);
+    }
+
+    // --- COVERAGE: updateProfile DB failure via mock (line 81) ---
+    public function testUpdateProfileDbFailureMock()
+    {
+        $userModelMock = $this->createMock(\App\Models\UserModel::class);
+        $userModelMock->method('findByEmail')->willReturn(null);
+        $userModelMock->method('findByPhone')->willReturn(null);
+        $userModelMock->method('updateProfile')->willReturn(false);
+        $userModelMock->method('getError')->willReturn('DB error');
+
+        $service = new ProfileService($userModelMock);
+        $data    = ['first_name' => 'A', 'last_name' => 'B', 'email' => 'mock@test.com', 'phone' => '0933333333'];
+        $result  = $service->updateProfile($this->dummyUserId, $data);
+
+        $this->assertEquals('error', $result['status']);
+        $this->assertStringContainsString('Lỗi khi cập nhật', $result['message']);
+    }
+
+    // --- COVERAGE: updatePassword DB failure via mock (line 121) ---
+    public function testUpdatePasswordDbFailureMock()
+    {
+        $hashedPw      = password_hash('123456', PASSWORD_DEFAULT);
+        $userModelMock = $this->createMock(\App\Models\UserModel::class);
+        $userModelMock->method('getById')->willReturn(['id' => 1, 'password' => $hashedPw]);
+        $userModelMock->method('updatePassword')->willReturn(false);
+        $userModelMock->method('getError')->willReturn('DB error');
+
+        $service = new ProfileService($userModelMock);
+        $result  = $service->updatePassword($this->dummyUserId, '123456', 'newpass123', 'newpass123');
+
+        $this->assertEquals('error', $result['status']);
+        $this->assertStringContainsString('Lỗi khi đổi mật khẩu', $result['message']);
     }
 }

@@ -8,9 +8,9 @@ class AuthService
 {
     private $userModel;
 
-    public function __construct()
+    public function __construct(UserModel $userModel = null)
     {
-        $this->userModel = new UserModel();
+        $this->userModel = $userModel ?? new UserModel();
     }
 
     public function register($data)
@@ -35,7 +35,27 @@ class AuthService
         }
 
         if (strlen($data['password']) < 6) {
-            return ['status' => 'error', 'message' => 'Mật khẩu phải có ít nhất 6 ký tự!'];
+            return ['status' => 'error', 'message' => 'Mật khẩu phải từ 6-20 ký tự!'];
+        }
+
+        if (strlen($data['password']) > 20) {
+            return ['status' => 'error', 'message' => 'Mật khẩu không được vượt quá 20 ký tự!'];
+        }
+
+        if (!preg_match('/^[\p{L}\s]+$/u', $data['last_name'])) {
+            return ['status' => 'error', 'message' => 'Họ không được chứa số hoặc ký tự đặc biệt!'];
+        }
+
+        if (!preg_match('/^\d+$/', $data['phone'])) {
+            return ['status' => 'error', 'message' => 'Số điện thoại không hợp lệ, chỉ được chứa số!'];
+        }
+
+        if (strlen($data['phone']) !== 10) {
+            return ['status' => 'error', 'message' => 'Số điện thoại phải bao gồm 10 số!'];
+        }
+
+        if ($data['phone'][0] !== '0') {
+            return ['status' => 'error', 'message' => 'Số điện thoại phải bắt đầu bằng số 0!'];
         }
 
         if ($this->userModel->findByEmail($data['email'])) {

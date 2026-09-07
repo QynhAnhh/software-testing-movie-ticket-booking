@@ -10,10 +10,10 @@ class ProfileService {
     private $ticketModel;
     private $bookingModel;
 
-    public function __construct() {
-        $this->userModel = new UserModel();
-        $this->ticketModel = new TicketModel();
-        $this->bookingModel = new BookingModel();
+    public function __construct(UserModel $userModel = null, TicketModel $ticketModel = null, BookingModel $bookingModel = null) {
+        $this->userModel    = $userModel    ?? new UserModel();
+        $this->ticketModel  = $ticketModel  ?? new TicketModel();
+        $this->bookingModel = $bookingModel ?? new BookingModel();
     }
 
     public function getProfile($userId) {

@@ -217,4 +217,22 @@ class AuthServiceTest extends TestCase
         $this->assertEquals('success', $result['status']);
         $this->assertArrayNotHasKey('user', $_SESSION);
     }
+
+    // --- COVERAGE: register DB insert failure via mock (line 63) ---
+    public function testRegisterDbInsertFailureMock()
+    {
+        $userModelMock = $this->createMock(\App\Models\UserModel::class);
+        $userModelMock->method('findByEmail')->willReturn(null);
+        $userModelMock->method('findByPhone')->willReturn(null);
+        $userModelMock->method('insert')->willReturn(false);
+        $userModelMock->method('getError')->willReturn('DB constraint error');
+
+        $service = new AuthService($userModelMock);
+        $data    = $this->getBaseRegisterData();
+        $data['email'] = 'mock@test.com';
+        $result  = $service->register($data);
+
+        $this->assertEquals('error', $result['status']);
+        $this->assertStringContainsString('Lỗi khi đăng ký', $result['message']);
+    }
 }
