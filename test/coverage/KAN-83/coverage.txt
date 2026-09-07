@@ -1,0 +1,14 @@
+
+
+Code Coverage Report:
+  2026-09-07 06:13:49
+
+ Summary:
+  Classes:  0.00% (0/2)
+  Methods: 12.00% (3/25)
+  Lines:   53.24% (115/216)
+
+App\Services\MovieService
+  Methods:  10.00% ( 1/10)   Lines:  39.18% ( 38/ 97)
+App\Services\ShowtimeService
+  Methods:  13.33% ( 2/15)   Lines:  64.71% ( 77/119)
