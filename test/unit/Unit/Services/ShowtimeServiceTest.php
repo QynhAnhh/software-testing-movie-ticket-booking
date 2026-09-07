@@ -35,6 +35,9 @@ class ShowtimeServiceTest extends TestCase
             'delete',
             'getError',
             'countBookedTickets',
+            'getAllWithDetails',
+'getDetailById',
+'getByMovieId',
         ])
         ->getMock();
 
@@ -43,6 +46,7 @@ class ShowtimeServiceTest extends TestCase
         ->disableOriginalConstructor()
         ->onlyMethods([
             'getMovieByIdWithGenres',
+            'getAllMovies'
         ])
         ->getMock();
 
@@ -51,6 +55,7 @@ class ShowtimeServiceTest extends TestCase
         ->disableOriginalConstructor()
         ->onlyMethods([
             'findById',
+            'getAllRooms'
         ])
         ->getMock();
 
@@ -634,5 +639,239 @@ public function testUpdateShowtimeRejectsInvalidId(): void
     $this->assertSame('error', $result['status']);
     $this->assertStringContainsString('ID', $result['message']);
 }
+
+public function testGetAllShowtimes(): void
+{
+    $expected = [
+        ['id' => 1],
+        ['id' => 2]
+    ];
+
+    $this->showtimeModel
+        ->method('getAllWithDetails')
+        ->willReturn($expected);
+
+    $this->assertSame($expected, $this->service->getAllShowtimes());
+}
+
+public function testGetShowtimeDetailValidId(): void
+{
+    $expected = ['id' => 10];
+
+    $this->showtimeModel
+        ->method('getDetailById')
+        ->with(10)
+        ->willReturn($expected);
+
+    $this->assertSame($expected, $this->service->getShowtimeDetail(10));
+}
+
+public function testGetShowtimesByMovieIdValidId(): void
+{
+    $expected = [
+        ['id' => 1, 'movie_id' => 5]
+    ];
+
+    $this->showtimeModel
+        ->method('getByMovieId')
+        ->with(5)
+        ->willReturn($expected);
+
+    $this->assertSame($expected, $this->service->getShowtimesByMovieId(5));
+}
+
+public function testGetAllMovies(): void
+{
+    $expected = [
+        ['id' => 1, 'title' => 'Movie A']
+    ];
+
+    $this->movieModel
+        ->method('getAllMovies')
+        ->willReturn($expected);
+
+    $this->assertSame($expected, $this->service->getAllMovies());
+}
+
+public function testGetAllRooms(): void
+{
+    $expected = [
+        ['id' => 1, 'name' => 'Room 1']
+    ];
+
+    $this->roomModel
+        ->method('getAllRooms')
+        ->willReturn($expected);
+
+    $this->assertSame($expected, $this->service->getAllRooms());
+}
+
+public function testGetShowtimesByMovieInvalidId(): void
+{
+    $this->assertSame([], $this->service->getShowtimesByMovie(0));
+}
+
+public function testGetShowtimeDetailsInvalidId(): void
+{
+    $this->assertNull($this->service->getShowtimeDetails(0));
+}
+
+public function testGetShowtimeByIdInvalidId(): void
+{
+    $this->assertNull($this->service->getShowtimeById(0));
+}
+
+public function testAddShowtimeInsertFailure(): void
+{
+    $data = $this->validShowtimeData();
+
+    $this->showtimeModel->method('movieExists')->willReturn(true);
+    $this->movieModel->method('getMovieByIdWithGenres')->willReturn(['id' => 1, 'is_active' => 1]);
+    $this->showtimeModel->method('roomExists')->willReturn(true);
+    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
+    $this->showtimeModel->method('findConflict')->willReturn(false);
+
+    $this->showtimeModel->method('insert')->willReturn(false);
+    $this->showtimeModel->method('getError')->willReturn('Database error');
+
+    $result = $this->service->addShowtime($data);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('Database error', $result['message']);
+}
+
+public function testUpdateShowtimeNotFound(): void
+{
+    $this->showtimeModel
+        ->method('findById')
+        ->with(999)
+        ->willReturn(false);
+
+    $result = $this->service->updateShowtime(999, []);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('không tồn tại', $result['message']);
+}
+
+public function testUpdateShowtimeSuccess(): void
+{
+    $data = $this->validShowtimeData();
+
+    $this->showtimeModel->method('findById')->willReturn(['id' => 300]);
+    $this->roomModel->method('findById')->willReturn(['id' => 1, 'total_seats' => 100]);
+    $this->showtimeModel->method('countBookedTickets')->willReturn(10);
+
+    $this->showtimeModel->method('movieExists')->willReturn(true);
+    $this->movieModel->method('getMovieByIdWithGenres')->willReturn(['id' => 1, 'is_active' => 1]);
+    $this->showtimeModel->method('roomExists')->willReturn(true);
+    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
+    $this->showtimeModel->method('findConflict')->willReturn(false);
+
+    $this->showtimeModel
+        ->method('update')
+        ->with(300, $this->anything())
+        ->willReturn(true);
+
+    $result = $this->service->updateShowtime(300, $data);
+
+    $this->assertSame('success', $result['status']);
+}
+
+public function testUpdateShowtimeFailure(): void
+{
+    $data = $this->validShowtimeData();
+
+    $this->showtimeModel->method('findById')->willReturn(['id' => 301]);
+    $this->roomModel->method('findById')->willReturn(['id' => 1, 'total_seats' => 100]);
+    $this->showtimeModel->method('countBookedTickets')->willReturn(10);
+
+    $this->showtimeModel->method('movieExists')->willReturn(true);
+    $this->movieModel->method('getMovieByIdWithGenres')->willReturn(['id' => 1, 'is_active' => 1]);
+    $this->showtimeModel->method('roomExists')->willReturn(true);
+    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
+    $this->showtimeModel->method('findConflict')->willReturn(false);
+
+    $this->showtimeModel->method('update')->willReturn(false);
+    $this->showtimeModel->method('getError')->willReturn('Update failed');
+
+    $result = $this->service->updateShowtime(301, $data);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('Update failed', $result['message']);
+}
+
+public function testUpdateShowtimeWithoutRoomData(): void
+{
+    $data = $this->validShowtimeData();
+
+    $this->showtimeModel->method('findById')->willReturn(['id' => 302]);
+
+    // Cover nhánh $room == false
+    $this->roomModel->method('findById')->willReturn(false);
+
+    $this->showtimeModel->method('movieExists')->willReturn(true);
+    $this->movieModel->method('getMovieByIdWithGenres')->willReturn(['id' => 1, 'is_active' => 1]);
+    $this->showtimeModel->method('roomExists')->willReturn(true);
+    $this->showtimeModel->method('getMovieDuration')->willReturn(120);
+    $this->showtimeModel->method('findConflict')->willReturn(false);
+    $this->showtimeModel->method('update')->willReturn(true);
+
+    $result = $this->service->updateShowtime(302, $data);
+
+    $this->assertSame('success', $result['status']);
+}
+
+public function testDeleteShowtimeRejectsWhenTicketsAlreadyBooked(): void
+{
+    $showtimeId = 205;
+
+    $this->showtimeModel
+        ->method('findById')
+        ->with($showtimeId)
+        ->willReturn(['id' => $showtimeId]);
+
+    $this->showtimeModel
+        ->method('countBookedTickets')
+        ->with($showtimeId)
+        ->willReturn(2);
+
+    $result = $this->service->deleteShowtime($showtimeId);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('đã có vé', $result['message']);
+}
+public function testAddShowtimeRejectsInvalidMovieDuration(): void
+{
+    $data = $this->validShowtimeData();
+
+    $this->showtimeModel
+        ->method('movieExists')
+        ->willReturn(true);
+
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->willReturn([
+            'id' => 1,
+            'is_active' => 1,
+            'status' => 'active'
+        ]);
+
+    $this->showtimeModel
+        ->method('roomExists')
+        ->willReturn(true);
+
+    $this->showtimeModel
+        ->method('getMovieDuration')
+        ->willReturn(0);
+
+    $result = $this->service->addShowtime($data);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString(
+        'Không thể tính giờ kết thúc',
+        $result['message']
+    );
+}
+
 }
 

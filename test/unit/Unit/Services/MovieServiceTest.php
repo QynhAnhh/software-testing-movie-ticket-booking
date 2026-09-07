@@ -615,5 +615,180 @@ public function testGetComingMovies(): void
             'status' => 'now_showing',
         ];
     }
+
+public function testUpdateMovieReturnsErrorWhenMovieNotFound(): void
+{
+    $data = [
+        'title' => 'Test Movie',
+        'country' => 'Vietnam',
+        'duration' => 120,
+        'screening_date' => '2026-12-20',
+        'description' => 'Test'
+    ];
+
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->with(999)
+        ->willReturn(null);
+
+    $result = $this->service->updateMovie(999, $data, [1]);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('không tồn tại', $result['message']);
+}
+
+public function testUpdateMovieRejectsTooLongDescription(): void
+{
+    $data = [
+        'title' => 'Test Movie',
+        'country' => 'Vietnam',
+        'duration' => 120,
+        'screening_date' => '2026-12-20',
+        'description' => str_repeat('a', 5001)
+    ];
+
+    $result = $this->service->updateMovie(10, $data, [1]);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('5000', $result['message']);
+}
+
+public function testUpdateMovieReturnsErrorWhenDatabaseUpdateFails(): void
+{
+    $data = [
+        'title' => 'Test Movie',
+        'country' => 'Vietnam',
+        'duration' => 120,
+        'screening_date' => '2026-12-20',
+        'description' => 'Test'
+    ];
+
+    $this->movieModel
+        ->method('getMovieByIdWithGenres')
+        ->with(10)
+        ->willReturn([
+            'id' => 10,
+            'poster' => 'old.jpg'
+        ]);
+
+    $this->movieModel
+        ->method('updateMovie')
+        ->willReturn(false);
+
+    $this->movieModel
+        ->method('getError')
+        ->willReturn('Update database failed');
+
+    $result = $this->service->updateMovie(10, $data, [1]);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString(
+        'Update database failed',
+        $result['message']
+    );
+}
+
+public function testAddMovieRejectsPosterIniSizeError(): void
+{
+    $data = [
+        'title' => 'Test Movie',
+        'country' => 'Vietnam',
+        'duration' => 120,
+        'screening_date' => '2026-12-20',
+        'description' => 'Test'
+    ];
+
+    $poster = [
+        'error' => UPLOAD_ERR_INI_SIZE,
+        'name' => 'poster.jpg',
+        'size' => 6000000,
+        'tmp_name' => ''
+    ];
+
+    $result = $this->service->addMovie($data, [1], $poster);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('5MB', $result['message']);
+}
+
+public function testAddMovieRejectsGenericPosterUploadError(): void
+{
+    $data = [
+        'title' => 'Test Movie',
+        'country' => 'Vietnam',
+        'duration' => 120,
+        'screening_date' => '2026-12-20',
+        'description' => 'Test'
+    ];
+
+    $poster = [
+        'error' => UPLOAD_ERR_PARTIAL,
+        'name' => 'poster.jpg',
+        'size' => 1000,
+        'tmp_name' => ''
+    ];
+
+    $result = $this->service->addMovie($data, [1], $poster);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString(
+        'Upload poster không thành công',
+        $result['message']
+    );
+}
+
+public function testAddMovieRejectsPosterLargerThanFiveMb(): void
+{
+    $data = [
+        'title' => 'Test Movie',
+        'country' => 'Vietnam',
+        'duration' => 120,
+        'screening_date' => '2026-12-20',
+        'description' => 'Test'
+    ];
+
+    $poster = [
+        'error' => UPLOAD_ERR_OK,
+        'name' => 'poster.jpg',
+        'size' => (5 * 1024 * 1024) + 1,
+        'tmp_name' => ''
+    ];
+
+    $result = $this->service->addMovie($data, [1], $poster);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString('5MB', $result['message']);
+}
+
+public function testAddMovieValidPosterButMoveUploadFails(): void
+{
+    $data = [
+        'title' => 'Test Movie',
+        'country' => 'Vietnam',
+        'duration' => 120,
+        'screening_date' => '2026-12-20',
+        'description' => 'Test'
+    ];
+
+    $poster = [
+        'error' => UPLOAD_ERR_OK,
+        'name' => 'poster.jpg',
+        'size' => 1024,
+        'tmp_name' => __DIR__ . '/fake-poster.jpg'
+    ];
+
+    $result = $this->service->addMovie($data, [1], $poster);
+
+    $this->assertSame('error', $result['status']);
+    $this->assertStringContainsString(
+        'Không thể lưu file poster',
+        $result['message']
+    );
+}
+
+
+
+
+
 }
 
