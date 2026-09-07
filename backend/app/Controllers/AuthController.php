@@ -32,7 +32,7 @@ class AuthController
             if ($result['role'] === 'admin') {
                 header("Location: admin/index.php");
             } else {
-                header("Location: index.php");
+                header("Location: /software-testing-movie-ticket-booking/index.php");
             }
             exit;
         }
@@ -79,7 +79,7 @@ class AuthController
     {
         $this->authService->logout();
 
-        header("Location: index.php");
+        header("Location: /software-testing-movie-ticket-booking/index.php");
         exit;
     }
 }

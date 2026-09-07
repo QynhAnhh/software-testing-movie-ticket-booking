@@ -1,5 +1,5 @@
 <?php
-require_once '../backend/config.php';
+require_once __DIR__ . '/../backend/config.php';
 
 $sessionUser = $_SESSION['user'] ?? null;
 if (isset($_SESSION['user']) && !is_array($sessionUser)) {
@@ -69,14 +69,14 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end site-user-menu" aria-labelledby="siteUserMenu">
                                     <li><a class="dropdown-item" href="profile.php">Hồ sơ cá nhân</a></li>
-                                    <li><a class="dropdown-item" href="../backend/logout.php">Đăng xuất</a></li>
+                                    <li><a class="dropdown-item" href="/software-testing-movie-ticket-booking/backend/logout.php">Đăng xuất</a></li>
                                 </ul>
                             </div>
                             <a class="btn btn-outline-light site-profile-btn" href="profile.php">
                                 <i class="bi bi-person-circle"></i>
                                 <span><?= htmlspecialchars($displayName) ?></span>
                             </a>
-                            <a class="btn btn-site-primary" href="../backend/logout.php">
+                            <a class="btn btn-site-primary" href="/software-testing-movie-ticket-booking/backend/logout.php">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>Đăng xuất</span>
                             </a>
