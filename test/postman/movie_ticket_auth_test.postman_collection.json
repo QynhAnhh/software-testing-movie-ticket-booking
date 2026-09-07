@@ -1478,7 +1478,6 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "}",
           "pm.variables.set('freshEmail', 'test_fresh_' + Date.now() + Math.floor(Math.random()*1000) + '@test.com');",
           "pm.variables.set('freshPhone', '09' + Math.floor(10000000 + Math.random() * 90000000));"
         ]
