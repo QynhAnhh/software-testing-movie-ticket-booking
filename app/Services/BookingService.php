@@ -5,6 +5,7 @@ use App\Models\BookingModel;
 use App\Models\ShowtimeModel;
 use App\Models\SeatModel;
 use App\Models\TicketModel;
+use App\Services\BookingRequestValidator;
 
 /**
  * Custom Dedicated Exceptions cho BookingService
@@ -18,6 +19,7 @@ class BookingService {
     private $showtimeModel;
     private $seatModel;
     private $ticketModel;
+    private $bookingRequestValidator;
 
     public function __construct(
         $bookingModel = null,
@@ -29,6 +31,7 @@ class BookingService {
         $this->showtimeModel = $showtimeModel ?? new ShowtimeModel();
         $this->seatModel = $seatModel ?? new SeatModel();
         $this->ticketModel = $ticketModel ?? new TicketModel();
+        $this->bookingRequestValidator = new BookingRequestValidator($this->showtimeModel);
     }
 
     // ==========================================
@@ -47,73 +50,12 @@ class BookingService {
     }
 
     private function validateBookingRequest($userId, $showtimeId, $seatIds, $paymentMethod) {
-        if ($userId <= 0) {
-            return [
-                'error' => ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.', 'page' => 'login.php'],
-                'data' => null
-            ];
-        }
-
-        if ($showtimeId <= 0) {
-            return [
-                'error' => ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'],
-                'data' => null
-            ];
-        }
-
-        if (!is_array($seatIds) || empty($seatIds)) {
-            return [
-                'error' => ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'],
-                'data' => null
-            ];
-        }
-
-        if (count($seatIds) > 10) {
-            return [
-                'error' => ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'],
-                'data' => null
-            ];
-        }
-
-        $showtime = $this->showtimeModel->getDetailById($showtimeId);
-        if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
-            return [
-                'error' => ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'],
-                'data' => null
-            ];
-        }
-
-        if ($this->showtimeHasStarted($showtime)) {
-            return [
-                'error' => ['status' => 'error', 'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'],
-                'data' => null
-            ];
-        }
-
-        $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
-        $normalizedPaymentMethod = in_array($paymentMethod, $allowedPaymentMethods, true)
-            ? $paymentMethod
-            : 'cash';
-
-        return [
-            'error' => null,
-            'data' => [
-                'user_id' => $userId,
-                'showtime_id' => $showtimeId,
-                'seat_ids' => array_values(array_unique(array_map('intval', $seatIds))),
-                'payment_method' => $normalizedPaymentMethod,
-                'showtime' => $showtime
-            ]
-        ];
-    }
-
-    private function showtimeHasStarted(array $showtime) {
-        $showDateTime = \DateTime::createFromFormat(
-            'Y-m-d H:i:s',
-            $showtime['show_date'] . ' ' . $showtime['start_time']
+        return $this->bookingRequestValidator->validate(
+            $userId,
+            $showtimeId,
+            $seatIds,
+            $paymentMethod
         );
-
-        return $showDateTime && $showDateTime <= new \DateTime();
     }
 
     private function createBookingTransaction(array $bookingData) {
