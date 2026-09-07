@@ -42,36 +42,48 @@ class BookingService {
             'data' => null
         ];
 
-        if ($userId <= 0) {
-            $result['error'] = ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.', 'page' => 'login.php'];
-        } elseif ($showtimeId <= 0) {
-            $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'];
-        } elseif (!is_array($seatIds) || count($seatIds) === 0) {
-            $result['error'] = ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'];
-        } else {
+        do {
+            if ($userId <= 0) {
+                $result['error'] = ['status' => 'error', 'message' => 'Vui lòng đăng nhập để đặt vé.', 'page' => 'login.php'];
+                break;
+            }
+            if ($showtimeId <= 0) {
+                $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'];
+                break;
+            }
+            if (!is_array($seatIds) || count($seatIds) === 0) {
+                $result['error'] = ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'];
+                break;
+            }
+
             $showtime = $this->showtimeModel->getDetailById($showtimeId);
             $normalizedSeatIds = array_values(array_unique(array_map('intval', $seatIds)));
 
             if (!$showtime || ($showtime['status'] ?? '') !== 'active') {
                 $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu không khả dụng.'];
-            } elseif ($this->showtimeHasStarted($showtime)) {
-                $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'];
-            } elseif (count($seatIds) > 10) {
-                $result['error'] = ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'];
-            } else {
-                $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
-                $normalizedPaymentMethod = in_array($paymentMethod, $allowedPaymentMethods, true)
-                    ? $paymentMethod
-                    : 'cash';
-                $result['data'] = [
-                    'user_id' => $userId,
-                    'showtime_id' => $showtimeId,
-                    'seat_ids' => $normalizedSeatIds,
-                    'payment_method' => $normalizedPaymentMethod,
-                    'showtime' => $showtime
-                ];
+                break;
             }
-        }
+            if ($this->showtimeHasStarted($showtime)) {
+                $result['error'] = ['status' => 'error', 'message' => 'Suất chiếu này đã bắt đầu hoặc đã kết thúc.'];
+                break;
+            }
+            if (count($seatIds) > 10) {
+                $result['error'] = ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'];
+                break;
+            }
+
+            $allowedPaymentMethods = ['cash', 'momo', 'vnpay', 'bank_transfer'];
+            $normalizedPaymentMethod = in_array($paymentMethod, $allowedPaymentMethods, true)
+                ? $paymentMethod
+                : 'cash';
+            $result['data'] = [
+                'user_id' => $userId,
+                'showtime_id' => $showtimeId,
+                'seat_ids' => $normalizedSeatIds,
+                'payment_method' => $normalizedPaymentMethod,
+                'showtime' => $showtime
+            ];
+        } while (false);
 
         return $result;
     }
@@ -179,42 +191,46 @@ class BookingService {
         $bookingId = (int)$bookingId;
         $result = null;
 
-        if ($userId <= 0) {
-            $result = ['status' => 'error', 'message' => 'Vui long dang nhap de huy ve.'];
-        } elseif ($bookingId <= 0) {
-            $result = ['status' => 'error', 'message' => 'Booking khong hop le.'];
-        } else {
+        do {
+            if ($userId <= 0) {
+                $result = ['status' => 'error', 'message' => 'Vui long dang nhap de huy ve.'];
+                break;
+            }
+            if ($bookingId <= 0) {
+                $result = ['status' => 'error', 'message' => 'Booking khong hop le.'];
+                break;
+            }
+
             $booking = $this->bookingModel->getByIdAndUser($bookingId, $userId);
             if (!$booking) {
                 $result = ['status' => 'error', 'message' => 'Khong tim thay booking can huy.'];
-            } elseif (($booking['status'] ?? '') === 'canceled') {
-                $result = ['status' => 'error', 'message' => 'Booking nay da duoc huy truoc do.'];
-            } else {
-                $showtime = $this->bookingModel->getPrimaryShowtimeByBookingId($bookingId);
-                $showtimeStarted = false;
-                if ($showtime && !empty($showtime['show_date']) && !empty($showtime['start_time'])) {
-                    $showDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $showtime['show_date'] . ' ' . $showtime['start_time']);
-                    $showtimeStarted = $showDateTime && $showDateTime <= new \DateTime();
-                }
-
-                if ($showtimeStarted) {
-                    $result = ['status' => 'error', 'message' => 'Khong the huy ve khi suat chieu da bat dau.'];
-                } else {
-                    $this->bookingModel->beginTransaction();
-                    try {
-                        if (!$this->bookingModel->cancelBooking($bookingId, $userId)) {
-                            throw new \RuntimeException('Loi khi huy booking: ' . $this->bookingModel->getError());
-                        }
-
-                        $this->bookingModel->commit();
-                        $result = ['status' => 'success', 'message' => 'Huy ve thanh cong.'];
-                    } catch (\Throwable $e) {
-                        $this->bookingModel->rollback();
-                        $result = ['status' => 'error', 'message' => $e->getMessage()];
-                    }
-                }
+                break;
             }
-        }
+            if (($booking['status'] ?? '') === 'canceled') {
+                $result = ['status' => 'error', 'message' => 'Booking nay da duoc huy truoc do.'];
+                break;
+            }
+
+            $showtime = $this->bookingModel->getPrimaryShowtimeByBookingId($bookingId);
+            if ($showtime && !empty($showtime['show_date']) && !empty($showtime['start_time'])
+                && $this->showtimeHasStarted($showtime)) {
+                $result = ['status' => 'error', 'message' => 'Khong the huy ve khi suat chieu da bat dau.'];
+                break;
+            }
+
+            $this->bookingModel->beginTransaction();
+            try {
+                if (!$this->bookingModel->cancelBooking($bookingId, $userId)) {
+                    throw new \RuntimeException('Loi khi huy booking: ' . $this->bookingModel->getError());
+                }
+
+                $this->bookingModel->commit();
+                $result = ['status' => 'success', 'message' => 'Huy ve thanh cong.'];
+            } catch (\Throwable $e) {
+                $this->bookingModel->rollback();
+                $result = ['status' => 'error', 'message' => $e->getMessage()];
+            }
+        } while (false);
 
         return $result;
     }
