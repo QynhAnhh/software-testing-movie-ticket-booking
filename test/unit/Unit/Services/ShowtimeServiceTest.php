@@ -281,25 +281,7 @@ public function testTcDt16RejectsInactiveMovie(): void
      * Phim tồn tại nhưng đã bị vô hiệu hóa.
      * Service đúng phải đọc trạng thái phim trước khi tạo suất chiếu.
      */
-    $this->showtimeModel
-        ->method('movieExists')
-        ->willReturn(true);
-
-    $this->showtimeModel
-        ->method('roomExists')
-        ->willReturn(true);
-
-    $this->showtimeModel
-        ->method('getMovieDuration')
-        ->willReturn(120);
-
-    $this->showtimeModel
-        ->method('findConflict')
-        ->willReturn(true);
-
-    $this->showtimeModel
-        ->method('insert')
-        ->willReturn(true);
+    $this->prepareValidDependencies(120, true);
 
     // Mong đợi Service phải kiểm tra chi tiết/trạng thái phim.
     $this->movieModel
@@ -334,25 +316,7 @@ public function testTcDt16RejectsInactiveMovie(): void
                 'id' => $showtimeId,
             ]);
 
-        $this->showtimeModel
-            ->method('movieExists')
-            ->willReturn(true);
-
-        $this->showtimeModel
-            ->method('roomExists')
-            ->willReturn(true);
-
-        $this->showtimeModel
-            ->method('getMovieDuration')
-            ->willReturn(120);
-
-        /*
-         * Giả lập xung đột khoảng thời gian,
-         * nhưng không trùng chính xác giờ bắt đầu.
-         */
-        $this->showtimeModel
-            ->method('findConflict')
-            ->willReturn(true);
+        $this->prepareValidDependencies(120, true);
 
         $this->showtimeModel
             ->method('update')
