@@ -34,6 +34,7 @@ class ShowtimeServiceTest extends TestCase
             'update',
             'delete',
             'getError',
+            'countBookedTickets',
         ])
         ->getMock();
 

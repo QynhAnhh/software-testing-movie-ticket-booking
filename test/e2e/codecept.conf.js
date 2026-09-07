@@ -1,10 +1,10 @@
 exports.config = {
-  tests: './tests/e2e/**/*_test.js',
-  output: './tests/e2e/output',
+  tests: './tests/**/*_test.js',
+  output: './tests/output',
   helpers: {
     Playwright: {
       url: 'http://localhost/software-testing-movie-ticket-booking',
-      show: true,
+      show: false,
       browser: 'chromium',
       video: true,
       keepVideoForPassedTests: true

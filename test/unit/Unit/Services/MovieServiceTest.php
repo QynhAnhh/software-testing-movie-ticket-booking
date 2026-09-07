@@ -27,6 +27,8 @@ class MovieServiceTest extends TestCase
             'deleteMovieGenres',
             'deleteMovie',
             'getError',
+            'hasBookedTickets',
+            'hasShowtimes',
         ])
         ->getMock();
 
