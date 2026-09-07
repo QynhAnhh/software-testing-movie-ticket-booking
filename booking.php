@@ -262,6 +262,7 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     const totalPrice = document.getElementById('total-price');
     const confirmButton = document.getElementById('btn-confirm');
     const formatter = new Intl.NumberFormat('vi-VN');
+    const showtimeId = <?= json_encode($showtimeId) ?>;
 
     function getSelectedSeatButtons() {
         return Array.from(document.querySelectorAll('.seat.selected[data-seat-id]'));
@@ -279,6 +280,33 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
         confirmButton.style.opacity = selected.length === 0 ? '0.5' : '';
     }
 
+    async function syncBookedSeats() {
+        try {
+            const response = await fetch(`api/seats.php?showtime_id=${showtimeId}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!response.ok) {
+                return;
+            }
+
+            const payload = await response.json();
+            const bookedSeatIds = new Set((payload.data || []).map(Number));
+            document.querySelectorAll('.seat[data-seat-id]').forEach((button) => {
+                if (!bookedSeatIds.has(Number(button.dataset.seatId))) {
+                    return;
+                }
+
+                button.classList.remove('available', 'selected', 'vip');
+                button.classList.add('booked', 'sold');
+                button.disabled = true;
+                button.innerHTML = '<i class="bi bi-lock-fill" aria-hidden="true"></i>';
+            });
+            updateSummary();
+        } catch (error) {
+            // Server-rendered booked seats remain the fallback when the refresh fails.
+        }
+    }
+
     seatButtons.forEach((button) => {
         button.addEventListener('click', () => {
             const selected = getSelectedSeatButtons();
@@ -294,6 +322,8 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
             updateSummary();
         });
     });
+
+    syncBookedSeats();
 
     confirmButton.addEventListener('click', () => {
             const selected = getSelectedSeatButtons();

@@ -39,11 +39,15 @@ class BookingService {
     // ==========================================
 
     public function processBooking($userId, $showtimeId, $seatIds, $paymentMethod) {
-        $validation = $this->validateBookingRequest($userId, $showtimeId, $seatIds, $paymentMethod);
-        $result = $validation['error'];
+        try {
+            $validation = $this->validateBookingRequest($userId, $showtimeId, $seatIds, $paymentMethod);
+            $result = $validation['error'];
 
-        if ($result === null) {
-            $result = $this->createBookingTransaction($validation['data']);
+            if ($result === null) {
+                $result = $this->createBookingTransaction($validation['data']);
+            }
+        } catch (\InvalidArgumentException $e) {
+            $result = ['status' => 'error', 'message' => $e->getMessage()];
         }
 
         return $result;

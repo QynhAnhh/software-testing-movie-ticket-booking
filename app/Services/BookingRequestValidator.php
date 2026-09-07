@@ -57,7 +57,7 @@ class BookingRequestValidator {
         } elseif ($showtimeId <= 0) {
             $result = ['status' => 'error', 'message' => 'Suất chiếu không hợp lệ.'];
         } elseif (!is_array($seatIds) || empty($seatIds)) {
-            $result = ['status' => 'error', 'message' => 'Vui lòng chọn ít nhất 1 ghế'];
+            throw new \InvalidArgumentException('Vui lòng chọn ít nhất 1 ghế');
         } elseif (count($seatIds) > 10) {
             $result = ['status' => 'error', 'message' => 'Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.'];
         }
