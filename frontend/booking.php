@@ -1,5 +1,5 @@
 <?php
-require_once '../backend/config.php';
+require_once 'config.php';
 
 use App\Controllers\ShowtimeController;
 use App\Controllers\SeatController;
@@ -141,9 +141,18 @@ require_once 'header.php';
                         <div class="mb-3">
                             <label class="form-label text-white fw-bold">Phương thức thanh toán</label>
                             <div class="d-grid gap-2">
-                                <label class="payment-option" for="payment-momo"><input id="payment-momo" class="form-check-input me-2" type="radio" name="payment_method" value="momo" checked>Momo</label>
-                                <label class="payment-option" for="payment-vnpay"><input id="payment-vnpay" class="form-check-input me-2" type="radio" name="payment_method" value="vnpay">VNPay</label>
-                                <label class="payment-option" for="payment-bank-transfer"><input id="payment-bank-transfer" class="form-check-input me-2" type="radio" name="payment_method" value="bank_transfer">Chuyển khoản</label>
+                                <label class="payment-option">
+                                    <input class="form-check-input me-2" type="radio" name="payment_method" value="momo" checked>
+                                    Momo
+                                </label>
+                                <label class="payment-option">
+                                    <input class="form-check-input me-2" type="radio" name="payment_method" value="vnpay">
+                                    VNPay
+                                </label>
+                                <label class="payment-option">
+                                    <input class="form-check-input me-2" type="radio" name="payment_method" value="bank_transfer">
+                                    Chuyển khoản
+                                </label>
                             </div>
                         </div>
 
@@ -235,18 +244,14 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     } elseif ($isInactive) {
         $class = 'inactive';
     } else {
-        $class = 'available';
-        if ($isVip) {
-            $class .= ' vip';
-        }
+        $class = 'available' . ($isVip ? ' vip' : '');
     }
+    $disabled = ($isBooked || $isInactive) ? 'disabled' : '';
+    $content = $isBooked
+        ? '<i class="bi bi-lock-fill" aria-hidden="true"></i>'
+        : (int)$seat['seat_number'];
 
-    $disabled = '';
-    if ($isBooked || $isInactive) {
-        $disabled = 'disabled';
-    }
-
-    echo '<button type="button" class="seat ' . $class . '" data-seat-id="' . $seatId . '" data-seat-name="' . htmlspecialchars($seatName) . '" data-price="' . $price . '" title="' . htmlspecialchars($seat['seat_type_name']) . '" ' . $disabled . '>' . (int)$seat['seat_number'] . '</button>';
+    echo '<button type="button" class="seat ' . $class . '" data-seat-id="' . $seatId . '" data-seat-name="' . htmlspecialchars($seatName) . '" data-price="' . $price . '" title="' . htmlspecialchars($seat['seat_type_name']) . '" ' . $disabled . '>' . $content . '</button>';
 }
 ?>
 
@@ -257,7 +262,7 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     const totalPrice = document.getElementById('total-price');
     const confirmButton = document.getElementById('btn-confirm');
     const formatter = new Intl.NumberFormat('vi-VN');
-    const maxSeats = 10;
+    const showtimeId = <?= json_encode($showtimeId) ?>;
 
     function getSelectedSeatButtons() {
         return Array.from(document.querySelectorAll('.seat.selected[data-seat-id]'));
@@ -272,13 +277,43 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
         selectedSeats.textContent = names.length ? names.join(', ') : 'Chưa chọn';
         totalPrice.textContent = formatter.format(total) + 'đ';
         confirmButton.disabled = selected.length === 0;
+        confirmButton.style.opacity = selected.length === 0 ? '0.5' : '';
+    }
+
+    async function syncBookedSeats() {
+        try {
+            const response = await fetch(`api/seats.php?showtime_id=${showtimeId}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!response.ok) {
+                return;
+            }
+
+            const payload = await response.json();
+            const bookedSeatIds = new Set((payload.data || []).map(Number));
+            document.querySelectorAll('.seat[data-seat-id]').forEach((button) => {
+                if (!bookedSeatIds.has(Number(button.dataset.seatId))) {
+                    return;
+                }
+
+                button.classList.remove('available', 'selected', 'vip');
+                button.classList.add('booked', 'sold');
+                button.disabled = true;
+                button.innerHTML = '<i class="bi bi-lock-fill" aria-hidden="true"></i>';
+            });
+            updateSummary();
+        } catch (error) {
+            // Server-rendered booked seats remain the fallback when the refresh fails.
+        }
     }
 
     seatButtons.forEach((button) => {
         button.addEventListener('click', () => {
             const selected = getSelectedSeatButtons();
-            if (!button.classList.contains('selected') && selected.length >= maxSeats) {
-                alert('Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch.');
+            const isSelected = button.classList.contains('selected');
+
+            if (!isSelected && selected.length >= 10) {
+                alert('Bạn chỉ được đặt tối đa 10 ghế cho mỗi giao dịch');
                 return;
             }
 
@@ -287,6 +322,8 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
             updateSummary();
         });
     });
+
+    syncBookedSeats();
 
     confirmButton.addEventListener('click', () => {
             const selected = getSelectedSeatButtons();
@@ -346,4 +383,3 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
 </script>
 
 <?php require_once 'footer.php'; ?>
-
