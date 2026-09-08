@@ -137,6 +137,44 @@ require_once 'header.php';
                             Tổng tiền:
                             <span id="total-price" class="summary-total">0đ</span>
                         </p>
+                        <!-- VOUCHER -->
+<div class="mb-3 mt-3">
+    <label for="voucher-code" class="form-label text-white fw-bold">
+        Mã giảm giá
+    </label>
+
+    <div class="input-group">
+        <input
+            type="text"
+            id="voucher-code"
+            class="form-control"
+            placeholder="Nhập mã voucher"
+        >
+
+        <button
+            type="button"
+            id="btn-apply-voucher"
+            class="btn btn-warning"
+        >
+            Áp dụng
+        </button>
+    </div>
+
+    <div
+        id="voucher-message"
+        class="mt-2"
+    ></div>
+</div>
+
+<p class="booking-meta">
+    Giảm giá:
+    <span id="discount-price" class="summary-value">0đ</span>
+</p>
+
+<p class="booking-meta">
+    Tổng thanh toán:
+    <span id="final-price" class="summary-total">0đ</span>
+</p>
 
                         <div class="mb-3">
                             <label class="form-label text-white fw-bold">Phương thức thanh toán</label>
@@ -255,6 +293,13 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     const seatCount = document.getElementById('seat-count');
     const selectedSeats = document.getElementById('selected-seats');
     const totalPrice = document.getElementById('total-price');
+    const voucherCode = document.getElementById('voucher-code');
+    const applyVoucherButton = document.getElementById('btn-apply-voucher');
+    const voucherMessage = document.getElementById('voucher-message');
+    const discountPrice = document.getElementById('discount-price');
+    const finalPrice = document.getElementById('final-price');
+
+let currentDiscount = 0;
     const confirmButton = document.getElementById('btn-confirm');
     const formatter = new Intl.NumberFormat('vi-VN');
     const maxSeats = 10;
@@ -264,15 +309,39 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
     }
 
     function updateSummary() {
-        const selected = getSelectedSeatButtons();
-        const names = selected.map((seat) => seat.dataset.seatName);
-        const total = selected.reduce((sum, seat) => sum + Number(seat.dataset.price || 0), 0);
+    const selected = getSelectedSeatButtons();
 
-        seatCount.textContent = selected.length;
-        selectedSeats.textContent = names.length ? names.join(', ') : 'Chưa chọn';
-        totalPrice.textContent = formatter.format(total) + 'đ';
-        confirmButton.disabled = selected.length === 0;
-    }
+    const names = selected.map(
+        (seat) => seat.dataset.seatName
+    );
+
+    const total = selected.reduce(
+        (sum, seat) => sum + Number(seat.dataset.price || 0),
+        0
+    );
+
+    seatCount.textContent = selected.length;
+
+    selectedSeats.textContent =
+        names.length
+            ? names.join(', ')
+            : 'Chưa chọn';
+
+    totalPrice.textContent =
+        formatter.format(total) + 'đ';
+
+    // Nếu số tiền thay đổi thì reset voucher
+    currentDiscount = 0;
+
+    discountPrice.textContent = '0đ';
+
+    finalPrice.textContent =
+        formatter.format(total) + 'đ';
+
+    voucherMessage.textContent = '';
+
+    confirmButton.disabled = selected.length === 0;
+}
 
     seatButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -287,7 +356,117 @@ function renderSeatButton($seat, $bookedSeatIds, $basePrice) {
             updateSummary();
         });
     });
+applyVoucherButton.addEventListener('click', async () => {
 
+    const selected = getSelectedSeatButtons();
+
+    // Chưa chọn ghế
+    if (!selected.length) {
+
+        voucherMessage.textContent =
+            'Vui lòng chọn ghế trước khi áp dụng voucher.';
+
+        voucherMessage.className =
+            'mt-2 text-danger';
+
+        return;
+    }
+
+    const code = voucherCode.value.trim();
+
+    // Chưa nhập voucher
+    if (!code) {
+
+        voucherMessage.textContent =
+            'Vui lòng nhập mã voucher.';
+
+        voucherMessage.className =
+            'mt-2 text-danger';
+
+        return;
+    }
+
+    // Tính tổng tiền
+    const subtotal = selected.reduce(
+        (sum, seat) =>
+            sum + Number(seat.dataset.price || 0),
+        0
+    );
+
+    try {
+
+        const response = await fetch(
+            '../backend/api/check_voucher.php',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+
+                body: JSON.stringify({
+                    voucher_code: code,
+                    subtotal: subtotal,
+                    user_id: 0
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        // Thành công
+        if (
+            response.ok &&
+            result.status === 'success'
+        ) {
+
+            currentDiscount =
+                Number(result.data.discount || 0);
+
+            const finalAmount =
+                Number(result.data.final_amount || 0);
+
+            discountPrice.textContent =
+                formatter.format(currentDiscount) + 'đ';
+
+            finalPrice.textContent =
+                formatter.format(finalAmount) + 'đ';
+
+            voucherMessage.textContent =
+                result.message;
+
+            voucherMessage.className =
+                'mt-2 text-success';
+
+        } else {
+
+            currentDiscount = 0;
+
+            discountPrice.textContent = '0đ';
+
+            finalPrice.textContent =
+                formatter.format(subtotal) + 'đ';
+
+            voucherMessage.textContent =
+                result.message || 'Không thể áp dụng voucher.';
+
+            voucherMessage.className =
+                'mt-2 text-danger';
+        }
+
+    } catch (error) {
+
+        voucherMessage.textContent =
+            'Không thể kết nối đến hệ thống Voucher.';
+
+        voucherMessage.className =
+            'mt-2 text-danger';
+
+        console.error(error);
+    }
+
+});
     confirmButton.addEventListener('click', () => {
             const selected = getSelectedSeatButtons();
             if (!selected.length) {
