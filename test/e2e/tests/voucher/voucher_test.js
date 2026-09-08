@@ -1,16 +1,9 @@
-Feature('Kiểm thử tính năng Voucher');
+const assert = require('assert');
 
-Scenario('Áp dụng mã voucher thành công', ({ I }) => {
-  // Đường dẫn sẽ ghép với URL gốc thành: .../frontend/booking.php
-  I.amOnPage('/booking.php'); // Đổi thành file .php thực tế chứa ô nhập voucher
+Feature('Kiểm thử Voucher API - TC-TC');
 
-  // Đợi ô nhập voucher xuất hiện (tối đa 5s)
-  I.waitForElement('input[name="voucher"]', 5); 
-  
-  // Điền mã và bấm nút
-  I.fillField('input[name="voucher"]', 'DISCOUNT20');
-  I.click('Áp dụng'); // Hoặc đổi thành selector nút: '.btn-apply'
+const API = '/check_voucher.php';
 
-  // Kiểm tra kết quả hiển thị
-  I.see('Áp dụng thành công');
-});
+
+/* =========================================================
+   HELPER FUNCTIONS
