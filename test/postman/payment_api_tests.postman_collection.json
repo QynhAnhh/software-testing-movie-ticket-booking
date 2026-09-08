@@ -1,0 +1,190 @@
+{
+  "info": {
+    "_postman_id": "payment-api-tests-collection-id",
+    "name": "Payment API Tests (TC-OI-02, 06, 07, 09, 10, 11)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "TC-OI-02: Thanh toán chuyển status Pending -> Paid",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+        },
+        "url": {
+          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "protocol": "http",
+          "host": ["localhost"],
+          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Payment success', function () { pm.response.to.have.status(200); });",
+              "pm.test('Status changed to Paid', function () { var jsonData = pm.response.json(); pm.expect(jsonData.status).to.eql('paid'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-OI-06: Thanh toán lại vé đã Paid",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+        },
+        "url": {
+          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "protocol": "http",
+          "host": ["localhost"],
+          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Duplicate payment rejected', function () { pm.response.to.have.status(400); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-OI-07: Gửi booking_id không tồn tại",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"booking_id\": 999999,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+        },
+        "url": {
+          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "protocol": "http",
+          "host": ["localhost"],
+          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Booking not found', function () { pm.response.to.have.status(404); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-OI-09: total_price âm hoặc bằng 0",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 0\n}"
+        },
+        "url": {
+          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "protocol": "http",
+          "host": ["localhost"],
+          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid amount rejected', function () { pm.response.to.have.status(400); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-OI-10: Mất kết nối mạng (Simulate network issue)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+        },
+        "url": {
+          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "protocol": "http",
+          "host": ["localhost"],
+          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Server handles connection properly', function () { pm.response.to.have.status(200); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-OI-11: Thanh toán khi Session hết hạn",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+        },
+        "url": {
+          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "protocol": "http",
+          "host": ["localhost"],
+          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Unauthorized when session expired', function () { pm.response.to.have.status(401); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}
