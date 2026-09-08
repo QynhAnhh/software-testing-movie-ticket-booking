@@ -8,14 +8,10 @@ use Tests\Support\ApiTester;
 
 final class VoucherCest
 {
-    public function _before(ApiTester $I): void
-    {
-        // Code here will be executed before each test function.
-    }
+    private const DEFAULT_EXPIRATION_DATE = '2099-12-31';
 
-    // All `public` methods will be executed as tests.
-    public function tryToTest(ApiTester $I): void
+    public function tryToTest(ApiTester $tester): void
     {
-        // Write your test content here.
+        // Viết logic test ở đây
     }
 }

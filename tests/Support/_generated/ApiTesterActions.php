@@ -564,7 +564,7 @@ trait ApiTesterActions
      * @param \Countable|iterable<mixed> $haystack
      * @see \Codeception\Module\AbstractAsserts::assertCount()
      */
-    public function assertCount(int $expectedCount, \Countable|\Traversable|array $haystack, string $message = ""): void {
+    public function assertCount(int $expectedCount, \Countable|iterable $haystack, string $message = ""): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('assertCount', func_get_args()));
     }
 
@@ -1502,7 +1502,7 @@ trait ApiTesterActions
      * @param \Countable|iterable<mixed> $haystack
      * @see \Codeception\Module\AbstractAsserts::assertNotCount()
      */
-    public function assertNotCount(int $expectedCount, \Countable|\Traversable|array $haystack, string $message = ""): void {
+    public function assertNotCount(int $expectedCount, \Countable|iterable $haystack, string $message = ""): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotCount', func_get_args()));
     }
 
@@ -1649,7 +1649,7 @@ trait ApiTesterActions
      * @param \Countable|iterable<mixed> $actual
      * @see \Codeception\Module\AbstractAsserts::assertNotSameSize()
      */
-    public function assertNotSameSize(\Countable|\Traversable|array $expected, \Countable|\Traversable|array $actual, string $message = ""): void {
+    public function assertNotSameSize(\Countable|iterable $expected, \Countable|iterable $actual, string $message = ""): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotSameSize', func_get_args()));
     }
 
@@ -1733,7 +1733,7 @@ trait ApiTesterActions
      * @param \Countable|iterable<mixed> $actual
      * @see \Codeception\Module\AbstractAsserts::assertSameSize()
      */
-    public function assertSameSize(\Countable|\Traversable|array $expected, \Countable|\Traversable|array $actual, string $message = ""): void {
+    public function assertSameSize(\Countable|iterable $expected, \Countable|iterable $actual, string $message = ""): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('assertSameSize', func_get_args()));
     }
 
