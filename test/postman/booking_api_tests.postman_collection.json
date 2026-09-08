@@ -14,13 +14,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"movie_id\": 1,\n  \"showtime_id\": 1,\n  \"seat_ids\": [1, 2]\n}"
+          "raw": "{\n  \"movie_id\": 1,\n  \"showtime_id\": 1,\n  \"seat_ids\": [1, 2],\n  \"user_id\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/booking.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/booking.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "booking.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "booking.php"]
         }
       },
       "event": [
@@ -45,13 +45,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"booking_id\": 1,\n  \"action\": \"cancel\"\n}"
+          "raw": "{\n  \"booking_id\": 1,\n  \"action\": \"cancel\",\n  \"user_id\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/booking.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/booking.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "booking.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "booking.php"]
         }
       },
       "event": [
@@ -72,10 +72,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/cron_timeout.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/cron_timeout.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "cron_timeout.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "cron_timeout.php"]
         }
       },
       "event": [
@@ -96,10 +96,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/booking_history.php?user_id=1",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/booking_history.php?user_id=1",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "booking_history.php"],
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "booking_history.php"],
           "query": [{ "key": "user_id", "value": "1" }]
         }
       },
@@ -124,13 +124,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"movie_id\": 1,\n  \"showtime_id\": 1,\n  \"seat_ids\": []\n}"
+          "raw": "{\n  \"movie_id\": 1,\n  \"showtime_id\": 1,\n  \"seat_ids\": [],\n  \"user_id\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/booking.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/booking.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "booking.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "booking.php"]
         }
       },
       "event": [

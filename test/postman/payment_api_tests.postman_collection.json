@@ -14,13 +14,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000,\n  \"user_id\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/payment.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "payment.php"]
         }
       },
       "event": [
@@ -45,13 +45,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000,\n  \"user_id\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/payment.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "payment.php"]
         }
       },
       "event": [
@@ -75,13 +75,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"booking_id\": 999999,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+          "raw": "{\n  \"booking_id\": 999999,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000,\n  \"user_id\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/payment.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "payment.php"]
         }
       },
       "event": [
@@ -105,13 +105,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 0\n}"
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 0,\n  \"user_id\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/payment.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "payment.php"]
         }
       },
       "event": [
@@ -135,13 +135,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
+          "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000,\n  \"user_id\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/payment.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "payment.php"]
         }
       },
       "event": [
@@ -168,10 +168,10 @@
           "raw": "{\n  \"booking_id\": 1,\n  \"payment_method\": \"vnpay\",\n  \"amount\": 100000\n}"
         },
         "url": {
-          "raw": "http://localhost/PROJECT_CLEAN/api/payment.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/backend/api/payment.php",
           "protocol": "http",
           "host": ["localhost"],
-          "path": ["PROJECT_CLEAN", "api", "payment.php"]
+          "path": ["software-testing-movie-ticket-booking", "backend", "api", "payment.php"]
         }
       },
       "event": [
