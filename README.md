@@ -90,112 +90,34 @@ Dự án tuân theo kiến trúc **Phân tầng (Hybrid MVC)** với 3 tầng: M
 
 ```text
 software-testing-movie-ticket-booking/
-├── app/                            # BỘ NÃO CỦA DỰ ÁN (Chứa toàn bộ PHP Logic)
-│   ├── .htaccess                   # Chặn truy cập trái phép
-│   ├── Config/
-│   │   └── Database.php            # Lớp kết nối CSDL duy nhất (Singleton)
-│   │
-│   ├── Models/                     # TẦNG 1: Tương tác Database
-│   │   ├── BookingModel.php        # CRUD đặt vé
-│   │   ├── DashboardModel.php      # Thống kê dashboard
-│   │   ├── GenreModel.php          # CRUD thể loại
-│   │   ├── MovieModel.php          # CRUD phim
-│   │   ├── ReviewModel.php         # CRUD đánh giá
-│   │   ├── RoomModel.php           # CRUD phòng chiếu
-│   │   ├── SeatModel.php           # CRUD ghế ngồi
-│   │   ├── SeatTypeModel.php       # Loại ghế
-│   │   ├── ShowtimeModel.php       # CRUD lịch chiếu
-│   │   ├── TheatreModel.php        # CRUD rạp
-│   │   ├── TicketModel.php         # CRUD vé
-│   │   └── UserModel.php           # CRUD người dùng
-│   │
-│   ├── Services/                   # TẦNG 2: Xử lý nghiệp vụ (Business Logic)
-│   │   ├── AuthService.php         # Xác thực, đăng ký, đăng nhập
-│   │   ├── BookingService.php      # Nghiệp vụ đặt vé
-│   │   ├── DashboardService.php    # Nghiệp vụ thống kê
-│   │   ├── GenreService.php        # Nghiệp vụ thể loại
-│   │   ├── MovieService.php        # Nghiệp vụ phim
-│   │   ├── ProfileService.php      # Nghiệp vụ hồ sơ cá nhân
-│   │   ├── ReviewService.php       # Nghiệp vụ đánh giá
-│   │   ├── RoomService.php         # Nghiệp vụ phòng chiếu
-│   │   ├── SeatService.php         # Nghiệp vụ ghế ngồi
-│   │   ├── ShowtimeService.php     # Nghiệp vụ lịch chiếu
-│   │   ├── TheatreService.php      # Nghiệp vụ rạp
-│   │   ├── TicketService.php       # Nghiệp vụ vé
-│   │   └── UserService.php         # Nghiệp vụ người dùng
-│   │
-│   ├── Controllers/                # TẦNG 3: Nhận Request & Điều hướng
-│   │   ├── AuthController.php      # Xử lý đăng nhập/đăng ký
-│   │   ├── BookingController.php   # Xử lý đặt vé
-│   │   ├── DashboardController.php # Xử lý dashboard
-│   │   ├── GenreController.php     # Xử lý thể loại
-│   │   ├── MovieController.php     # Xử lý phim
-│   │   ├── ProfileController.php   # Xử lý hồ sơ cá nhân
-│   │   ├── ReviewController.php    # Xử lý đánh giá
-│   │   ├── RoomController.php      # Xử lý phòng chiếu
-│   │   ├── SeatController.php      # Xử lý ghế ngồi
-│   │   ├── ShowtimeController.php  # Xử lý lịch chiếu
-│   │   ├── TheatreController.php   # Xử lý rạp
-│   │   ├── TicketController.php    # Xử lý vé
-│   │   └── UserController.php      # Xử lý người dùng
-│   │
-│   └── init.php                    # File Autoloader (tự động nạp class)
-│
-├── admin/                          # GIAO DIỆN ADMIN
-│   ├── admin_header.php            # Header chung admin
-│   ├── admin_sidebar.php           # Sidebar điều hướng
-│   ├── admin_footer.php            # Footer chung admin
-│   ├── index.php                   # Dashboard thống kê
-│   ├── manage_movies.php           # Quản lý phim
-│   ├── manage_genres.php           # Quản lý thể loại
-│   ├── manage_showtimes.php        # Quản lý lịch chiếu
-│   ├── manage_theatres.php         # Quản lý rạp
-│   ├── manage_rooms.php            # Quản lý phòng chiếu
-│   ├── manage_seats.php            # Quản lý ghế ngồi
-│   ├── manage_booking.php          # Quản lý đặt vé
-│   └── manage_users.php            # Quản lý người dùng
-│
-├── css/                            # STYLESHEETS
-│   ├── global.css                  # CSS chung toàn site
-│   ├── header.css / footer.css     # CSS header & footer
-│   ├── home.css                    # CSS trang chủ
-│   ├── auth.css                    # CSS đăng nhập/đăng ký
-│   ├── movie.css                   # CSS chi tiết phim
-│   ├── booking.css                 # CSS đặt vé
-│   ├── booking_history.css         # CSS lịch sử đặt vé
-│   ├── showtime.css                # CSS lịch chiếu
-│   ├── seat.css                    # CSS chọn ghế
-│   ├── profile.css                 # CSS hồ sơ cá nhân
-│   ├── admin.css                   # CSS giao diện admin
-│   └── admin-seat.css              # CSS quản lý ghế admin
-│
-├── js/                             # JAVASCRIPT FILES (Nếu có)
-├── images/                         # Hình ảnh (poster phim, assets)
-├── docs/                           # TÀI LIỆU DỰ ÁN
-│   ├── abg.md                      # ...
-│   ├── booking.md                  # ...
-│   ├── movie_detail.md             # ...
-│   └── ADMIN_DESIGN_GUIDE.md       # Thiết kế admin
-│
-├── tests/                          # TEST FILES
-│   └── test_booking.php            # Logic test đặt vé
-│
-├── Database/
-│   ├── .htaccess                   # Chặn truy cập trái phép
-│   └── BookingTicketDatabase.sql   # File khởi tạo CSDL + dữ liệu mẫu
-│
-├── config.php                      # Cấu hình chung (session, autoloader, kết nối DB)
-├── header.php                      # Header chung user site
-├── footer.php                      # Footer chung user site
-├── index.php                       # Trang chủ (danh sách phim)
-├── login.php                       # Trang đăng nhập
-├── logout.php                      # Xử lý đăng xuất
-├── movie_details.php               # Trang chi tiết phim
-├── booking.php                     # Trang đặt vé
-├── booking_history.php             # Trang lịch sử đặt vé
-└── profile.php                     # Trang hồ sơ cá nhân
+├── backend/            # Nơi chứa toàn bộ não bộ của dự án
+│   ├── admin/
+│   ├── api/
+│   ├── app/            # Controllers, Models, Services
+│   ├── config.php      # File cấu hình trung tâm
+│   ├── import_db.php
+│   ├── composer.json
+│   └── package.json
+├── database/           # Chứa các file liên quan đến DB
+│   ├── sql/            # (Database cũ) Chứa hình ảnh, sơ đồ...
+│   └── schema.sql      # Script tạo CSDL
+├── frontend/           # Nơi chứa giao diện người dùng
+│   ├── css/
+│   ├── images/
+│   ├── js/
+│   ├── index.php       # (Đã chuyển từ root vào đây)
+│   ├── booking.php
+│   └── login.php...
+├── test/               # 🎯 THE TESTING HUB
+│   ├── data/           # Các file csv tạo data test
+│   ├── e2e/            # Chứa thư mục tests/e2e và codecept.conf.js
+│   ├── postman/        # Chứa movie_ticket_auth_test.postman_collection.json
+│   ├── report/         # coverage_report
+│   └── unit/           # phpunit.xml và các test unit
+├── .htaccess           # Bộ điều hướng luồng truy cập web
+├── .gitignore
+└── README.md
 ```
-
 ---
 
 # Git Branch Strategy

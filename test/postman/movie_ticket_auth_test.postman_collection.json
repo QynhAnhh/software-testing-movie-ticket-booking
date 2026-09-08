@@ -1,0 +1,1487 @@
+{
+  "info": {
+    "name": "Movie Ticket Booking - Auth (32 Test Cases)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "[TC-AH-01] Đăng ký hợp lệ (13 ký tự)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-01] Đăng ký hợp lệ (13 ký tự)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('success');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('sharedEmail', 'test_shared_' + Date.now() + '@test.com');",
+              "pm.collectionVariables.set('sharedPhone', '090' + Math.floor(1000000 + Math.random() * 9000000));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{sharedEmail}}\",\n    \"phone\": \"{{sharedPhone}}\",\n    \"password\": \"abcdfhgjtghtg\",\n    \"confirm_password\": \"abcdfhgjtghtg\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-02] Mật khẩu quá ngắn (3 ký tự)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-02] Mật khẩu quá ngắn (3 ký tự)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Mật khẩu phải từ 6-20 ký tự');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"abc\",\n    \"confirm_password\": \"abc\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-03] Mật khẩu quá dài (25 ký tự)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-03] Mật khẩu quá dài (25 ký tự)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Mật khẩu không được vượt quá 20 ký tự');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"abcdefghijklmnopqrstuvwxy\",\n    \"confirm_password\": \"abcdefghijklmnopqrstuvwxy\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-04] Mật khẩu 5 ký tự (Dưới biên)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-04] Mật khẩu 5 ký tự (Dưới biên)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Mật khẩu phải từ 6-20 ký tự');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"abcde\",\n    \"confirm_password\": \"abcde\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-05] Mật khẩu 6 ký tự (Ngay biên)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-05] Mật khẩu 6 ký tự (Ngay biên)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('success');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"abcdef\",\n    \"confirm_password\": \"abcdef\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-06] Mật khẩu 7 ký tự (Trên biên dưới)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-06] Mật khẩu 7 ký tự (Trên biên dưới)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('success');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"abcdefg\",\n    \"confirm_password\": \"abcdefg\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-07] Mật khẩu 19 ký tự (Dưới biên trên)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-07] Mật khẩu 19 ký tự (Dưới biên trên)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('success');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"abcdefghijklmnopqrs\",\n    \"confirm_password\": \"abcdefghijklmnopqrs\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-08] Mật khẩu 20 ký tự (Ngay biên trên)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-08] Mật khẩu 20 ký tự (Ngay biên trên)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('success');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"abcdefghijklmnopqrst\",\n    \"confirm_password\": \"abcdefghijklmnopqrst\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-09] Mật khẩu 21 ký tự (Trên biên trên)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-09] Mật khẩu 21 ký tự (Trên biên trên)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Mật khẩu không được vượt quá 20 ký tự');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"abcdefghijklmnopqrstu\",\n    \"confirm_password\": \"abcdefghijklmnopqrstu\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-11] SĐT chứa chữ cái",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-11] SĐT chứa chữ cái\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('chỉ được chứa số');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"0901a14d67\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-12] SĐT ít hơn 10 chữ số",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-12] SĐT ít hơn 10 chữ số\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Số điện thoại phải bao gồm 10 số');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"012345678\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-13] SĐT nhiều hơn 10 chữ số",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-13] SĐT nhiều hơn 10 chữ số\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Số điện thoại phải bao gồm 10 số');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"01234567890\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-14] SĐT không bắt đầu bằng số 0",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-14] SĐT không bắt đầu bằng số 0\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Số điện thoại phải bắt đầu bằng số 0');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"1234567890\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-15] Đăng ký trùng Email",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-15] Đăng ký trùng Email\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Email này đã được sử dụng');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{sharedEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-16] Đăng ký trùng SĐT",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-16] Đăng ký trùng SĐT\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Số điện thoại này đã được sử dụng');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{sharedPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-17] Đăng nhập hợp lệ",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-17] Đăng nhập hợp lệ\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('success');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"{{sharedEmail}}\",\n    \"password\": \"abcdfhgjtghtg\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "login"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-18] Đăng nhập sai mật khẩu",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-18] Đăng nhập sai mật khẩu\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Email hoặc mật khẩu không đúng');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"{{sharedEmail}}\",\n    \"password\": \"wrongpass\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "login"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-19] Đăng nhập Email chưa đăng ký",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-19] Đăng nhập Email chưa đăng ký\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Email hoặc mật khẩu không đúng');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"notfound@test.com\",\n    \"password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "login"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-20] Đăng nhập để trống",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-20] Đăng nhập để trống\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Vui lòng nhập email và mật khẩu');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"\",\n    \"password\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "login"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-21] Xác nhận mật khẩu không khớp",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-21] Xác nhận mật khẩu không khớp\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Mật khẩu xác nhận không khớp');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123457\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-22] Đăng ký để trống tất cả",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-22] Đăng ký để trống tất cả\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Vui lòng nhập đầy đủ thông tin');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"\",\n    \"last_name\": \"\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"\",\n    \"confirm_password\": \"\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-23] Đăng ký để trống 1 trường",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-23] Đăng ký để trống 1 trường\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Vui lòng nhập đầy đủ thông tin');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-24] Email sai định dạng (Thiếu @)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-24] Email sai định dạng (Thiếu @)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Email không hợp lệ');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"test24test.com\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-25] Email sai định dạng (Thiếu tên miền)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-25] Email sai định dạng (Thiếu tên miền)\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Email không hợp lệ');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"test24@\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-26] Họ chứa số",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-26] Họ chứa số\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('không được chứa số hoặc ký tự đặc biệt');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn 123\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-27] SĐT chứa ký tự đặc biệt",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-27] SĐT chứa ký tự đặc biệt\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Số điện thoại không hợp lệ');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"0901234567@\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-28] Tên có ký tự đặc biệt",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-28] Tên có ký tự đặc biệt\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('không được chứa số hoặc ký tự đặc biệt');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"A@\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-29] Bỏ trống tên",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-29] Bỏ trống tên\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Vui lòng nhập đầy đủ thông tin');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-30] Tên vượt quá 255 ký tự",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-30] Tên vượt quá 255 ký tự\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('không được vượt quá 255 ký tự');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"Nguyễn\",\n    \"last_name\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-31] Bỏ trống Họ",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-31] Bỏ trống Họ\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('Vui lòng nhập đầy đủ thông tin');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[TC-AH-32] Họ vượt quá 255 ký tự",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"[TC-AH-32] Họ vượt quá 255 ký tự\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('error');",
+              "    pm.expect(jsonData.message).to.include('không được vượt quá 255 ký tự');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"first_name\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n    \"last_name\": \"A\",\n    \"email\": \"{{freshEmail}}\",\n    \"phone\": \"{{freshPhone}}\",\n    \"password\": \"123456\",\n    \"confirm_password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth.php?action=register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth.php"
+          ],
+          "query": [
+            {
+              "key": "action",
+              "value": "register"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/software-testing-movie-ticket-booking"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.variables.set('freshEmail', 'test_fresh_' + Date.now() + Math.floor(Math.random()*1000) + '@test.com');",
+          "pm.variables.set('freshPhone', '09' + Math.floor(10000000 + Math.random() * 90000000));"
+        ]
+      }
+    }
+  ]
+}

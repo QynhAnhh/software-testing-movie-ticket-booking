@@ -1,0 +1,29 @@
+Options -Indexes
+DirectoryIndex frontend/index.php
+
+RewriteEngine On
+RewriteBase /software-testing-movie-ticket-booking/
+
+# 0. Bỏ qua các file/thư mục thực sự tồn tại trên disk (vendor, node_modules, .git...)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 1. Chặn truy cập thẳng vào thư mục /frontend/ — redirect về root
+RewriteCond %{REQUEST_URI} ^/software-testing-movie-ticket-booking/frontend/
+RewriteRule ^frontend/(.*)$ /software-testing-movie-ticket-booking/$1 [R=301,L]
+
+# 2. Chuyển hướng các request API vào backend/api
+RewriteRule ^api/(.*)$ backend/api/$1 [L]
+
+# 3. Chuyển hướng các request Admin vào backend/admin
+RewriteRule ^admin/(.*)$ backend/admin/$1 [L]
+
+# 4. Chuyển hướng các file tĩnh (css, js, images) vào frontend/ (khi chưa tồn tại ở root)
+RewriteRule ^(css|js|images)/(.*)$ frontend/$1/$2 [L]
+
+# 5. Trỏ các request tới các trang giao diện (.php) vào frontend/
+RewriteRule ^(.*\.php)$ frontend/$1 [L]
+
+# 6. Mặc định trỏ thư mục gốc về frontend/index.php
+RewriteRule ^$ frontend/index.php [L]
