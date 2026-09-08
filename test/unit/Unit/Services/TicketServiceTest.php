@@ -104,4 +104,111 @@ class TicketServiceTest extends TestCase
             'TC-TKT-09: Thêm vé thành công trọn vẹn và trả về ID vé mới (Nhánh N10 -> N11 - Happy Path)' => ['TC-TKT-09: Thêm vé thành công trọn vẹn và trả về ID vé mới (Nhánh N10 -> N11 - Happy Path)', 'success', ['booking_id' => 101, 'showtime_id' => 1, 'seat_id' => 10, 'price' => 90000, 'status' => 'booked'], 'success', 'Thêm vé thành công!', 77],
         ];
     }
+
+/*
+     =========================================================================
+     PHẦN II: KIỂM THỬ BỔ SUNG (TỐI ƯU ĐẠT 80% - 90% COVERAGE)
+     =========================================================================
+     */
+
+    /**
+     * @testdox TC-TKT-UPDATE-01: updateTicket() trả về lỗi khi ID không hợp lệ hoặc validation thất bại
+     */
+    public function test_updateTicket_invalid_data()
+    {
+        // 1. Kiểm tra ID không hợp lệ (<= 0)
+        $result = $this->ticketService->updateTicket(0, []);
+        $this->assertSame('error', $result['status']);
+
+        // 2. Kiểm tra validation thất bại
+        $ticketId = 12;
+        $this->ticketModelMock->method('getById')->with($ticketId)->willReturn(['id' => $ticketId]);
+        $this->bookingModelMock->method('getById')->willReturn(null); // Booking không tồn tại
+
+        $data = ['booking_id' => 999, 'showtime_id' => 1, 'seat_id' => 1, 'price' => 90000];
+        $result = $this->ticketService->updateTicket($ticketId, $data);
+
+        $this->assertSame('error', $result['status']);
+        $this->assertSame('Booking không hợp lệ!', $result['message']);
+    }
+
+    /**
+     * @testdox TC-TKT-UPDATE-02: updateTicket() thành công trọn vẹn (Happy Path)
+     */
+    public function test_updateTicket_success()
+    {
+        $ticketId = 12;
+        $this->ticketModelMock->method('getById')->with($ticketId)->willReturn(['id' => $ticketId]);
+
+        // Giả lập validate thành công
+        $this->bookingModelMock->method('getById')->willReturn(['id' => 101]);
+        $this->showtimeModelMock->method('findById')->willReturn(['id' => 1, 'room_id' => 5]);
+        $this->seatModelMock->method('findById')->willReturn(['id' => 10, 'room_id' => 5]);
+        $this->ticketModelMock->method('isSeatBooked')->willReturn(false);
+
+        $data = ['booking_id' => 101, 'showtime_id' => 1, 'seat_id' => 10, 'price' => 90000, 'status' => 'booked'];
+        $this->ticketModelMock->expects($this->once())->method('update')->willReturn(true);
+
+        $result = $this->ticketService->updateTicket($ticketId, $data);
+
+        $this->assertSame('success', $result['status']);
+    }
+
+    /**
+     * @testdox TC-TKT-DELETE-01: deleteTicket() hoạt động chính xác với trường hợp lỗi và thành công
+     */
+    public function test_deleteTicket_flow()
+    {
+        // 1. Trường hợp ID không hợp lệ
+        $result = $this->ticketService->deleteTicket(0);
+        $this->assertSame('error', $result['status']);
+
+        // 2. Trường hợp xóa thành công
+        $ticketId = 15;
+        $this->ticketModelMock->method('getById')->with($ticketId)->willReturn(['id' => $ticketId]);
+        $this->ticketModelMock->expects($this->once())->method('delete')->with($ticketId)->willReturn(true);
+
+        $result = $this->ticketService->deleteTicket($ticketId);
+        $this->assertSame('success', $result['status']);
+    }
+
+    /**
+     * @testdox TC-TKT-GET-01: getTicketById() và getTicketsByBookingId() trả về dữ liệu đúng
+     */
+    public function test_getTickets_queries()
+    {
+        // 1. getTicketById với ID hợp lệ
+        $ticket = ['id' => 10, 'ticket_code' => 'TKT-10'];
+        $this->ticketModelMock->method('getById')->with(10)->willReturn($ticket);
+        $this->assertSame($ticket, $this->ticketService->getTicketById(10));
+
+        // 2. getTicketsByBookingId với ID hợp lệ
+        $tickets = [['id' => 1, 'booking_id' => 101]];
+        $this->ticketModelMock->method('getByBookingId')->with(101)->willReturn($tickets);
+        $this->assertSame($tickets, $this->ticketService->getTicketsByBookingId(101));
+    }
+
+    /**
+     * @testdox TC-TKT-SEAT-01: getBookedSeatIdsByShowtimeId() và isSeatBooked()
+     */
+    public function test_seat_helpers()
+    {
+        $seatIds = [15, 16];
+        $this->ticketModelMock->method('getBookedSeatIdsByShowtimeId')->with(201)->willReturn($seatIds);
+        $this->assertSame($seatIds, $this->ticketService->getBookedSeatIdsByShowtimeId(201));
+
+        $this->ticketModelMock->method('isSeatBooked')->with(201, 15, 100)->willReturn(true);
+        $this->assertTrue($this->ticketService->isSeatBooked(201, 15, 100));
+    }
+
+    /**
+     * @testdox TC-TKT-BULK-01: createMany() thực thi chèn hàng loạt vé thành công
+     */
+    public function test_createMany()
+    {
+        $seatPrices = [['seat_id' => 15, 'price' => 80000.0]];
+        $this->ticketModelMock->expects($this->once())->method('createMany')->willReturn(true);
+
+        $this->assertTrue($this->ticketService->createMany(101, 201, $seatPrices));
+    }
 }

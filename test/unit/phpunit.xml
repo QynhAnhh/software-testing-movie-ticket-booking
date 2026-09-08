@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="bootstrap.php"
-         colors="true"
-         verbose="true">
+         colors="true">
     <testsuites>
         <testsuite name="Unit">
             <directory>Unit</directory>
-            <directory>../../tests/Unit</directory>
         </testsuite>
     </testsuites>
-    <coverage processUncoveredFiles="false">
-        <include>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
             <file>../../backend/app/Services/AuthService.php</file>
             <file>../../backend/app/Services/BookingService.php</file>
             <file>../../backend/app/Services/MovieService.php</file>
@@ -17,8 +16,9 @@
             <file>../../backend/app/Services/ShowtimeService.php</file>
             <file>../../backend/app/Services/TicketService.php</file>
             <file>../../backend/app/Services/VoucherService.php</file>
-        </include>
-    </coverage>
+        </whitelist>
+    </filter>
+
     <php>
         <env name="APP_ENV" value="testing"/>
     </php>

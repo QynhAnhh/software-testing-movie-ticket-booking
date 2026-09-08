@@ -111,8 +111,11 @@ class AuthServiceTest extends TestCase
             ['phone', '1234567890', 'error', 'phải bắt đầu bằng số 0', 'TC-AH-14'], // Không đầu 0
             ['email', 'test24test.com', 'error', 'Email không hợp lệ', 'TC-AH-24'], // Thiếu @
             ['email', 'test24@', 'error', 'Email không hợp lệ', 'TC-AH-25'], // Thiếu domain
-            ['last_name', 'A@123', 'error', 'không được chứa số hoặc ký tự đặc biệt', 'TC-AH-26'], // Tên chứa ký tự đặc biệt
+            ['last_name', 'A@123', 'error', 'Tên không được chứa số hoặc ký tự đặc biệt', 'TC-AH-26'], // Tên chứa ký tự đặc biệt
             ['phone', '090123@#67', 'error', 'không hợp lệ', 'TC-AH-27'], // SĐT chứa ký tự đặc biệt
+            ['first_name', 'A123', 'error', 'Họ không được chứa số hoặc ký tự đặc biệt', 'TC-AH-28'], // Họ chứa số
+            ['first_name', str_repeat('a', 256), 'error', 'Họ không được vượt quá 255 ký tự', 'TC-AH-29'], // Họ quá dài
+            ['last_name', str_repeat('b', 256), 'error', 'Tên không được vượt quá 255 ký tự', 'TC-AH-30'], // Tên quá dài
         ];
     }
 

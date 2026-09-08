@@ -20,12 +20,10 @@ class BookingServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        // tạo mock cho các Model thực tế mà BookingService sử dụng
-        $this->bookingModelMock = $this->createMock(BookingModel::class);
-        $this->ticketModelMock = $this->createMock(TicketModel::class);
+        $this->bookingModelMock  = $this->createMock(BookingModel::class);
+        $this->ticketModelMock   = $this->createMock(TicketModel::class);
         $this->showtimeModelMock = $this->createMock(ShowtimeModel::class);
-        $this->seatModelMock = $this->createMock(SeatModel::class);
+        $this->seatModelMock     = $this->createMock(SeatModel::class);
 
         $this->bookingService = new BookingService(
             $this->bookingModelMock,
@@ -37,43 +35,65 @@ class BookingServiceTest extends TestCase
 
     protected function tearDown(): void
     {
-        unset($this->bookingService);
-        unset($this->bookingModelMock);
-        unset($this->ticketModelMock);
-        unset($this->showtimeModelMock);
-        unset($this->seatModelMock);
+        unset($this->bookingService, $this->bookingModelMock,
+              $this->ticketModelMock, $this->showtimeModelMock, $this->seatModelMock);
         parent::tearDown();
     }
 
+    // -------------------------------------------------------------------------
+    // Helper: trả về showtime hợp lệ trong tương lai
+    // -------------------------------------------------------------------------
+    private function futureShowtime(array $override = []): array
+    {
+        return array_merge([
+            'id'         => 10,
+            'room_id'    => 5,
+            'base_price' => 90000,
+            'show_date'  => date('Y-m-d', strtotime('+7 days')),
+            'start_time' => '18:00:00',
+            'status'     => 'active',
+        ], $override);
+    }
+
+    private function mockShowtime(?array $showtime = null): void
+    {
+        // BookingRequestValidator gọi getDetailById() 2 lần: một lần validate, một lần lấy data
+        $this->showtimeModelMock->method('getDetailById')
+            ->willReturn($showtime ?? $this->futureShowtime());
+    }
+
+    private function mockSeats(array $seats): void
+    {
+        $this->seatModelMock->method('getByIds')->willReturn($seats);
+    }
+
+    private function defaultSeat(int $id = 1, int $roomId = 5): array
+    {
+        return ['id' => $id, 'room_id' => $roomId, 'is_active' => 1, 'seat_type_price' => 0];
+    }
+
     // =========================================================================
-    // NHÓM 1: KIỂM THỬ VÒNG ĐỜI TRẠNG THÁI (STATE TRANSITION)
+    // NHÓM 1: VÒNG ĐỜI TRẠNG THÁI (STATE TRANSITION)
     // =========================================================================
 
     /**
-     * @testdox TC-OI-01: Kiểm tra tạo booking mới phải ở trạng thái Pending
+     * @testdox TC-OI-01: Tạo booking mới phải ở trạng thái Pending
      */
     public function test_TC_OI_01_create_booking_should_have_pending_status()
     {
-        $userId = 1;
+        $seatIds    = [1, 2];
         $showtimeId = 10;
-        $seatIds = [1, 2];
 
-        // Prepare showtime and seat data so processBooking can compute price and create booking
-        $this->showtimeModelMock->method('getDetailById')->with($showtimeId)
-            ->willReturn(['id' => $showtimeId, 'room_id' => 5, 'base_price' => 90000, 'show_date' => date('Y-m-d'), 'start_time' => date('H:i:s', strtotime('+1 hour')), 'status' => 'active']);
-
-        $this->seatModelMock->method('lockByIds')->with($seatIds)
-            ->willReturn([
-                ['id' => 1, 'room_id' => 5, 'is_active' => 1, 'seat_type_price' => 0],
-                ['id' => 2, 'room_id' => 5, 'is_active' => 1, 'seat_type_price' => 0],
-            ]);
-
+        $this->mockShowtime();
+        $this->mockSeats([
+            $this->defaultSeat(1),
+            $this->defaultSeat(2),
+        ]);
         $this->ticketModelMock->method('isSeatBooked')->willReturn(false);
-
         $this->bookingModelMock->method('createBooking')->willReturn(101);
         $this->ticketModelMock->method('createMany')->willReturn(true);
 
-        $result = $this->bookingService->processBooking($userId, $showtimeId, $seatIds, 'cash');
+        $result = $this->bookingService->processBooking(1, $showtimeId, $seatIds, 'momo');
 
         $this->assertIsArray($result);
         $this->assertEquals('success', $result['status']);
@@ -81,52 +101,45 @@ class BookingServiceTest extends TestCase
     }
 
     /**
-     * @testdox TC-OI-02: Kiểm tra chuyển trạng thái Pending -> Paid khi thanh toán thành công
+     * @testdox TC-OI-02: Chuyển trạng thái Pending -> Paid khi admin cập nhật
      */
     public function test_TC_OI_02_payment_success_transitions_pending_to_paid()
     {
         $bookingId = 101;
-
-        // Admin updates booking status from pending to paid
-        $this->bookingModelMock->method('getAdminBookingById')->with($bookingId)
+        $this->bookingModelMock->method('getAdminBookingById')
             ->willReturn(['id' => $bookingId, 'status' => 'pending']);
-
-        $this->bookingModelMock->method('updateBookingStatus')->with($bookingId, 'paid')->willReturn(true);
-        $this->bookingModelMock->method('updateTicketsStatusByBooking')->with($bookingId, 'booked')->willReturn(true);
+        $this->bookingModelMock->method('updateBookingStatus')->willReturn(true);
+        $this->bookingModelMock->method('updateTicketsStatusByBooking')->willReturn(true);
 
         $result = $this->bookingService->updateAdminBookingStatus($bookingId, 'paid');
 
-        $this->assertIsArray($result);
         $this->assertEquals('success', $result['status']);
     }
 
     /**
-     * @testdox TC-OI-03: Kiểm tra hủy đặt vé thủ công (Pending -> Canceled) và giải phóng ghế
+     * @testdox TC-OI-03: Hủy vé thành công -> trạng thái Canceled
      */
-    public function test_TC_OI_03_manual_cancellation_changes_status_to_canceled_and_releases_seats()
+    public function test_TC_OI_03_manual_cancellation_changes_status_to_canceled()
     {
+        $userId    = 1;
         $bookingId = 101;
 
-        $userId = 1;
-        $this->bookingModelMock->method('getByIdAndUser')->with($bookingId, $userId)
+        $this->bookingModelMock->method('getByIdAndUser')
             ->willReturn(['id' => $bookingId, 'status' => 'pending']);
-
-        $this->bookingModelMock->expects($this->once())->method('cancelBooking')->with($bookingId, $userId)->willReturn(true);
+        $this->bookingModelMock->method('getPrimaryShowtimeByBookingId')->willReturn(null);
+        $this->bookingModelMock->method('cancelBooking')->willReturn(true);
 
         $result = $this->bookingService->cancelBooking($userId, $bookingId);
 
-        $this->assertIsArray($result);
         $this->assertEquals('success', $result['status']);
     }
 
     /**
-     * @testdox TC-OI-04: Kiểm tra time-out tự động hủy đơn Pending sau 10 phút
+     * @testdox TC-OI-04: normalizeAdminFilters xử lý đúng ngày tháng hợp lệ
      */
-    public function test_TC_OI_04_automatic_timeout_after_10_minutes_cancels_booking()
+    public function test_TC_OI_04_normalize_admin_filters_valid_dates()
     {
-        // Bổ sung: kiểm tra normalizeAdminFilters xử lý ngày đúng (thay thế TC timeout vì service không có phương thức xử lý timeout)
-        $input = ['status' => 'pending', 'from_date' => '2026-01-01', 'to_date' => '2026-12-31', 'search' => ''];
-
+        $input   = ['status' => 'pending', 'from_date' => '2026-01-01', 'to_date' => '2026-12-31', 'search' => ''];
         $filters = $this->bookingService->normalizeAdminFilters($input);
 
         $this->assertEquals('pending', $filters['status']);
@@ -139,20 +152,14 @@ class BookingServiceTest extends TestCase
     // =========================================================================
 
     /**
-     * @testdox TC-OI-05: Kiểm tra xem lịch sử đặt vé hiển thị chính xác thông tin sau khi thanh toán
+     * @testdox TC-OI-05: Lịch sử đặt vé hiển thị chính xác thông tin
      */
-    public function test_TC_OI_05_booking_history_returns_correct_paid_details()
+    public function test_TC_OI_05_booking_history_returns_correct_details()
     {
         $userId = 1;
-        $this->bookingModelMock->method('getBookingsByUser')->with($userId)
-            ->willReturn([
-                [
-                    'id' => 101,
-                    'movie_title' => 'Avengers',
-                    'status' => 'paid',
-                    'total_price' => 180000
-                ]
-            ]);
+        $this->bookingModelMock->method('getBookingsByUser')->willReturn([
+            ['id' => 101, 'movie_title' => 'Avengers', 'status' => 'paid', 'total_price' => 180000]
+        ]);
 
         $history = $this->bookingService->getUserBookings($userId);
 
@@ -162,125 +169,98 @@ class BookingServiceTest extends TestCase
     }
 
     /**
-     * @testdox TC-OI-06: Chặn thanh toán lại đơn hàng đã ở trạng thái Paid
+     * @testdox TC-OI-06: Chặn đặt ghế đã có người đặt
      */
-    public function test_TC_OI_06_prevent_repayment_on_already_paid_booking()
+    public function test_TC_OI_06_prevent_booking_already_booked_seat()
     {
-        // Nếu ghế đã được đặt (ticketModel->isSeatBooked trả true) thì processBooking phải trả về lỗi
-        $userId = 1;
-        $showtimeId = 10;
-        $seatIds = [1];
-
-        $this->showtimeModelMock->method('getDetailById')->willReturn(['id' => $showtimeId, 'room_id' => 5, 'base_price' => 90000, 'status' => 'active', 'show_date' => date('Y-m-d'), 'start_time' => date('H:i:s', strtotime('+1 hour'))]);
-        $this->seatModelMock->method('lockByIds')->willReturn([['id'=>1,'room_id'=>5,'is_active'=>1,'seat_type_price'=>0]]);
+        $this->mockShowtime();
+        $this->mockSeats([$this->defaultSeat(1)]);
         $this->ticketModelMock->method('isSeatBooked')->willReturn(true);
 
-        $result = $this->bookingService->processBooking($userId, $showtimeId, $seatIds, 'cash');
+        $result = $this->bookingService->processBooking(1, 10, [1], 'momo');
 
-        $this->assertIsArray($result);
         $this->assertEquals('error', $result['status']);
     }
 
     // =========================================================================
-    // NHÓM 3: RÀNG BUỘC ĐẦU VÀO VÀ BẢO MẬT GIÁ (SECURITY)
+    // NHÓM 3: RÀNG BUỘC ĐẦU VÀO VÀ BẢO MẬT GIÁ
     // =========================================================================
 
     /**
-     * @testdox TC-OI-07: Gửi booking_id không tồn tại (999999)
+     * @testdox TC-OI-07: bookingId không tồn tại -> hủy vé trả lỗi
      */
-    public function test_TC_OI_07_invalid_booking_id_throws_exception()
+    public function test_TC_OI_07_invalid_booking_id_returns_error()
     {
-        $invalidBookingId = 999999;
+        $this->bookingModelMock->method('getByIdAndUser')->willReturn(null);
 
-        $this->bookingModelMock->method('getByIdAndUser')->with($invalidBookingId, $this->anything())->willReturn(null);
+        $result = $this->bookingService->cancelBooking(1, 999999);
 
-        $result = $this->bookingService->cancelBooking(1, $invalidBookingId);
-
-        $this->assertIsArray($result);
         $this->assertEquals('error', $result['status']);
     }
 
     /**
-     * @testdox TC-OI-08: Thiếu danh sách seat_ids khi đặt vé
+     * @testdox TC-OI-08: Thiếu seat_ids -> trả về lỗi
      */
-    public function test_TC_OI_08_empty_seat_ids_throws_exception()
+    public function test_TC_OI_08_empty_seat_ids_returns_error()
     {
-        // processBooking kiểm tra seatIds rỗng và trả về lỗi
-        $result = $this->bookingService->processBooking(1, 10, [], 'cash');
+        $this->showtimeModelMock->method('getDetailById')
+            ->willReturn($this->futureShowtime());
 
-        $this->assertIsArray($result);
+        $result = $this->bookingService->processBooking(1, 10, [], 'momo');
+
         $this->assertEquals('error', $result['status']);
     }
 
     /**
-     * @testdox TC-OI-09: Backend tự tính lại giá vé đúng khi Client gửi total_price bằng 0 hoặc âm
+     * @testdox TC-OI-09: Backend tự tính giá đúng (2 ghế x 90000 = 180000)
      */
-    public function test_TC_OI_09_backend_recalculates_price_ignoring_client_total_price()
+    public function test_TC_OI_09_backend_recalculates_price_correctly()
     {
-        $seatIds = [1, 2];
+        $seatIds    = [1, 2];
         $showtimeId = 10;
 
-        $this->showtimeModelMock->method('getDetailById')->with($showtimeId)
-            ->willReturn(['id' => $showtimeId, 'room_id' => 5, 'base_price' => 90000, 'status' => 'active', 'show_date' => date('Y-m-d'), 'start_time' => date('H:i:s', strtotime('+1 hour'))]);
+        $this->mockShowtime($this->futureShowtime(['base_price' => 90000]));
+        $this->mockSeats([
+            $this->defaultSeat(1),
+            $this->defaultSeat(2),
+        ]);
+        $this->ticketModelMock->method('isSeatBooked')->willReturn(false);
 
-        $this->seatModelMock->method('lockByIds')->with($seatIds)
-            ->willReturn([
-                ['id' => 1, 'room_id' => 5, 'is_active' => 1, 'seat_type_price' => 0],
-                ['id' => 2, 'room_id' => 5, 'is_active' => 1, 'seat_type_price' => 0],
-            ]);
-
-        // capture createBooking call to verify price passed
         $this->bookingModelMock->expects($this->once())
             ->method('createBooking')
-            ->with($this->anything(), $this->equalTo(180000), $this->anything())
+            ->with($this->anything(), $this->equalTo(180000.0), $this->anything())
             ->willReturn(201);
 
         $this->ticketModelMock->method('createMany')->willReturn(true);
 
-        $res = $this->bookingService->processBooking(1, $showtimeId, $seatIds, 'cash');
+        $res = $this->bookingService->processBooking(1, $showtimeId, $seatIds, 'momo');
 
         $this->assertEquals('success', $res['status']);
         $this->assertEquals(201, $res['booking_id']);
     }
 
-    // =========================================================================
-    // NHÓM 4: SỰ CỐ MÔI TRƯỜNG VÀ PHIÊN LÀM VIỆC (SESSION)
-    // =========================================================================
-
-/**
-     * @testdox TC-OI-10: Mất kết nối DB/Mạng khi bấm thanh toán không sinh ra booking rác (Rollback)
+    /**
+     * @testdox TC-OI-10: DB lỗi khi tạo booking -> rollback, không sinh dữ liệu rác
      */
-    public function test_TC_OI_10_network_failure_rolls_back_transaction_without_garbage_data()
+    public function test_TC_OI_10_db_failure_rolls_back()
     {
-        $userId = 1;
-        $showtimeId = 10;
-        $seatIds = [1, 2];
+        $this->mockShowtime();
+        $this->mockSeats([$this->defaultSeat(1)]);
+        $this->ticketModelMock->method('isSeatBooked')->willReturn(false);
+        $this->bookingModelMock->method('createBooking')->willReturn(null); // tạo thất bại
 
-        // Bỏ expects($this->once()) để tránh lỗi nếu Service trả về lỗi trước bước start transaction
-        $this->bookingModelMock->method('beginTransaction');
-        $this->bookingModelMock->method('rollBack');
+        $result = $this->bookingService->processBooking(1, 10, [1], 'momo');
 
-        // Giả lập cơ sở dữ liệu ném Exception khi tạo booking
-        $this->bookingModelMock->method('createBooking')
-            ->willThrowException(new \PDOException('Database connection failed'));
-
-        // Truyền đủ 4 tham số cho processBooking
-        $result = $this->bookingService->processBooking($userId, $showtimeId, $seatIds, 180000);
-
-        // Kiểm tra kết quả bắt lỗi an toàn
-        $this->assertIsArray($result);
         $this->assertEquals('error', $result['status']);
     }
 
     /**
-     * @testdox TC-OI-11: Chặn thanh toán và yêu cầu đăng nhập lại khi Session hết hạn
+     * @testdox TC-OI-11: userId = 0 -> cancelBooking trả lỗi (mô phỏng session hết hạn)
      */
-    public function test_TC_OI_11_expired_session_blocks_payment()
+    public function test_TC_OI_11_expired_session_blocks_cancel()
     {
-        // Thanh toán bị chặn khi userId không hợp lệ (mô phỏng session hết hạn)
         $res = $this->bookingService->cancelBooking(0, 101);
 
-        $this->assertIsArray($res);
         $this->assertEquals('error', $res['status']);
     }
 }

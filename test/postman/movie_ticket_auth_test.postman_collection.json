@@ -18,6 +18,16 @@
             ],
             "type": "text/javascript"
           }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('sharedEmail', 'test_shared_' + Date.now() + '@test.com');",
+              "pm.collectionVariables.set('sharedPhone', '090' + Math.floor(1000000 + Math.random() * 9000000));"
+            ]
+          }
         }
       ],
       "request": {
@@ -1468,10 +1478,6 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "if (!pm.collectionVariables.has('sharedEmail')) {",
-          "    pm.collectionVariables.set('sharedEmail', 'test_shared_' + Date.now() + '@test.com');",
-          "    pm.collectionVariables.set('sharedPhone', '090' + Math.floor(1000000 + Math.random() * 9000000));",
-          "}",
           "pm.variables.set('freshEmail', 'test_fresh_' + Date.now() + Math.floor(Math.random()*1000) + '@test.com');",
           "pm.variables.set('freshPhone', '09' + Math.floor(10000000 + Math.random() * 90000000));"
         ]

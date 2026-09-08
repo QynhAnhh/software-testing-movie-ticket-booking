@@ -9,6 +9,74 @@
   },
   "item": [
     {
+      "name": "00 - Login Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Đăng nhập Admin thành công\", function () {",
+              "    pm.response.to.have.status(200);",
+              "",
+              "    const body = pm.response.text();",
+              "",
+              "    pm.expect(",
+              "        body.includes(\"Đăng xuất\") ||",
+              "        body.includes(\"Quản lý\") ||",
+              "        body.includes(\"admin\")",
+              "    ).to.be.true;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "auth_action",
+              "value": "login",
+              "type": "text",
+              "uuid": "43f485a3-f6f6-4215-8b74-f3e9048fc1a3"
+            },
+            {
+              "key": "email",
+              "value": "{{admin_email}}",
+              "type": "text",
+              "uuid": "8d602d26-4fc9-4d6c-a9f1-f6d76704a715"
+            },
+            {
+              "key": "password",
+              "value": "{{admin_password}}",
+              "type": "text",
+              "uuid": "b83a54a0-383a-4533-83a0-38f73066f4f9"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/login.php",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "login.php"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "MOVIE - TC-DT-01 đến TC-DT-10",
       "item": [
         {
@@ -1592,7 +1660,7 @@
                 },
                 {
                   "key": "id",
-                  "value": "{{showtime_capacity_test_id}}",
+                  "value": "{{showtime_with_booking_id}}",
                   "type": "text"
                 },
                 {
@@ -1898,74 +1966,6 @@
           "response": []
         }
       ]
-    },
-    {
-      "name": "00 - Login Admin",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Đăng nhập Admin thành công\", function () {",
-              "    pm.response.to.have.status(200);",
-              "",
-              "    const body = pm.response.text();",
-              "",
-              "    pm.expect(",
-              "        body.includes(\"Đăng xuất\") ||",
-              "        body.includes(\"Quản lý\") ||",
-              "        body.includes(\"admin\")",
-              "    ).to.be.true;",
-              "});"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {
-              "key": "auth_action",
-              "value": "login",
-              "type": "text",
-              "uuid": "43f485a3-f6f6-4215-8b74-f3e9048fc1a3"
-            },
-            {
-              "key": "email",
-              "value": "{{admin_email}}",
-              "type": "text",
-              "uuid": "8d602d26-4fc9-4d6c-a9f1-f6d76704a715"
-            },
-            {
-              "key": "password",
-              "value": "{{admin_password}}",
-              "type": "text",
-              "uuid": "b83a54a0-383a-4533-83a0-38f73066f4f9"
-            }
-          ]
-        },
-        "url": {
-          "raw": "{{base_url}}/login.php",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "login.php"
-          ]
-        }
-      },
-      "response": []
     }
   ],
   "event": [
@@ -2002,9 +2002,9 @@
       "value": "admin@example.com"
     },
     {
-      "key": "admin_password",
-      "value": "password"
-    },
+  "key": "admin_password",
+  "value": "Admin@123"
+},
     {
       "key": "movie_with_showtime_id",
       "value": ""
@@ -2035,7 +2035,7 @@
     },
     {
       "key": "small_room_id",
-      "value": ""
+      "value": "5"
     },
     {
       "key": "conflict_room_id",
@@ -2055,7 +2055,7 @@
     },
     {
       "key": "showtime_with_booking_id",
-      "value": ""
+      "value": "340"
     },
     {
       "key": "future_date",

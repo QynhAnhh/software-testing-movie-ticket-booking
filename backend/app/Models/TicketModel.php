@@ -148,33 +148,32 @@ class TicketModel {
             return false;
         }
 
-        $values = [];
-        $types = '';
-        $params = [];
-        foreach ($seatPrices as $seatPrice) {
-            $values[] = '(?, ?, ?, ?, ?)';
-            $types .= 'iiids';
-            $params[] = $bookingId;
-            $params[] = $showtimeId;
-            $params[] = (int)$seatPrice['seat_id'];
-            $params[] = (float)$seatPrice['price'];
-            $params[] = 'booked';
-        }
-
+        $valueGroups = implode(', ', array_fill(0, count($seatPrices), '(?, ?, ?, ?, ?)'));
         $stmt = mysqli_prepare(
             $this->conn,
-            'INSERT INTO tickets (booking_id, showtime_id, seat_id, price, status) VALUES ' . implode(', ', $values)
+            "INSERT INTO tickets (booking_id, showtime_id, seat_id, price, status) VALUES {$valueGroups}"
         );
+
         if (!$stmt) {
             return false;
         }
 
-        $references = [$types];
-        foreach ($params as $index => $value) {
-            $references[] = &$params[$index];
+        $types = str_repeat('iiids', count($seatPrices));
+        $values = [];
+        foreach ($seatPrices as $seatPrice) {
+            $values[] = $bookingId;
+            $values[] = $showtimeId;
+            $values[] = (int)$seatPrice['seat_id'];
+            $values[] = (float)$seatPrice['price'];
+            $values[] = 'booked';
         }
-        call_user_func_array('mysqli_stmt_bind_param', [$stmt, ...$references]);
 
+        $parameters = [$types];
+        foreach ($values as $index => $value) {
+            $parameters[] = &$values[$index];
+        }
+
+        call_user_func_array('mysqli_stmt_bind_param', array_merge([$stmt], $parameters));
         return mysqli_stmt_execute($stmt);
     }
 

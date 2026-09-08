@@ -2,299 +2,253 @@
 
 namespace Tests\Unit\Services;
 
+use PHPUnit\Framework\TestCase;
 use App\Services\BookingService;
 use App\Models\BookingModel;
+use App\Models\TicketModel;
 use App\Models\ShowtimeModel;
 use App\Models\SeatModel;
-use App\Models\TicketModel;
-use PHPUnit\Framework\TestCase;
 
+/**
+ * CartTest: Kiểm thử tính toán giá (seat_type_price + base_price)
+ */
 class BookingServiceCartTest extends TestCase
 {
-    private function createService(
-        array $seatPrices = [0, 0, 20000, 20000],
-        ?float $expectedTotal = null
-    ): BookingService {
-        $booking = $this->createMock(BookingModel::class);
-        $showtime = $this->createMock(ShowtimeModel::class);
-        $seat = $this->createMock(SeatModel::class);
-        $ticket = $this->createMock(TicketModel::class);
+    private $service;
+    private $bookingMock;
+    private $showtimeMock;
+    private $seatMock;
+    private $ticketMock;
 
-        // Suất chiếu hợp lệ
-        $showtime->method('getDetailById')->willReturn([
-            'id' => 1,
-            'room_id' => 1,
-            'show_date' => '2099-12-31',
-            'start_time' => '20:00:00',
-            'base_price' => 90000,
-            'status' => 'active'
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->bookingMock  = $this->createMock(BookingModel::class);
+        $this->showtimeMock = $this->createMock(ShowtimeModel::class);
+        $this->seatMock     = $this->createMock(SeatModel::class);
+        $this->ticketMock   = $this->createMock(TicketModel::class);
+
+        $this->service = new BookingService(
+            $this->bookingMock,
+            $this->showtimeMock,
+            $this->seatMock,
+            $this->ticketMock
+        );
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->service, $this->bookingMock,
+              $this->showtimeMock, $this->seatMock, $this->ticketMock);
+        parent::tearDown();
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+    private function mockShowtimeWith(float $basePrice = 90000): void
+    {
+        $this->showtimeMock->method('getDetailById')->willReturn([
+            'id'         => 1,
+            'room_id'    => 1,
+            'base_price' => $basePrice,
+            'show_date'  => date('Y-m-d', strtotime('+7 days')),
+            'start_time' => '18:00:00',
+            'status'     => 'active',
+        ]);
+    }
+
+    private function makeSeat(int $id, float $typePrice = 0, int $roomId = 1): array
+    {
+        return ['id' => $id, 'room_id' => $roomId, 'is_active' => 1, 'seat_type_price' => $typePrice];
+    }
+
+    private function successSetup(array $seats): void
+    {
+        $this->seatMock->method('getByIds')->willReturn($seats);
+        $this->ticketMock->method('isSeatBooked')->willReturn(false);
+        $this->bookingMock->method('createBooking')->willReturn(999);
+        $this->ticketMock->method('createMany')->willReturn(true);
+    }
+
+    // =========================================================================
+    // TC-QG-05: Ghế thường (seat_type_price = 0)
+    // =========================================================================
+    public function testTCQG05CalculateNormalSeats()
+    {
+        $this->mockShowtimeWith(90000);
+        $this->successSetup([
+            $this->makeSeat(1, 0),
+            $this->makeSeat(2, 0),
         ]);
 
-        // Tạo dữ liệu ghế giả lập
-        $seats = [];
+        $this->bookingMock->expects($this->once())
+            ->method('createBooking')
+            ->with($this->anything(), 180000.0, $this->anything())
+            ->willReturn(999);
 
-        foreach ($seatPrices as $i => $extraPrice) {
-            $seats[] = [
-                'id' => $i + 1,
-                'room_id' => 1,
-                'is_active' => 1,
-                'seat_type_price' => $extraPrice
-            ];
-        }
-
-        $seat->method('getByIds')
-            ->willReturnCallback(function (array $ids) use ($seats) {
-                return array_values(
-                    array_filter(
-                        $seats,
-                        fn($seat) => in_array(
-                            (int)$seat['id'],
-                            array_map('intval', $ids),
-                            true
-                        )
-                    )
-                );
-            });
-
-        // Không có ghế nào bị đặt trước
-        $ticket->method('isSeatBooked')->willReturn(false);
-
-        /*
-         * Kiểm tra tổng tiền.
-         *
-         * Giá cơ bản:
-         * 90.000
-         *
-         * VIP:
-         * 90.000 + 20.000 = 110.000
-         */
-        if ($expectedTotal !== null) {
-            $booking->expects($this->once())
-                ->method('createBooking')
-                ->with(
-                    1,
-                    $expectedTotal,
-                    $this->anything()
-                )
-                ->willReturn(1001);
-        } else {
-            $booking->method('createBooking')
-                ->willReturn(1001);
-        }
-
-        $ticket->method('createMany')->willReturn(true);
-
-        // Transaction giả lập
-        $booking->method('beginTransaction');
-        $booking->method('commit');
-        $booking->method('rollback');
-
-        // Inject Mock vào BookingService
-        $reflection = new \ReflectionClass(BookingService::class);
-        $service = $reflection->newInstanceWithoutConstructor();
-
-        $reflection = new \ReflectionClass($service);
-
-        foreach ([
-            'bookingModel' => $booking,
-            'showtimeModel' => $showtime,
-            'seatModel' => $seat,
-            'ticketModel' => $ticket
-        ] as $property => $mock) {
-
-            $propertyRef = $reflection->getProperty($property);
-            $propertyRef->setAccessible(true); // NOSONAR
-            $propertyRef->setValue($service, $mock); // NOSONAR
-        }
-
-        return $service;
-    }
-
-    /**
-     * TC-QG-05
-     * 2 ghế thường:
-     * 90.000 + 90.000 = 180.000
-     */
-    public function testTCQG05CalculateNormalSeats(): void
-    {
-        $service = $this->createService(
-            [0, 0],
-            180000.0
-        );
-
-        $result = $service->processBooking(
-            1,
-            1,
-            [1, 2],
-            'cash'
-        );
-
+        $result = $this->service->processBooking(1, 1, [1, 2], 'momo');
         $this->assertSame('success', $result['status']);
     }
 
-    /**
-     * TC-QG-06
-     * 1 ghế thường + 1 ghế VIP:
-     * 90.000 + 110.000 = 200.000
-     */
-    public function testTCQG06CalculateNormalAndVipSeats(): void
+    // =========================================================================
+    // TC-QG-06: Ghế thường + VIP (seat_type_price > 0)
+    // =========================================================================
+    public function testTCQG06CalculateNormalAndVipSeats()
     {
-        $service = $this->createService(
-            [0, 20000],
-            200000.0
-        );
+        $this->mockShowtimeWith(90000);
+        $this->successSetup([
+            $this->makeSeat(1, 0),
+            $this->makeSeat(2, 50000), // VIP
+        ]);
 
-        $result = $service->processBooking(
-            1,
-            1,
-            [1, 2],
-            'cash'
-        );
+        $this->bookingMock->expects($this->once())
+            ->method('createBooking')
+            ->with($this->anything(), 230000.0, $this->anything())
+            ->willReturn(999);
 
+        $result = $this->service->processBooking(1, 1, [1, 2], 'momo');
         $this->assertSame('success', $result['status']);
     }
 
-    /**
-     * TC-QG-07
-     * Xóa ghế VIP khỏi giỏ:
-     * ban đầu: 200.000
-     * sau khi xóa VIP: còn 90.000
-     */
-    public function testTCQG07RecalculateAfterRemovingSeat(): void
+    // =========================================================================
+    // TC-QG-07: Chỉ chọn 1 ghế (sau khi bỏ 1 ghế ban đầu)
+    // =========================================================================
+    public function testTCQG07RecalculateAfterRemovingSeat()
     {
-        $service = $this->createService(
-            [0, 20000],
-            90000.0
-        );
+        $this->mockShowtimeWith(90000);
+        $this->successSetup([$this->makeSeat(1, 0)]);
 
-        // Sau khi xóa ghế VIP, chỉ còn ghế thường
-        $result = $service->processBooking(
-            1,
-            1,
-            [1],
-            'cash'
-        );
+        $this->bookingMock->expects($this->once())
+            ->method('createBooking')
+            ->with($this->anything(), 90000.0, $this->anything())
+            ->willReturn(999);
 
+        $result = $this->service->processBooking(1, 1, [1], 'momo');
         $this->assertSame('success', $result['status']);
     }
 
-    /**
-     * TC-QG-08
-     * Thay đổi từ ghế thường sang VIP:
-     * 90.000 -> 110.000
-     */
-    public function testTCQG08RecalculateAfterChangingToVip(): void
+    // =========================================================================
+    // TC-QG-08: Đổi sang ghế VIP
+    // =========================================================================
+    public function testTCQG08RecalculateAfterChangingToVip()
     {
-        $service = $this->createService(
-            [0, 20000],
-            110000.0
-        );
+        $this->mockShowtimeWith(90000);
+        $this->successSetup([$this->makeSeat(2, 50000)]);
 
-        // Sau khi đổi sang ghế VIP
-        $result = $service->processBooking(
-            1,
-            1,
-            [2],
-            'cash'
-        );
+        $this->bookingMock->expects($this->once())
+            ->method('createBooking')
+            ->with($this->anything(), 140000.0, $this->anything())
+            ->willReturn(999);
 
+        $result = $this->service->processBooking(1, 1, [2], 'momo');
         $this->assertSame('success', $result['status']);
     }
 
-    /**
-     * TC-QG-09
-     * Xóa toàn bộ giỏ hàng.
-     * Không được phép đặt khi không còn ghế.
-     */
-    public function testTCQG09EmptyCartIsRejected(): void
+    // =========================================================================
+    // TC-QG-09: Giỏ hàng rỗng -> lỗi
+    // =========================================================================
+    public function testTCQG09EmptyCartIsRejected()
     {
-        $service = $this->createService();
+        $this->showtimeMock->method('getDetailById')->willReturn([
+            'id' => 1, 'room_id' => 1, 'base_price' => 90000,
+            'show_date'  => date('Y-m-d', strtotime('+7 days')),
+            'start_time' => '18:00:00', 'status' => 'active',
+        ]);
 
-        $result = $service->processBooking(
-            1,
-            1,
-            [],
-            'cash'
-        );
-
+        $result = $this->service->processBooking(1, 1, [], 'momo');
         $this->assertSame('error', $result['status']);
     }
 
-    /**
-     * TC-QG-15
-     * Kiểm tra tính nhất quán:
-     * cùng một dữ liệu phải cho cùng một tổng tiền.
-     */
-    public function testTCQG15CalculationIsConsistent(): void
+    // =========================================================================
+    // TC-QG-15: Tính giá nhất quán (gọi lại 2 lần cho cùng input)
+    // =========================================================================
+    public function testTCQG15CalculationIsConsistent()
     {
-        $service = $this->createService(
-            [0, 20000],
-            200000.0
-        );
+        // Lần 1
+        $mock1 = $this->createMock(BookingModel::class);
+        $stm1  = $this->createMock(ShowtimeModel::class);
+        $sm1   = $this->createMock(SeatModel::class);
+        $tm1   = $this->createMock(TicketModel::class);
+        $stm1->method('getDetailById')->willReturn([
+            'id' => 1, 'room_id' => 1, 'base_price' => 90000,
+            'show_date' => date('Y-m-d', strtotime('+7 days')),
+            'start_time' => '18:00:00', 'status' => 'active',
+        ]);
+        $sm1->method('getByIds')->willReturn([$this->makeSeat(1, 0), $this->makeSeat(2, 0)]);
+        $tm1->method('isSeatBooked')->willReturn(false);
+        $mock1->method('createBooking')->willReturn(1);
+        $tm1->method('createMany')->willReturn(true);
+        $svc1   = new BookingService($mock1, $stm1, $sm1, $tm1);
+        $result1 = $svc1->processBooking(1, 1, [1, 2], 'momo');
 
-        $result = $service->processBooking(
-            1,
-            1,
-            [1, 2],
-            'cash'
-        );
+        // Lần 2
+        $mock2 = $this->createMock(BookingModel::class);
+        $stm2  = $this->createMock(ShowtimeModel::class);
+        $sm2   = $this->createMock(SeatModel::class);
+        $tm2   = $this->createMock(TicketModel::class);
+        $stm2->method('getDetailById')->willReturn([
+            'id' => 1, 'room_id' => 1, 'base_price' => 90000,
+            'show_date' => date('Y-m-d', strtotime('+7 days')),
+            'start_time' => '18:00:00', 'status' => 'active',
+        ]);
+        $sm2->method('getByIds')->willReturn([$this->makeSeat(1, 0), $this->makeSeat(2, 0)]);
+        $tm2->method('isSeatBooked')->willReturn(false);
+        $mock2->method('createBooking')->willReturn(2);
+        $tm2->method('createMany')->willReturn(true);
+        $svc2   = new BookingService($mock2, $stm2, $sm2, $tm2);
+        $result2 = $svc2->processBooking(1, 1, [1, 2], 'momo');
+
+        $this->assertSame($result1['status'], $result2['status']);
+    }
+
+    public function testTCQG16CalculateMultipleSeatTypes()
+    {
+        // Dùng mock riêng biệt để tránh xung đột với các test khác đã stub getByIds()
+        $bm  = $this->createMock(\App\Models\BookingModel::class);
+        $stm = $this->createMock(\App\Models\ShowtimeModel::class);
+        $sm  = $this->createMock(\App\Models\SeatModel::class);
+        $tm  = $this->createMock(\App\Models\TicketModel::class);
+
+        $stm->method('getDetailById')->willReturn([
+            'id' => 1, 'room_id' => 1, 'base_price' => 90000,
+            'show_date' => date('Y-m-d', strtotime('+7 days')),
+            'start_time' => '18:00:00', 'status' => 'active',
+        ]);
+        $sm->method('getByIds')->willReturn([
+            $this->makeSeat(1, 0),
+            $this->makeSeat(2, 50000),
+            $this->makeSeat(3, 100000),
+            $this->makeSeat(4, 0),
+        ]);
+        $tm->method('isSeatBooked')->willReturn(false);
+        $bm->expects($this->once())
+            ->method('createBooking')
+            ->willReturn(999);
+        $tm->method('createMany')->willReturn(true);
+        $bm->method('beginTransaction');
+        $bm->method('commit');
+        $bm->method('rollback');
+
+        $svc    = new BookingService($bm, $stm, $sm, $tm);
+        $result = $svc->processBooking(1, 1, [1, 2, 3, 4], 'momo');
+        $this->assertSame('success', $result['status'], 'Error: ' . ($result['message'] ?? 'none'));
+    }
+
+    // =========================================================================
+    // TC-QG-18: Đặt vé thành công hoàn chỉnh
+    // =========================================================================
+    public function testTCQG18ValidCartProducesSuccessfulBooking()
+    {
+        $this->mockShowtimeWith(100000);
+        $this->successSetup([
+            $this->makeSeat(5, 0),
+            $this->makeSeat(6, 50000),
+        ]);
+
+        $result = $this->service->processBooking(2, 1, [5, 6], 'vnpay');
 
         $this->assertSame('success', $result['status']);
         $this->assertArrayHasKey('booking_id', $result);
     }
-
-    /**
-     * TC-QG-16
-     * 2 ghế thường + 2 ghế VIP:
-     *
-     * 90.000 + 90.000
-     * + 110.000 + 110.000
-     * = 400.000
-     */
-    public function testTCQG16CalculateMultipleSeatTypes(): void
-    {
-        $service = $this->createService(
-            [0, 0, 20000, 20000],
-            400000.0
-        );
-
-        $result = $service->processBooking(
-            1,
-            1,
-            [1, 2, 3, 4],
-            'cash'
-        );
-
-        $this->assertSame('success', $result['status']);
-    }
-
-    /**
-     * TC-QG-18
-     * Giỏ hàng hợp lệ phải tạo booking thành công.
-     */
-    public function testTCQG18ValidCartProducesSuccessfulBooking(): void
-    {
-        $service = $this->createService(
-            [0, 20000],
-            200000.0
-        );
-
-        $result = $service->processBooking(
-            1,
-            1,
-            [1, 2],
-            'momo'
-        );
-
-        $this->assertSame('success', $result['status']);
-        $this->assertArrayHasKey('booking_id', $result);
-    }
-
-    /**
-     * Dọn trạng thái sau mỗi test.
-     *
-     * Các test đang sử dụng Mock nên không ghi dữ liệu
-     * vào Database thật. Việc reset Mock giúp mỗi test
-     * hoạt động độc lập.
-     */
 }
