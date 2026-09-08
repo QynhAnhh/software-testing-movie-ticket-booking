@@ -48,7 +48,7 @@ const selectSeat = (I) => {
 
 
 // ==========================================
-// HÀM TẠO CHUỖI VOUCHER
+// TẠO CHUỖI VOUCHER
 // ==========================================
 
 const generateVoucher = (length) => {
@@ -59,7 +59,8 @@ const generateVoucher = (length) => {
 
 // ==========================================
 // TC-TC-16
-// Độ dài mã Voucher = 1 ký tự
+// Độ dài = 1
+// Mong đợi: Không hợp lệ
 // ==========================================
 
 Scenario(
@@ -67,12 +68,9 @@ Scenario(
     ({ I }) => {
 
         login(I);
-
         selectSeat(I);
 
         I.waitForElement('#voucher-code', 10);
-
-        I.scrollTo('#voucher-code');
 
         I.fillField(
             '#voucher-code',
@@ -81,14 +79,19 @@ Scenario(
 
         I.click('#btn-apply-voucher');
 
-        I.wait(2);
+        I.waitForText(
+            'Mã voucher phải có từ 2 đến 50 ký tự.',
+            5,
+            '#voucher-message'
+        );
     }
 );
 
 
 // ==========================================
 // TC-TC-17
-// Độ dài mã Voucher = 2 ký tự
+// Độ dài = 2
+// Mong đợi: Được xử lý bình thường
 // ==========================================
 
 Scenario(
@@ -96,12 +99,9 @@ Scenario(
     ({ I }) => {
 
         login(I);
-
         selectSeat(I);
 
         I.waitForElement('#voucher-code', 10);
-
-        I.scrollTo('#voucher-code');
 
         I.fillField(
             '#voucher-code',
@@ -110,14 +110,19 @@ Scenario(
 
         I.click('#btn-apply-voucher');
 
-        I.wait(2);
+        I.waitForElement('#voucher-message', 5);
+
+        I.dontSee(
+            'Mã voucher phải có từ 2 đến 50 ký tự.',
+            '#voucher-message'
+        );
     }
 );
 
 
 // ==========================================
 // TC-TC-18
-// Độ dài Voucher = 49 ký tự
+// Độ dài = 49
 // ==========================================
 
 Scenario(
@@ -125,12 +130,7 @@ Scenario(
     ({ I }) => {
 
         login(I);
-
         selectSeat(I);
-
-        I.waitForElement('#voucher-code', 10);
-
-        I.scrollTo('#voucher-code');
 
         I.fillField(
             '#voucher-code',
@@ -139,14 +139,19 @@ Scenario(
 
         I.click('#btn-apply-voucher');
 
-        I.wait(2);
+        I.waitForElement('#voucher-message', 5);
+
+        I.dontSee(
+            'Mã voucher phải có từ 2 đến 50 ký tự.',
+            '#voucher-message'
+        );
     }
 );
 
 
 // ==========================================
 // TC-TC-19
-// Độ dài Voucher = 50 ký tự
+// Độ dài = 50
 // ==========================================
 
 Scenario(
@@ -154,12 +159,7 @@ Scenario(
     ({ I }) => {
 
         login(I);
-
         selectSeat(I);
-
-        I.waitForElement('#voucher-code', 10);
-
-        I.scrollTo('#voucher-code');
 
         I.fillField(
             '#voucher-code',
@@ -168,14 +168,20 @@ Scenario(
 
         I.click('#btn-apply-voucher');
 
-        I.wait(2);
+        I.waitForElement('#voucher-message', 5);
+
+        I.dontSee(
+            'Mã voucher phải có từ 2 đến 50 ký tự.',
+            '#voucher-message'
+        );
     }
 );
 
 
 // ==========================================
 // TC-TC-20
-// Độ dài Voucher = 51 ký tự
+// Độ dài = 51
+// Mong đợi: Không hợp lệ
 // ==========================================
 
 Scenario(
@@ -183,12 +189,7 @@ Scenario(
     ({ I }) => {
 
         login(I);
-
         selectSeat(I);
-
-        I.waitForElement('#voucher-code', 10);
-
-        I.scrollTo('#voucher-code');
 
         I.fillField(
             '#voucher-code',
@@ -197,6 +198,10 @@ Scenario(
 
         I.click('#btn-apply-voucher');
 
-        I.wait(2);
+        I.waitForText(
+            'Mã voucher phải có từ 2 đến 50 ký tự.',
+            5,
+            '#voucher-message'
+        );
     }
 );

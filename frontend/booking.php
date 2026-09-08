@@ -149,6 +149,7 @@ require_once 'header.php';
             id="voucher-code"
             class="form-control"
             placeholder="Nhập mã voucher"
+            maxlength="50"
         >
 
         <button
@@ -374,17 +375,64 @@ applyVoucherButton.addEventListener('click', async () => {
 
     const code = voucherCode.value.trim();
 
-    // Chưa nhập voucher
-    if (!code) {
+// Chưa nhập voucher
+if (!code) {
 
-        voucherMessage.textContent =
-            'Vui lòng nhập mã voucher.';
+    voucherMessage.textContent =
+        'Vui lòng nhập mã voucher.';
 
-        voucherMessage.className =
-            'mt-2 text-danger';
+    voucherMessage.className =
+        'mt-2 text-danger';
 
-        return;
-    }
+    return;
+}
+
+
+    // Voucher dưới 2 ký tự
+if (code.length < 2) {
+
+    voucherMessage.textContent =
+        'Mã voucher phải có ít nhất 2 ký tự.';
+
+    voucherMessage.className =
+        'mt-2 text-danger';
+
+    return;
+}
+
+
+// Voucher vượt quá 50 ký tự
+if (code.length > 50) {
+
+    voucherMessage.textContent =
+        'Mã voucher phải có từ 2 đến 50 ký tự.';
+
+    voucherMessage.className =
+        'mt-2 text-danger';
+
+    return;
+}
+
+    voucherMessage.textContent =
+        'Mã voucher phải có ít nhất 2 ký tự.';
+
+    voucherMessage.className =
+        'mt-2 text-danger';
+
+    return;
+}
+
+// Kiểm tra độ dài tối đa
+if (code.length > 50) {
+
+    voucherMessage.textContent =
+        'Mã voucher không được vượt quá 50 ký tự.';
+
+    voucherMessage.className =
+        'mt-2 text-danger';
+
+    return;
+}
 
     // Tính tổng tiền
     const subtotal = selected.reduce(
