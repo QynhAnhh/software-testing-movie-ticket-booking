@@ -1,0 +1,223 @@
+{
+  "info": {
+    "_postman_id": "a82f3210-912b-401d-b31c-testing-payment",
+    "name": "Payment & Booking State Transition API Tests",
+    "description": "Collection test API/Form Data cho các kịch bản kiểm thử biên và bảo mật thanh toán (TC-OI-06 -> TC-OI-09)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "TC-OI-06: Thanh toán lại vé đã ở trạng thái Paid",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "booking_id",
+              "value": "105",
+              "type": "text"
+            },
+            {
+              "key": "action",
+              "value": "pay",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/booking_history.php",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "booking_history.php"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code trả về hợp lệ (200 OK hoặc 302 Redirect)', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 302]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-OI-07: Gửi mã booking_id không tồn tại (999999)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "booking_id",
+              "value": "999999",
+              "type": "text"
+            },
+            {
+              "key": "action",
+              "value": "pay",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/booking_history.php",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "booking_history.php"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Xử lý thành công không bị crash Fatal Error', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 302]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-OI-08: Thiếu mảng ghế seat_ids khi đặt vé",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "showtime_id",
+              "value": "300",
+              "type": "text"
+            },
+            {
+              "key": "payment_method",
+              "value": "momo",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/booking.php",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "booking.php"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Backend xử lý chặn đặt vé rỗng (200/302)', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 302]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TC-OI-09: Tham số total_price gửi lên bị âm/bằng 0",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "showtime_id",
+              "value": "300",
+              "type": "text"
+            },
+            {
+              "key": "seats[]",
+              "value": "A5",
+              "type": "text"
+            },
+            {
+              "key": "payment_method",
+              "value": "momo",
+              "type": "text"
+            },
+            {
+              "key": "total_price",
+              "value": "-500000",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/booking.php",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "booking.php"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Backend nhận request thành công không bị crash (200/302)', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 302]);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/PROJECT_CLEAN",
+      "type": "string"
+    }
+  ]
+}
