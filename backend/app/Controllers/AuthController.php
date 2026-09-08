@@ -30,7 +30,7 @@ class AuthController
 
         if ($result['status'] === 'success') {
             if ($result['role'] === 'admin') {
-                header("Location: admin/index.php");
+                header("Location:  /software-testing-movie-ticket-booking/admin/index.php");
             } else {
                 header("Location: /software-testing-movie-ticket-booking/index.php");
             }
