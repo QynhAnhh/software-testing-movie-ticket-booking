@@ -48,13 +48,13 @@ trait BookingValidationTrait {
      */
     protected function normalizePaymentMethod($paymentMethod) {
         $paymentMethod = strtolower(trim((string)$paymentMethod));
-        $allowedMethods = ['cash', 'vnpay', 'momo']; // Add other allowed methods if needed
+        $allowedMethods = ['momo', 'vnpay', 'bank_transfer']; // Add other allowed methods if needed
 
-        if (in_array($paymentMethod, $allowedMethods)) {
+        if (in_array($paymentMethod, $allowedMethods, true)) {
             return $paymentMethod;
         }
 
-        return 'cash'; // Default
+        throw new \InvalidArgumentException('Phương thức thanh toán không hợp lệ.');
     }
 
     /**
