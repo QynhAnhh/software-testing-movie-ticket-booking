@@ -84,3 +84,5 @@ class BookingPriceTest extends TestCase
         $this->assertTrue(true);
     }
 }
+
+
