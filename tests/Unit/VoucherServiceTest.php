@@ -95,7 +95,7 @@ public function testInactiveVoucher()
         ->willReturn([
             'id' => 1,
             'code' => 'MOVIE50',
-            'expiry_date' => '2099-12-31',
+            'expiry_date' => ':DEFAULT_EXPIRATION_DATE.',
             'status' => 'inactive',
             'min_order' => 50000,
             'used_count' => 0,
