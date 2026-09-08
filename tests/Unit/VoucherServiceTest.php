@@ -13,7 +13,9 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 {
     protected UnitTester $tester;
 
-    public function testEmptyVoucherCode()
+    private const DEFAULT_EXPIRATION_DATE = '2099-12-31';
+
+    public function testEmptyVoucherCode(): void
     {
         $service = new VoucherService();
 
@@ -22,7 +24,7 @@ class VoucherServiceTest extends \Codeception\Test\Unit
         $service->validateCode('');
     }
 
-    public function testVoucherTooLong()
+    public function testVoucherTooLong(): void
     {
         $service = new VoucherService();
 
@@ -31,7 +33,7 @@ class VoucherServiceTest extends \Codeception\Test\Unit
         $service->validateCode(str_repeat('A', 51));
     }
 
-    public function testVoucherContainsSpecialCharacter()
+    public function testVoucherContainsSpecialCharacter(): void
     {
         $service = new VoucherService();
 
@@ -40,7 +42,7 @@ class VoucherServiceTest extends \Codeception\Test\Unit
         $service->validateCode('MOVIE@50');
     }
 
-    public function testValidVoucherCode()
+    public function testValidVoucherCode(): void
     {
         $service = new VoucherService();
 
@@ -49,7 +51,7 @@ class VoucherServiceTest extends \Codeception\Test\Unit
         $this->assertTrue(true);
     }
 
-    public function testVoucherNotFound()
+    public function testVoucherNotFound(): void
     {
         $model = $this->createMock(VoucherModel::class);
 
@@ -62,217 +64,230 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
         $service->applyVoucher('MOVIE50', 100000);
     }
-public function testExpiredVoucher()
-{
-    $model = $this->createMock(VoucherModel::class);
 
-    $model->method('findByCode')
-        ->willReturn([
-            'id' => 1,
-            'code' => 'MOVIE50',
-            'expiry_date' => '2020-01-01',
-            'status' => 'active',
-            'min_order' => 50000,
-            'used_count' => 0,
-            'max_usage' => 100,
-            'discount_type' => 'fixed',
-            'discount_value' => 20000
-        ]);
+    public function testExpiredVoucher(): void
+    {
+        $model = $this->createMock(VoucherModel::class);
 
-    $service = new VoucherService($model);
+        $model->method('findByCode')
+            ->willReturn([
+                'id' => 1,
+                'code' => 'MOVIE50',
+                'expiry_date' => '2020-01-01',
+                'status' => 'active',
+                'min_order' => 50000,
+                'used_count' => 0,
+                'max_usage' => 100,
+                'discount_type' => 'fixed',
+                'discount_value' => 20000
+            ]);
 
-    $this->expectException(VoucherException::class);
-    $this->expectExceptionMessage('Voucher has expired.');
+        $service = new VoucherService($model);
 
-    $service->applyVoucher('MOVIE50', 100000);
-}
+        $this->expectException(VoucherException::class);
+        $this->expectExceptionMessage('Voucher has expired.');
 
-public function testInactiveVoucher()
-{
-    $model = $this->createMock(VoucherModel::class);
+        $service->applyVoucher('MOVIE50', 100000);
+    }
 
-    $model->method('findByCode')
-        ->willReturn([
-            'id' => 1,
-            'code' => 'MOVIE50',
-            'expiry_date' => ':DEFAULT_EXPIRATION_DATE.',
-            'status' => 'inactive',
-            'min_order' => 50000,
-            'used_count' => 0,
-            'max_usage' => 100,
-            'discount_type' => 'fixed',
-            'discount_value' => 20000
-        ]);
+    public function testInactiveVoucher(): void
+    {
+        $model = $this->createMock(VoucherModel::class);
 
-    $service = new VoucherService($model);
+        $model->method('findByCode')
+            ->willReturn([
+                'id' => 1,
+                'code' => 'MOVIE50',
+                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
+                'status' => 'inactive',
+                'min_order' => 50000,
+                'used_count' => 0,
+                'max_usage' => 100,
+                'discount_type' => 'fixed',
+                'discount_value' => 20000
+            ]);
 
-    $this->expectException(VoucherException::class);
+        $service = new VoucherService($model);
 
-    $service->applyVoucher('MOVIE50', 100000);
-}
+        $this->expectException(VoucherException::class);
 
-public function testMinimumOrderNotReached()
-{
-    $model = $this->createMock(VoucherModel::class);
+        $service->applyVoucher('MOVIE50', 100000);
+    }
 
-    $model->method('findByCode')
-        ->willReturn([
-            'id' => 1,
-            'code' => 'MOVIE50',
-            'expiry_date' => '2099-12-31',
-            'status' => 'active',
-            'min_order' => 100000,
-            'used_count' => 0,
-            'max_usage' => 100,
-            'discount_type' => 'fixed',
-            'discount_value' => 20000
-        ]);
+    public function testMinimumOrderNotReached(): void
+    {
+        $model = $this->createMock(VoucherModel::class);
 
-    $service = new VoucherService($model);
+        $model->method('findByCode')
+            ->willReturn([
+                'id' => 1,
+                'code' => 'MOVIE50',
+                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
+                'status' => 'active',
+                'min_order' => 100000,
+                'used_count' => 0,
+                'max_usage' => 100,
+                'discount_type' => 'fixed',
+                'discount_value' => 20000
+            ]);
 
-    $this->expectException(VoucherException::class);
+        $service = new VoucherService($model);
 
-    $service->applyVoucher('MOVIE50', 50000);
-}
+        $this->expectException(VoucherException::class);
 
-public function testMaxUsageReached()
-{
-    $model = $this->createMock(VoucherModel::class);
+        $service->applyVoucher('MOVIE50', 50000);
+    }
 
-    $model->method('findByCode')
-        ->willReturn([
-            'id' => 1,
-            'code' => 'MOVIE50',
-            'expiry_date' => '2099-12-31',
-            'status' => 'active',
-            'min_order' => 50000,
-            'used_count' => 100,
-            'max_usage' => 100,
-            'discount_type' => 'fixed',
-            'discount_value' => 20000
-        ]);
+    public function testMaxUsageReached(): void
+    {
+        $model = $this->createMock(VoucherModel::class);
 
-    $service = new VoucherService($model);
+        $model->method('findByCode')
+            ->willReturn([
+                'id' => 1,
+                'code' => 'MOVIE50',
+                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
+                'status' => 'active',
+                'min_order' => 50000,
+                'used_count' => 100,
+                'max_usage' => 100,
+                'discount_type' => 'fixed',
+                'discount_value' => 20000
+            ]);
 
-    $this->expectException(VoucherException::class);
+        $service = new VoucherService($model);
 
-    $service->applyVoucher('MOVIE50', 100000);
-}
+        $this->expectException(VoucherException::class);
 
-public function testApplyFixedVoucherSuccess()
-{
-    $model = $this->createMock(VoucherModel::class);
+        $service->applyVoucher('MOVIE50', 100000);
+    }
 
-    $model->method('findByCode')
-        ->willReturn([
-            'id' => 1,
-            'code' => 'MOVIE50',
-            'expiry_date' => '2099-12-31',
-            'status' => 'active',
-            'min_order' => 50000,
-            'used_count' => 0,
-            'max_usage' => 100,
-            'discount_type' => 'fixed',
-            'discount_value' => 20000
-        ]);
+    public function testApplyFixedVoucherSuccess(): void
+    {
+        $model = $this->createMock(VoucherModel::class);
 
-    $model->method('hasUserUsed')->willReturn(false);
-    $model->method('incrementUsage')->willReturn(true);
-    $model->method('recordUsage')->willReturn(true);
+        $model->method('findByCode')
+            ->willReturn([
+                'id' => 1,
+                'code' => 'MOVIE50',
+                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
+                'status' => 'active',
+                'min_order' => 50000,
+                'used_count' => 0,
+                'max_usage' => 100,
+                'discount_type' => 'fixed',
+                'discount_value' => 20000
+            ]);
 
-    $service = new VoucherService($model);
+        $model->method('hasUserUsed')
+            ->willReturn(false);
 
-    $result = $service->applyVoucher('MOVIE50', 100000, 1);
+        $model->method('incrementUsage')
+            ->willReturn(true);
 
-    $this->assertEquals(20000, $result['discount']);
-    $this->assertEquals(80000, $result['final_amount']);
-}
+        $model->method('recordUsage')
+            ->willReturn(true);
 
-public function testApplyPercentVoucherSuccess()
-{
-    $model = $this->createMock(VoucherModel::class);
+        $service = new VoucherService($model);
 
-    $model->method('findByCode')
-        ->willReturn([
-            'id' => 1,
-            'code' => 'VIP20',
-            'expiry_date' => '2099-12-31',
-            'status' => 'active',
-            'min_order' => 50000,
-            'used_count' => 0,
-            'max_usage' => 100,
-            'discount_type' => 'percent',
-            'discount_value' => 20
-        ]);
+        $result = $service->applyVoucher('MOVIE50', 100000, 1);
 
-    $model->method('hasUserUsed')->willReturn(false);
-    $model->method('incrementUsage')->willReturn(true);
-    $model->method('recordUsage')->willReturn(true);
+        $this->assertEquals(20000, $result['discount']);
+        $this->assertEquals(80000, $result['final_amount']);
+    }
 
-    $service = new VoucherService($model);
+    public function testApplyPercentVoucherSuccess(): void
+    {
+        $model = $this->createMock(VoucherModel::class);
 
-    $result = $service->applyVoucher('VIP20', 100000, 1);
+        $model->method('findByCode')
+            ->willReturn([
+                'id' => 1,
+                'code' => 'VIP20',
+                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
+                'status' => 'active',
+                'min_order' => 50000,
+                'used_count' => 0,
+                'max_usage' => 100,
+                'discount_type' => 'percent',
+                'discount_value' => 20
+            ]);
 
-    $this->assertEquals(20000, $result['discount']);
-    $this->assertEquals(80000, $result['final_amount']);
-}
-public function testUserAlreadyUsedVoucher()
-{
-    $model = $this->createMock(VoucherModel::class);
+        $model->method('hasUserUsed')
+            ->willReturn(false);
 
-    $model->method('findByCode')
-        ->willReturn([
-            'id' => 1,
-            'code' => 'MOVIE50',
-            'expiry_date' => '2099-12-31',
-            'status' => 'active',
-            'min_order' => 50000,
-            'used_count' => 0,
-            'max_usage' => 100,
-            'discount_type' => 'fixed',
-            'discount_value' => 20000
-        ]);
+        $model->method('incrementUsage')
+            ->willReturn(true);
 
-    $model->method('hasUserUsed')
-        ->willReturn(true);
+        $model->method('recordUsage')
+            ->willReturn(true);
 
-    $service = new VoucherService($model);
+        $service = new VoucherService($model);
 
-    $this->expectException(VoucherException::class);
+        $result = $service->applyVoucher('VIP20', 100000, 1);
 
-    $service->applyVoucher('MOVIE50', 100000, 1);
-}
-public function testDiscountCannotMakeNegativeAmount()
-{
-    $model = $this->createMock(VoucherModel::class);
+        $this->assertEquals(20000, $result['discount']);
+        $this->assertEquals(80000, $result['final_amount']);
+    }
 
-    $model->method('findByCode')
-        ->willReturn([
-            'id' => 1,
-            'code' => 'FREE100',
-            'expiry_date' => '2099-12-31',
-            'status' => 'active',
-            'min_order' => 0,
-            'used_count' => 0,
-            'max_usage' => 100,
-            'discount_type' => 'fixed',
-            'discount_value' => 200000
-        ]);
+    public function testUserAlreadyUsedVoucher(): void
+    {
+        $model = $this->createMock(VoucherModel::class);
 
-    $model->method('hasUserUsed')
-        ->willReturn(false);
+        $model->method('findByCode')
+            ->willReturn([
+                'id' => 1,
+                'code' => 'MOVIE50',
+                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
+                'status' => 'active',
+                'min_order' => 50000,
+                'used_count' => 0,
+                'max_usage' => 100,
+                'discount_type' => 'fixed',
+                'discount_value' => 20000
+            ]);
 
-    $model->method('incrementUsage')
-        ->willReturn(true);
+        $model->method('hasUserUsed')
+            ->willReturn(true);
 
-    $model->method('recordUsage')
-        ->willReturn(true);
+        $service = new VoucherService($model);
 
-    $service = new VoucherService($model);
+        $this->expectException(VoucherException::class);
 
-    $result = $service->applyVoucher('FREE100', 100000, 1);
+        $service->applyVoucher('MOVIE50', 100000, 1);
+    }
 
-    $this->assertEquals(100000, $result['discount']);
-    $this->assertEquals(0, $result['final_amount']);
-}
+    public function testDiscountCannotMakeNegativeAmount(): void
+    {
+        $model = $this->createMock(VoucherModel::class);
+
+        $model->method('findByCode')
+            ->willReturn([
+                'id' => 1,
+                'code' => 'FREE100',
+                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
+                'status' => 'active',
+                'min_order' => 0,
+                'used_count' => 0,
+                'max_usage' => 100,
+                'discount_type' => 'fixed',
+                'discount_value' => 200000
+            ]);
+
+        $model->method('hasUserUsed')
+            ->willReturn(false);
+
+        $model->method('incrementUsage')
+            ->willReturn(true);
+
+        $model->method('recordUsage')
+            ->willReturn(true);
+
+        $service = new VoucherService($model);
+
+        $result = $service->applyVoucher('FREE100', 100000, 1);
+
+        $this->assertEquals(100000, $result['discount']);
+        $this->assertEquals(0, $result['final_amount']);
+    }
 }
