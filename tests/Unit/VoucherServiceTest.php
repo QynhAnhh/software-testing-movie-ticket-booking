@@ -15,6 +15,36 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     private const DEFAULT_EXPIRATION_DATE = '2099-12-31';
 
+    /**
+     * Create a mock VoucherModel with default voucher data.
+     *
+     * @param array<string, mixed> $overrides
+     */
+    private function createVoucherModel(array $overrides = []): VoucherModel
+    {
+        $model = $this->createMock(VoucherModel::class);
+
+        $voucher = array_merge(
+            [
+                'id' => 1,
+                'code' => 'MOVIE50',
+                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
+                'status' => 'active',
+                'min_order' => 50000,
+                'used_count' => 0,
+                'max_usage' => 100,
+                'discount_type' => 'fixed',
+                'discount_value' => 20000,
+            ],
+            $overrides
+        );
+
+        $model->method('findByCode')
+            ->willReturn($voucher);
+
+        return $model;
+    }
+
     public function testEmptyVoucherCode(): void
     {
         $service = new VoucherService();
@@ -67,20 +97,9 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     public function testExpiredVoucher(): void
     {
-        $model = $this->createMock(VoucherModel::class);
-
-        $model->method('findByCode')
-            ->willReturn([
-                'id' => 1,
-                'code' => 'MOVIE50',
-                'expiry_date' => '2020-01-01',
-                'status' => 'active',
-                'min_order' => 50000,
-                'used_count' => 0,
-                'max_usage' => 100,
-                'discount_type' => 'fixed',
-                'discount_value' => 20000
-            ]);
+        $model = $this->createVoucherModel([
+            'expiry_date' => '2020-01-01',
+        ]);
 
         $service = new VoucherService($model);
 
@@ -92,20 +111,9 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     public function testInactiveVoucher(): void
     {
-        $model = $this->createMock(VoucherModel::class);
-
-        $model->method('findByCode')
-            ->willReturn([
-                'id' => 1,
-                'code' => 'MOVIE50',
-                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
-                'status' => 'inactive',
-                'min_order' => 50000,
-                'used_count' => 0,
-                'max_usage' => 100,
-                'discount_type' => 'fixed',
-                'discount_value' => 20000
-            ]);
+        $model = $this->createVoucherModel([
+            'status' => 'inactive',
+        ]);
 
         $service = new VoucherService($model);
 
@@ -116,20 +124,9 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     public function testMinimumOrderNotReached(): void
     {
-        $model = $this->createMock(VoucherModel::class);
-
-        $model->method('findByCode')
-            ->willReturn([
-                'id' => 1,
-                'code' => 'MOVIE50',
-                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
-                'status' => 'active',
-                'min_order' => 100000,
-                'used_count' => 0,
-                'max_usage' => 100,
-                'discount_type' => 'fixed',
-                'discount_value' => 20000
-            ]);
+        $model = $this->createVoucherModel([
+            'min_order' => 100000,
+        ]);
 
         $service = new VoucherService($model);
 
@@ -140,20 +137,9 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     public function testMaxUsageReached(): void
     {
-        $model = $this->createMock(VoucherModel::class);
-
-        $model->method('findByCode')
-            ->willReturn([
-                'id' => 1,
-                'code' => 'MOVIE50',
-                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
-                'status' => 'active',
-                'min_order' => 50000,
-                'used_count' => 100,
-                'max_usage' => 100,
-                'discount_type' => 'fixed',
-                'discount_value' => 20000
-            ]);
+        $model = $this->createVoucherModel([
+            'used_count' => 100,
+        ]);
 
         $service = new VoucherService($model);
 
@@ -164,20 +150,7 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     public function testApplyFixedVoucherSuccess(): void
     {
-        $model = $this->createMock(VoucherModel::class);
-
-        $model->method('findByCode')
-            ->willReturn([
-                'id' => 1,
-                'code' => 'MOVIE50',
-                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
-                'status' => 'active',
-                'min_order' => 50000,
-                'used_count' => 0,
-                'max_usage' => 100,
-                'discount_type' => 'fixed',
-                'discount_value' => 20000
-            ]);
+        $model = $this->createVoucherModel();
 
         $model->method('hasUserUsed')
             ->willReturn(false);
@@ -198,20 +171,11 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     public function testApplyPercentVoucherSuccess(): void
     {
-        $model = $this->createMock(VoucherModel::class);
-
-        $model->method('findByCode')
-            ->willReturn([
-                'id' => 1,
-                'code' => 'VIP20',
-                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
-                'status' => 'active',
-                'min_order' => 50000,
-                'used_count' => 0,
-                'max_usage' => 100,
-                'discount_type' => 'percent',
-                'discount_value' => 20
-            ]);
+        $model = $this->createVoucherModel([
+            'code' => 'VIP20',
+            'discount_type' => 'percent',
+            'discount_value' => 20,
+        ]);
 
         $model->method('hasUserUsed')
             ->willReturn(false);
@@ -232,20 +196,7 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     public function testUserAlreadyUsedVoucher(): void
     {
-        $model = $this->createMock(VoucherModel::class);
-
-        $model->method('findByCode')
-            ->willReturn([
-                'id' => 1,
-                'code' => 'MOVIE50',
-                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
-                'status' => 'active',
-                'min_order' => 50000,
-                'used_count' => 0,
-                'max_usage' => 100,
-                'discount_type' => 'fixed',
-                'discount_value' => 20000
-            ]);
+        $model = $this->createVoucherModel();
 
         $model->method('hasUserUsed')
             ->willReturn(true);
@@ -259,20 +210,11 @@ class VoucherServiceTest extends \Codeception\Test\Unit
 
     public function testDiscountCannotMakeNegativeAmount(): void
     {
-        $model = $this->createMock(VoucherModel::class);
-
-        $model->method('findByCode')
-            ->willReturn([
-                'id' => 1,
-                'code' => 'FREE100',
-                'expiry_date' => self::DEFAULT_EXPIRATION_DATE,
-                'status' => 'active',
-                'min_order' => 0,
-                'used_count' => 0,
-                'max_usage' => 100,
-                'discount_type' => 'fixed',
-                'discount_value' => 200000
-            ]);
+        $model = $this->createVoucherModel([
+            'code' => 'FREE100',
+            'min_order' => 0,
+            'discount_value' => 200000,
+        ]);
 
         $model->method('hasUserUsed')
             ->willReturn(false);
