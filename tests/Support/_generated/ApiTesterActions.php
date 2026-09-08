@@ -395,7 +395,7 @@ trait ApiTesterActions
      * @param iterable<mixed> $haystack
      * @see \Codeception\Module\AbstractAsserts::assertContainsOnly()
      */
-    public function assertContainsOnly(string $type, iterable $haystack, ?bool $isNativeType = NULL, string $message = ""): void {
+    public function assertContainsOnly(string $type, iterable $haystack, ?bool $isNativeType = null, string $message = ""): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('assertContainsOnly', func_get_args()));
     }
 
@@ -1489,7 +1489,7 @@ trait ApiTesterActions
      * @param iterable<mixed> $haystack
      * @see \Codeception\Module\AbstractAsserts::assertNotContainsOnly()
      */
-    public function assertNotContainsOnly(string $type, iterable $haystack, ?bool $isNativeType = NULL, string $message = ""): void {
+    public function assertNotContainsOnly(string $type, iterable $haystack, ?bool $isNativeType = null, string $message = ""): void {
         $this->getScenario()->runStep(new \Codeception\Step\Action('assertNotContainsOnly', func_get_args()));
     }
 
