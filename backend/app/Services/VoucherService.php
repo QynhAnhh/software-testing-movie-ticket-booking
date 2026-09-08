@@ -62,14 +62,21 @@ class VoucherService
 
         // 2. Find voucher
         $voucher = $this->voucherModel->findByCode($code);
+        
+        if (!$voucher) {
+            throw new VoucherException('Voucher not found.');
+    }
+        
         if (!$voucher) {
             throw new VoucherException('Voucher not found.');
         }
 
         // 3. Check expiry
-        if (strtotime($voucher['expiry_date']) < strtotime(date('Y-m-d'))) {
+        if (!empty($voucher['expires_at']) &&
+            strtotime($voucher['expires_at']) < time()) {
             throw new VoucherException('Voucher has expired.');
-        }
+    
+    }
 
         // 4. Check active status
         if ($voucher['status'] !== 'active') {
@@ -77,18 +84,18 @@ class VoucherService
         }
 
         // 5. Check minimum order amount
-        if ($orderAmount < (float) $voucher['min_order']) {
+        if ($orderAmount < (float) $voucher['min_order_amount']) {
             throw new VoucherException(
                 sprintf(
                     'Order amount does not meet the minimum required (%.0f VND).',
-                    $voucher['min_order']
-                )
+                        $voucher['min_order_amount']
+)
             );
         }
 
         // 6. Check usage limit
-        if ($voucher['used_count'] >= $voucher['max_usage']) {
-            throw new VoucherException('Voucher has reached its maximum usage limit.');
+            if ($voucher['used_quantity'] >= $voucher['total_quantity']) {
+                throw new VoucherException('Voucher has reached its maximum usage limit.');
         }
 
         // 7. Check if this user already used it
@@ -122,14 +129,14 @@ class VoucherService
      * @return float
      */
     private function calculateDiscount(array $voucher, float $orderAmount): float
-    {
-        if ($voucher['discount_type'] === 'percent') {
-            return $orderAmount * ((float) $voucher['discount_value'] / 100);
-        }
-
-        // fixed
-        return min((float) $voucher['discount_value'], $orderAmount);
-    }
+    
+{
+    return min(
+        (float)$voucher['discount_amount'],
+        $orderAmount
+    );
+}
+    
 
     /**
      * Restore usage count and history – used in PHPUnit tearDown().
