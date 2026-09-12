@@ -86,7 +86,7 @@ require_once 'header.php';
                     </a>
                     <a href="../backend/logout.php" class="btn btn-profile-logout">
                         <i class="bi bi-box-arrow-right"></i>
-                        <span>Đăng xuất</span>
+                        <span>Đóng xuất</span>
                     </a>
                 </nav>
             </div>
@@ -209,6 +209,25 @@ require_once 'header.php';
     </div>
 </div>
 
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="cancelConfirmModalLabel">Xác nhận hủy vé</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn hủy vé này không? Thao tác này không thể hoàn tác.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-cancel">Đồng ý hủy</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
 <script>
 document.querySelectorAll('.booking-history-poster').forEach((image) => {
     image.addEventListener('error', () => {
@@ -216,17 +235,32 @@ document.querySelectorAll('.booking-history-poster').forEach((image) => {
     });
 });
 
+let formToSubmit = null;
+let cancelModal = null;
+
 document.querySelectorAll('form[action="booking_history.php"]').forEach((form) => {
     if (form.querySelector('input[name="action"][value="cancel_booking"]')) {
         form.addEventListener('submit', (event) => {
-            if (!confirm('B?n c� ch?c mu?n h?y v� n�y?')) {
-                event.preventDefault();
+            event.preventDefault();
+            formToSubmit = form;
+            if (!cancelModal) {
+                cancelModal = new bootstrap.Modal(document.getElementById('cancelConfirmModal'));
             }
+            cancelModal.show();
         });
+    }
+});
+
+document.getElementById('btn-confirm-cancel').addEventListener('click', () => {
+    if (formToSubmit) {
+        HTMLFormElement.prototype.submit.call(formToSubmit);
     }
 });
 </script>
 <?php require_once 'footer.php'; ?>
+
+
+
 
 
 

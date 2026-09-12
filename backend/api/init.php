@@ -1,4 +1,7 @@
 <?php
+// Nạp cấu hình hệ thống (Database, Session, Autoload) trước khi set headers
+require_once __DIR__ . '/../config.php';
+
 // Siết chặt CORS (chỉ cho phép các domain cụ thể)
 $allowed_origins = [
     'http://localhost',
@@ -29,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 // Nạp cấu hình hệ thống (Database, Session, Autoload)
-require_once __DIR__ . '/../config.php';
+// Moved to top
 
 // Hàm hỗ trợ trả về JSON và kết thúc script
 function sendJsonResponse($status, $message, $data = null, $httpCode = 200) {

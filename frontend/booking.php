@@ -1,5 +1,5 @@
 <?php
-require_once 'config.php';
+require_once '../backend/config.php';
 
 use App\Controllers\ShowtimeController;
 use App\Controllers\SeatController;
@@ -38,9 +38,11 @@ if ($result) {
             </script>
         ";    
     } else {
+        $showtimeIdRedirect = (int)($_POST['showtime_id'] ?? $_GET['showtime_id'] ?? 0);
         echo "
             <script>
                 alert('{$result['message']}');
+                window.location='booking.php?showtime_id={$showtimeIdRedirect}';
             </script>
         "; 
     }
@@ -328,7 +330,7 @@ let currentDiscount = 0;
 
     async function syncBookedSeats() {
         try {
-            const response = await fetch(`api/seats.php?showtime_id=${showtimeId}`, {
+            const response = await fetch(`/software-testing-movie-ticket-booking/api/seats.php?showtime_id=${showtimeId}`, {
                 headers: { 'Accept': 'application/json' }
             });
             if (!response.ok) {
@@ -368,220 +370,132 @@ let currentDiscount = 0;
             updateSummary();
         });
     });
-applyVoucherButton.addEventListener('click', async () => {
 
-    const selected = getSelectedSeatButtons();
+    applyVoucherButton.addEventListener('click', async () => {
+        const selected = getSelectedSeatButtons();
 
-    // Chưa chọn ghế
-    if (!selected.length) {
-
-        voucherMessage.textContent =
-            'Vui lòng chọn ghế trước khi áp dụng voucher.';
-
-        voucherMessage.className =
-            'mt-2 text-danger';
-
-        return;
-    }
-
-    const code = voucherCode.value.trim();
-
-// Chưa nhập voucher
-if (!code) {
-
-    voucherMessage.textContent =
-        'Vui lòng nhập mã voucher.';
-
-    voucherMessage.className =
-        'mt-2 text-danger';
-
-    return;
-}
-
-
-    // Voucher dưới 2 ký tự
-if (code.length < 2) {
-
-    voucherMessage.textContent =
-        'Mã voucher phải có ít nhất 2 ký tự.';
-
-    voucherMessage.className =
-        'mt-2 text-danger';
-
-    return;
-}
-
-
-// Voucher vượt quá 50 ký tự
-if (code.length > 50) {
-
-    voucherMessage.textContent =
-        'Mã voucher phải có từ 2 đến 50 ký tự.';
-
-    voucherMessage.className =
-        'mt-2 text-danger';
-
-    return;
-}
-
-    voucherMessage.textContent =
-        'Mã voucher phải có ít nhất 2 ký tự.';
-
-    voucherMessage.className =
-        'mt-2 text-danger';
-
-    return;
-}
-
-// Kiểm tra độ dài tối đa
-if (code.length > 50) {
-
-    voucherMessage.textContent =
-        'Mã voucher không được vượt quá 50 ký tự.';
-
-    voucherMessage.className =
-        'mt-2 text-danger';
-
-    return;
-}
-
-    // Tính tổng tiền
-    const subtotal = selected.reduce(
-        (sum, seat) =>
-            sum + Number(seat.dataset.price || 0),
-        0
-    );
-
-    try {
-
-        const response = await fetch(
-            '../backend/api/check_voucher.php',
-            {
-                method: 'POST',
-
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-
-                body: JSON.stringify({
-                    voucher_code: code,
-                    subtotal: subtotal,
-                    user_id: 0
-                })
-            }
-        );
-
-        const result = await response.json();
-
-        // Thành công
-        if (
-            response.ok &&
-            result.status === 'success'
-        ) {
-
-            currentDiscount =
-                Number(result.data.discount || 0);
-
-            const finalAmount =
-                Number(result.data.final_amount || 0);
-
-            discountPrice.textContent =
-                formatter.format(currentDiscount) + 'đ';
-
-            finalPrice.textContent =
-                formatter.format(finalAmount) + 'đ';
-
-            voucherMessage.textContent =
-                result.message;
-
-            voucherMessage.className =
-                'mt-2 text-success';
-
-        } else {
-
-            currentDiscount = 0;
-
-            discountPrice.textContent = '0đ';
-
-            finalPrice.textContent =
-                formatter.format(subtotal) + 'đ';
-
-            voucherMessage.textContent =
-                result.message || 'Không thể áp dụng voucher.';
-
-            voucherMessage.className =
-                'mt-2 text-danger';
+        // Chưa chọn ghế
+        if (!selected.length) {
+            voucherMessage.textContent = 'Vui lòng chọn ghế trước khi áp dụng voucher.';
+            voucherMessage.className = 'mt-2 text-danger';
+            return;
         }
 
-    } catch (error) {
+        const code = voucherCode.value.trim();
 
-        voucherMessage.textContent =
-            'Không thể kết nối đến hệ thống Voucher.';
+        // Chưa nhập voucher
+        if (!code) {
+            voucherMessage.textContent = 'Vui lòng nhập mã voucher.';
+            voucherMessage.className = 'mt-2 text-danger';
+            return;
+        }
 
-        voucherMessage.className =
-            'mt-2 text-danger';
+        // Voucher dưới 2 ký tự
+        if (code.length < 2) {
+            voucherMessage.textContent = 'Mã voucher phải có ít nhất 2 ký tự.';
+            voucherMessage.className = 'mt-2 text-danger';
+            return;
+        }
 
-        console.error(error);
-    }
+        // Voucher vượt quá 50 ký tự
+        if (code.length > 50) {
+            voucherMessage.textContent = 'Mã voucher không được vượt quá 50 ký tự.';
+            voucherMessage.className = 'mt-2 text-danger';
+            return;
+        }
 
-    syncBookedSeats();
+        // Tính tổng tiền
+        const subtotal = selected.reduce(
+            (sum, seat) => sum + Number(seat.dataset.price || 0),
+            0
+        );
 
-    confirmButton.addEventListener('click', () => {
-            const selected = getSelectedSeatButtons();
-            if (!selected.length) {
-                alert("Vui lòng chọn ghế");
-                return;
-            }
-
-            if (!confirm("Bạn có chắc chắn muốn đặt vé không?")) {
-                return;
-            }
-
-            const payment = document.querySelector(
-                'input[name="payment_method"]:checked'
+        try {
+            const response = await fetch(
+                '/software-testing-movie-ticket-booking/backend/api/check_voucher.php',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        voucher_code: code,
+                        subtotal: subtotal,
+                        user_id: 0
+                    })
+                }
             );
 
-            const form = document.createElement('form');
-            form.method = "POST";
-            form.action = "booking.php";
-            // action
-            let action = document.createElement('input');
+            const result = await response.json();
 
-            action.type = "hidden";
-            action.name = "action";
-            action.value = "book_ticket";
+            // Thành công
+            if (response.ok && result.status === 'success') {
+                currentDiscount = Number(result.data.discount || 0);
+                const finalAmount = Number(result.data.final_amount || 0);
 
-            form.appendChild(action);
+                discountPrice.textContent = formatter.format(currentDiscount) + 'đ';
+                finalPrice.textContent = formatter.format(finalAmount) + 'đ';
+                voucherMessage.textContent = result.message;
+                voucherMessage.className = 'mt-2 text-success';
+            } else {
+                currentDiscount = 0;
+                discountPrice.textContent = '0đ';
+                finalPrice.textContent = formatter.format(subtotal) + 'đ';
+                voucherMessage.textContent = result.message || 'Không thể áp dụng voucher.';
+                voucherMessage.className = 'mt-2 text-danger';
+            }
+        } catch (error) {
+            voucherMessage.textContent = 'Không thể kết nối đến hệ thống Voucher.';
+            voucherMessage.className = 'mt-2 text-danger';
+            console.error(error);
+        }
+    });
 
-            // showtime id
-            let showtime = document.createElement('input');
+    confirmButton.addEventListener('click', () => {
+        const selected = getSelectedSeatButtons();
+        if (!selected.length) {
+            alert("Vui lòng chọn ghế");
+            return;
+        }
 
-            showtime.type = "hidden";
-            showtime.name = "showtime_id";
-            showtime.value = "<?= $showtimeId ?>";
+        const payment = document.querySelector('input[name="payment_method"]:checked');
 
-            form.appendChild(showtime);
+        const form = document.createElement('form');
+        form.method = "POST";
+        form.action = "booking.php";
 
-            // payment
-            let paymentInput = document.createElement('input');
+        let action = document.createElement('input');
+        action.type = "hidden";
+        action.name = "action";
+        action.value = "book_ticket";
+        form.appendChild(action);
 
-            paymentInput.type = "hidden";
-            paymentInput.name = "payment_method";
-            paymentInput.value = payment.value;
+        let showtime = document.createElement('input');
+        showtime.type = "hidden";
+        showtime.name = "showtime_id";
+        showtime.value = "<?= $showtimeId ?>";
+        form.appendChild(showtime);
 
-            form.appendChild(paymentInput);
-            // selected seats
-            selected.forEach(seat => {
-                let input = document.createElement('input');
-                input.type = "hidden";
-                input.name = "seats[]";
-                input.value = seat.dataset.seatId;
-                form.appendChild(input);
-            });
-            document.body.appendChild(form);
-            form.submit();
+        let paymentInput = document.createElement('input');
+        paymentInput.type = "hidden";
+        paymentInput.name = "payment_method";
+        paymentInput.value = payment ? payment.value : 'momo';
+        form.appendChild(paymentInput);
+
+        selected.forEach(seat => {
+            let input = document.createElement('input');
+            input.type = "hidden";
+            input.name = "seats[]";
+            input.value = seat.dataset.seatId;
+            form.appendChild(input);
         });
+
+        document.body.appendChild(form);
+        HTMLFormElement.prototype.submit.call(form);
+    });
+
+    syncBookedSeats();
 </script>
 
 <?php require_once 'footer.php'; ?>

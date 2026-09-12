@@ -13,7 +13,7 @@ if (isset($_SESSION['user']) && !is_array($sessionUser)) {
 }
 
 if (!is_array($sessionUser) || ($sessionUser['role'] ?? '') !== 'admin') {
-    header("Location: ../login.php");
+    header("Location: /software-testing-movie-ticket-booking/login.php");
     exit;
 }
 
@@ -43,7 +43,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-    integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
     crossorigin="anonymous">
     <!-- Custom Admin CSS -->
     <link rel="stylesheet" href="../css/admin.css">

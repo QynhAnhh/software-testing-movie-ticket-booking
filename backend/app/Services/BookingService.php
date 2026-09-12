@@ -205,6 +205,14 @@ class BookingService {
         }
     }
 
+    private function showtimeHasStarted(array $showtime) {
+        $showDateTime = \DateTime::createFromFormat(
+            'Y-m-d H:i:s',
+            $showtime['show_date'] . ' ' . $showtime['start_time']
+        );
+        return $showDateTime && $showDateTime <= new \DateTime();
+    }
+
     // ==========================================
     // 3. QUẢN TRỊ ADMIN (ADMIN OPERATIONS)
     // ==========================================

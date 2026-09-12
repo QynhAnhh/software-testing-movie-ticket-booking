@@ -33,14 +33,14 @@
         <a href="manage_users.php" class="nav-link <?= ($current_page == 'manage_users.php') ? 'active' : '' ?>">
             <i class="bi bi-people"></i> Quản lý Người dùng
         </a>
-        <a href="../index.php" class="nav-link" target="_blank" rel="noopener">
+        <a href="/software-testing-movie-ticket-booking/index.php" class="nav-link" target="_blank" rel="noopener">
             <i class="bi bi-house-door"></i> Xem trang chủ
         </a>
     </div>
 
     <div class="sidebar-footer">
         <div class="d-grid">
-            <a href="../logout.php" class="btn btn-netflix-red btn-sm">
+            <a href="/software-testing-movie-ticket-booking/backend/logout.php" class="btn btn-netflix-red btn-sm">
                 <i class="bi bi-box-arrow-right"></i> Đăng xuất
             </a>
         </div>

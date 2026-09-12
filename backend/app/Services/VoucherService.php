@@ -72,11 +72,10 @@ class VoucherService
         }
 
         // 3. Check expiry
-        if (!empty($voucher['expires_at']) &&
-            strtotime($voucher['expires_at']) < time()) {
+        if (!empty($voucher['expiry_date']) &&
+            strtotime($voucher['expiry_date']) < time()) {
             throw new VoucherException('Voucher has expired.');
-    
-    }
+        }
 
         // 4. Check active status
         if ($voucher['status'] !== 'active') {
@@ -84,18 +83,18 @@ class VoucherService
         }
 
         // 5. Check minimum order amount
-        if ($orderAmount < (float) $voucher['min_order_amount']) {
+        if ($orderAmount < (float) $voucher['min_order']) {
             throw new VoucherException(
                 sprintf(
                     'Order amount does not meet the minimum required (%.0f VND).',
-                        $voucher['min_order_amount']
-)
+                    $voucher['min_order']
+                )
             );
         }
 
         // 6. Check usage limit
-            if ($voucher['used_quantity'] >= $voucher['total_quantity']) {
-                throw new VoucherException('Voucher has reached its maximum usage limit.');
+        if ($voucher['used_count'] >= $voucher['max_usage']) {
+            throw new VoucherException('Voucher has reached its maximum usage limit.');
         }
 
         // 7. Check if this user already used it
@@ -129,14 +128,14 @@ class VoucherService
      * @return float
      */
     private function calculateDiscount(array $voucher, float $orderAmount): float
-    
-{
-    return min(
-        (float)$voucher['discount_amount'],
-        $orderAmount
-    );
-}
-    
+    {
+        $value = (float) $voucher['discount_value'];
+        if ($voucher['discount_type'] === 'percent') {
+            $discount = $orderAmount * ($value / 100);
+            return min($discount, $orderAmount);
+        }
+        return min($value, $orderAmount);
+    }
 
     /**
      * Restore usage count and history – used in PHPUnit tearDown().

@@ -37,7 +37,7 @@ class VoucherModel
      */
     public function incrementUsage(int $id): bool
     {
-        $stmt = mysqli_prepare($this->conn, "UPDATE vouchers SET used_quantity = used_quantity + 1 WHERE id = ?");
+        $stmt = mysqli_prepare($this->conn, "UPDATE vouchers SET used_count = used_count + 1 WHERE id = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         $result = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
@@ -54,7 +54,7 @@ class VoucherModel
     {
         $stmt = mysqli_prepare(
             $this->conn,
-            "UPDATE vouchers SET used_quantity = GREATEST(0, used_quantity - 1) WHERE id = ?"
+            "UPDATE vouchers SET used_count = GREATEST(0, used_count - 1) WHERE id = ?"
         );
         mysqli_stmt_bind_param($stmt, "i", $id);
         $result = mysqli_stmt_execute($stmt);

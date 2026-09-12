@@ -22,6 +22,10 @@ RewriteRule ^admin/(.*)$ backend/admin/$1 [L]
 # 4. Chuyển hướng các file tĩnh (css, js, images) vào frontend/ (khi chưa tồn tại ở root)
 RewriteRule ^(css|js|images)/(.*)$ frontend/$1/$2 [L]
 
+# 5a. Bỏ qua backend/ - không rewrite vào frontend/
+RewriteCond %{REQUEST_URI} ^/software-testing-movie-ticket-booking/backend/
+RewriteRule ^ - [L]
+
 # 5. Trỏ các request tới các trang giao diện (.php) vào frontend/
 RewriteRule ^(.*\.php)$ frontend/$1 [L]
 
