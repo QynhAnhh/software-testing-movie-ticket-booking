@@ -10,8 +10,7 @@ const SHOWTIME_ID = Number(process.env.E2E_SHOWTIME_ID || 1);
 
 function getRequiredCredentials() {
   const email = process.env.E2E_USER_EMAIL || 'uyenngo@gmail.com';
-  // Không đặt password cứng dự phòng để tránh security warning
-  const password = process.env.E2E_USER_PASSWORD; 
+  const password = process.env.E2E_USER_PASSWORD;
   return { email, password };
 }
 
