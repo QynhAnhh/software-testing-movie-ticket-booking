@@ -13,7 +13,7 @@ class VoucherModel
     }
 
     /**
-     * Find a voucher by its code.
+     * Tìm voucher theo mã voucher
      *
      * @param string $code
      * @return array|null
@@ -30,7 +30,7 @@ class VoucherModel
     }
 
     /**
-     * Increment the used_count of a voucher.
+     * Tăng số lần sử dụng voucher
      *
      * @param int $id
      * @return bool
@@ -45,7 +45,7 @@ class VoucherModel
     }
 
     /**
-     * Decrement the used_count of a voucher (used for test teardown).
+     * Giảm số lần sử dụng voucher - test
      *
      * @param int $id
      * @return bool
@@ -63,7 +63,7 @@ class VoucherModel
     }
 
     /**
-     * Check if a user has already used a specific voucher.
+     * Kiểm tra user đã xài voucher chưa
      *
      * @param int $voucherId
      * @param int $userId
@@ -84,7 +84,7 @@ class VoucherModel
     }
 
     /**
-     * Record that a user has used a voucher.
+     * Lưu lịch sử user đã xài voucher.
      *
      * @param int $voucherId
      * @param int $userId
@@ -103,7 +103,7 @@ class VoucherModel
     }
 
     /**
-     * Delete a voucher usage record (used for test teardown).
+     * Xóa lịch sử dùng - test.
      *
      * @param int $voucherId
      * @param int $userId

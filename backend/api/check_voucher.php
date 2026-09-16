@@ -19,11 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $inputJSON = file_get_contents('php://input');
 $inputData = json_decode($inputJSON, true) ?: [];
 
-/*
-|--------------------------------------------------------------------------
-| TC15 - Không cho phép sử dụng nhiều voucher cùng lúc
-|--------------------------------------------------------------------------
-*/
+/* TC15 - Không cho phép sử dụng nhiều voucher cùng lúc */
 if (
     isset($inputData['voucher_codes']) &&
     is_array($inputData['voucher_codes']) &&
@@ -37,11 +33,7 @@ if (
     );
 }
 
-/*
-|--------------------------------------------------------------------------
-| Kiểm tra dữ liệu bắt buộc
-|--------------------------------------------------------------------------
-*/
+/* Kiểm tra dữ liệu bắt buộc */
 if (
     !isset($inputData['voucher_code']) ||
     !isset($inputData['subtotal'])
@@ -60,11 +52,7 @@ $userId = isset($inputData['user_id'])
     ? (int)$inputData['user_id']
     : 0;
 
-/*
-|--------------------------------------------------------------------------
-| Voucher rỗng
-|--------------------------------------------------------------------------
-*/
+/* Voucher rỗng */
 if ($code === '') {
     sendJsonResponse(
         'error',
@@ -74,11 +62,7 @@ if ($code === '') {
     );
 }
 
-/*
-|--------------------------------------------------------------------------
-| Tổng tiền không hợp lệ
-|--------------------------------------------------------------------------
-*/
+/* Tổng tiền không hợp lệ */
 if ($subtotal <= 0) {
     sendJsonResponse(
         'error',

@@ -17,8 +17,8 @@ class VoucherService
     }
 
     /**
-     * Validate the format of a voucher code.
-     * Rules: non-empty, uppercase alphanumeric only (A-Z, 0-9), max 50 characters.
+     * Kiểm tra định dạng mã
+     * Rules: không rỗng, chỉ chứa ký tự chữ hoa (A-Z) và số (0-9), tối đa 50 ký tự.
      *
      * @param string $code
      * @throws \InvalidArgumentException if format is invalid
@@ -43,7 +43,7 @@ class VoucherService
     }
 
     /**
-     * Apply a voucher to an order and return the discounted total.
+     * Áp dụng voucher và trả về tổng tiền sau khi giảm
      *
      * @param string $code        Voucher code
      * @param float  $orderAmount Order total before discount
@@ -55,34 +55,31 @@ class VoucherService
      */
     public function applyVoucher(string $code, float $orderAmount, int $userId = 0): array
     {
-        // 1. Validate format
+        // 1. Kiểm tra định dạng mã
         $this->validateCode($code);
 
         $code = trim($code);
 
-        // 2. Find voucher
+        // 2. Tìm voucher
         $voucher = $this->voucherModel->findByCode($code);
         
-        if (!$voucher) {
-            throw new VoucherException('Voucher not found.');
-    }
         
         if (!$voucher) {
             throw new VoucherException('Voucher not found.');
         }
 
-        // 3. Check expiry
+        // 3. Kiểm tra hạn sử dụng
         if (!empty($voucher['expiry_date']) &&
             strtotime($voucher['expiry_date']) < time()) {
             throw new VoucherException('Voucher has expired.');
         }
 
-        // 4. Check active status
+        // 4. Kiểm tra trạng thái
         if ($voucher['status'] !== 'active') {
             throw new VoucherException('Voucher is inactive.');
         }
 
-        // 5. Check minimum order amount
+        // 5. Kiểm tra tổng tiền tối thiểu
         if ($orderAmount < (float) $voucher['min_order']) {
             throw new VoucherException(
                 sprintf(
@@ -92,21 +89,21 @@ class VoucherService
             );
         }
 
-        // 6. Check usage limit
+        // 6. Kiểm tra giới hạn sử dụng
         if ($voucher['used_count'] >= $voucher['max_usage']) {
             throw new VoucherException('Voucher has reached its maximum usage limit.');
         }
 
-        // 7. Check if this user already used it
+        // 7. Kiểm tra user đã xài voucher chưa
         if ($userId > 0 && $this->voucherModel->hasUserUsed((int) $voucher['id'], $userId)) {
             throw new VoucherException('You have already used this voucher.');
         }
 
-        // 8. Calculate discount (result must never be negative)
+        // 8. Tính toán số tiền được giảm
         $discount = $this->calculateDiscount($voucher, $orderAmount);
         $finalAmount = max(0, $orderAmount - $discount);
 
-        // 9. Record usage
+        // 9. Lưu lịch sử sử dụng
         $this->voucherModel->incrementUsage((int) $voucher['id']);
         if ($userId > 0) {
             $this->voucherModel->recordUsage((int) $voucher['id'], $userId);
@@ -121,7 +118,7 @@ class VoucherService
     }
 
     /**
-     * Calculate the discount amount based on discount type.
+     * Tính số tiền được giảm dựa trên loại giảm giá
      *
      * @param array $voucher
      * @param float $orderAmount
@@ -138,7 +135,7 @@ class VoucherService
     }
 
     /**
-     * Restore usage count and history – used in PHPUnit tearDown().
+     * Khôi phục số lần sử dụng và lịch sử - dùng trong PHPUnit
      */
     public function restoreUsageCountAndHistory(): void
     {

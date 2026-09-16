@@ -2,7 +2,7 @@
 namespace App\Exceptions;
 
 /**
- * Base exception for all voucher-related errors.
+ * Ngoại lệ voucher
  */
 class VoucherException extends \RuntimeException
 {
