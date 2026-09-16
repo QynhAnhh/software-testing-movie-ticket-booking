@@ -67,11 +67,12 @@
         "url": {
           "raw": "http://localhost/software-testing-movie-ticket-booking/login.php",
           "host": [
-            "http://localhost/software-testing-movie-ticket-booking"
+            "localhost"
           ],
           "path": [
             "login.php"
-          ]
+          ],
+          "protocol": "http"
         }
       },
       "response": []
@@ -169,12 +170,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "Expected theo Excel: hệ thống từ chối khi thiếu trường bắt buộc."
           },
@@ -270,12 +272,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             }
           },
           "response": []
@@ -370,12 +373,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             }
           },
           "response": []
@@ -473,12 +477,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "Postman bypass browser date validation. Nếu server không validate ngày, case này sẽ FAIL và phản ánh thiếu server-side validation."
           },
@@ -576,12 +581,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "Sau khi import collection, nếu Postman báo file unresolved hãy chọn lại file document.pdf ở field poster."
           },
@@ -677,12 +683,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "Expected theo Excel là reject >5MB. Source hiện tại chưa thấy kiểm tra kích thước nên case có thể FAIL."
           },
@@ -782,12 +789,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             }
           },
           "response": []
@@ -851,12 +859,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "DÙNG ID TEST/DISPOSABLE. Source có thể xóa thật dữ liệu nếu không có guard."
           },
@@ -921,12 +930,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "DÙNG ID TEST/DISPOSABLE. Source có thể xóa thật dữ liệu nếu không có guard."
           },
@@ -1048,12 +1058,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_movies.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "Source hiện tại chưa thấy validation 5000 ký tự nên case có thể FAIL."
           },
@@ -1145,12 +1156,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             }
           },
           "response": []
@@ -1237,12 +1249,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "Postman bypass client-side time input validation. Nếu server chỉ kiểm regex HH:MM, case có thể FAIL."
           },
@@ -1324,12 +1337,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "Precondition: cùng phòng/ngày đã có suất 10:00-12:00. Source hiện tại có vẻ chỉ kiểm cùng start_time nên có thể FAIL."
           },
@@ -1405,12 +1419,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             }
           },
           "response": []
@@ -1504,12 +1519,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "movie_120_id phải là phim có duration=120."
           },
@@ -1598,12 +1614,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             }
           },
           "response": []
@@ -1698,12 +1715,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             }
           },
           "response": []
@@ -1795,12 +1813,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "Precondition: cùng room/date có suất khác 14:00-16:00; update target thành 13:00-15:00."
           },
@@ -1888,12 +1907,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             }
           },
           "response": []
@@ -1954,12 +1974,13 @@
             "url": {
               "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "http://localhost/software-testing-movie-ticket-booking"
+                "localhost"
               ],
               "path": [
                 "admin",
                 "manage_showtimes.php"
-              ]
+              ],
+              "protocol": "http"
             },
             "description": "DÙNG ID TEST/DISPOSABLE. Source hiện tại có thể xóa thật nếu không guard."
           },
@@ -2002,9 +2023,9 @@
       "value": "admin@example.com"
     },
     {
-  "key": "admin_password",
-  "value": "Admin@123"
-},
+      "key": "admin_password",
+      "value": "Admin@123"
+    },
     {
       "key": "movie_with_showtime_id",
       "value": ""
