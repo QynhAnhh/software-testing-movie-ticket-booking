@@ -69,6 +69,7 @@ class AuthServiceTest extends TestCase
     }
 
     /**
+     * * 
      * @dataProvider passwordLengthProvider
      */
     public function testPasswordLengthValidation($length, $password, $expectedStatus, $expectedMessage, $tcId)

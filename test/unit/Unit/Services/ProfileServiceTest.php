@@ -76,7 +76,6 @@ class ProfileServiceTest extends TestCase
         $result = $this->profileService->getProfileOverview($this->dummyUserId);
         $this->assertNotNull($result['user']);
         $this->assertEquals('user1@test.com', $result['user']['email']);
-        // Ticket and spent count might be 0, but it should not be null
         $this->assertIsNumeric($result['total_tickets']);
         $this->assertIsNumeric($result['total_spent']);
     }
@@ -145,7 +144,7 @@ class ProfileServiceTest extends TestCase
 
     public function testUpdateProfileSuccess()
     {
-        $_SESSION['user'] = ['id' => $this->dummyUserId]; // To test syncSessionUser
+        $_SESSION['user'] = ['id' => $this->dummyUserId];
         $data = ['first_name' => 'Updated', 'last_name' => 'Name', 'email' => 'updated@test.com', 'phone' => '0933333333', 'birth_date' => '2000-12-12'];
         $result = $this->profileService->updateProfile($this->dummyUserId, $data);
         
