@@ -52,22 +52,22 @@
             },
             {
               "key": "email",
-              "value": "{{admin_email}}",
+              "value": "admin@example.com",
               "type": "text",
               "uuid": "8d602d26-4fc9-4d6c-a9f1-f6d76704a715"
             },
             {
               "key": "password",
-              "value": "{{admin_password}}",
+              "value": "password",
               "type": "text",
               "uuid": "b83a54a0-383a-4533-83a0-38f73066f4f9"
             }
           ]
         },
         "url": {
-          "raw": "{{base_url}}/login.php",
+          "raw": "http://localhost/software-testing-movie-ticket-booking/login.php",
           "host": [
-            "{{base_url}}"
+            "http://localhost/software-testing-movie-ticket-booking"
           ],
           "path": [
             "login.php"
@@ -167,9 +167,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -268,9 +268,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -368,9 +368,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -471,9 +471,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -574,9 +574,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -675,9 +675,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -780,9 +780,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -849,9 +849,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -919,9 +919,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1046,9 +1046,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_movies.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_movies.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1143,9 +1143,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1235,9 +1235,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1322,9 +1322,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1403,9 +1403,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1502,9 +1502,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1596,9 +1596,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1696,9 +1696,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1793,9 +1793,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1886,9 +1886,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
@@ -1952,9 +1952,9 @@
               ]
             },
             "url": {
-              "raw": "{{base_url}}/admin/manage_showtimes.php",
+              "raw": "http://localhost/software-testing-movie-ticket-booking/admin/manage_showtimes.php",
               "host": [
-                "{{base_url}}"
+                "http://localhost/software-testing-movie-ticket-booking"
               ],
               "path": [
                 "admin",
